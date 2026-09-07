@@ -1,6 +1,5 @@
 import { getCaseStudy } from '@/content'
 import type { Metric as MetricType } from '@/content'
-import { LogoRow } from '@/components/layout/LogoRow'
 import { Metric } from '@/components/primitives/Metric'
 
 /**
@@ -53,7 +52,6 @@ export function Position() {
           ))}
         </dl>
 
-        <LogoRow className="mt-20 border-t border-grid pt-10" />
       </div>
     </section>
   )
