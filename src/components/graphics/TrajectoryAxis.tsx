@@ -32,9 +32,13 @@ const LANE_CLASS =
 
 // A role/education bar (the axis's time dimension): a fixed-thickness mark
 // whose length is the only thing the dates actually determine, exactly like
-// stroke-width staying constant while geometry varies in `geometry.ts`.
+// stroke-width staying constant while geometry varies in `geometry.ts`. Its
+// colour is the one real piece of data this component adds on top of
+// position: `current` (already parsed from the CV date string, never
+// invented) reads as resolved --signal, and every closed period reads as
+// --depth, the ramp's own "earlier" end.
 const BAR_CLASS =
-  'absolute left-0 top-[var(--pos)] h-[var(--span)] w-2 bg-bone/70 md:left-[var(--pos)] md:top-1/2 md:h-2 md:w-[var(--span)] md:-translate-y-1/2'
+  'absolute left-0 top-[var(--pos)] h-[var(--span)] w-2 md:left-[var(--pos)] md:top-1/2 md:h-2 md:w-[var(--span)] md:-translate-y-1/2'
 
 const LABEL_CLASS =
   'absolute left-4 top-[var(--pos)] max-w-[7.5rem] font-mono text-12 leading-tight text-label md:left-[var(--pos)] md:top-0 md:max-w-[9rem] md:pt-0.5'
@@ -45,13 +49,16 @@ const TICK_LINE_CLASS =
 const TICK_LABEL_CLASS =
   'absolute left-1.5 top-[var(--pos)] font-mono text-12 text-label md:left-[var(--pos)] md:top-auto md:bottom-0 md:ml-1'
 
-// The Nepal-to-London marker: a dashed rule (never --signal, that budget is
-// spent elsewhere on the page) crossing every track at once.
+// The Nepal-to-London marker: a dashed rule in --depth (never --signal, that
+// budget is spent elsewhere on the page) crossing every track at once. Depth
+// is the ramp's "earlier" colour, and this line marks exactly the point the
+// record moves from an earlier country to the current one, so the colour
+// carries the same meaning here as it does inside the diagrams.
 const MARKER_LINE_CLASS =
-  'absolute left-0 right-0 top-[var(--pos)] border-t border-dashed border-bone/70 md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:border-t-0 md:border-l md:h-full'
+  'absolute left-0 right-0 top-[var(--pos)] border-t border-dashed border-depth md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:border-t-0 md:border-l md:h-full'
 
 const MARKER_LABEL_CLASS =
-  'absolute left-1.5 top-[var(--pos)] -mt-4 font-mono text-12 text-bone md:left-[var(--pos)] md:top-0 md:mt-0 md:ml-1.5'
+  'absolute left-1.5 top-[var(--pos)] -mt-4 font-mono text-12 text-depth md:left-[var(--pos)] md:top-0 md:mt-0 md:ml-1.5'
 
 type AxisVars = CSSProperties & { '--pos'?: string; '--span'?: string }
 
@@ -68,6 +75,11 @@ function computeSlots(weights: number[]): { pos: number; span: number }[] {
     cursor += span
     return slot
   })
+}
+
+/** Resolved (still running) reads --signal; every closed period reads --depth. */
+function barToneClass(current: boolean): string {
+  return current ? 'bg-signal' : 'bg-depth'
 }
 
 function laneCount(entries: PositionedEntry[]): number {
@@ -136,7 +148,7 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
       <div
         role="img"
         aria-label={`Timeline of roles and education, ${domainLabel}, drawn to scale so overlapping periods overlap on the axis.`}
-        className="relative h-[26rem] w-full border border-grid md:h-[13rem]"
+        className="relative h-[26rem] w-full border border-grid bg-panel md:h-[13rem]"
       >
         {/* Year ticks */}
         <div className={LANE_CLASS} style={posVar(tickSlot.pos, tickSlot.span)} aria-hidden>
@@ -160,7 +172,7 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
                 .filter((e) => e.lane === lane)
                 .map((entry) => (
                   <div key={entry.key} title={`${entry.heading}, ${entry.sub}, ${entry.range.current ? 'current' : ''}`}>
-                    <div className={BAR_CLASS} style={posVar(entry.startPct, entry.spanPct)} />
+                    <div className={`${BAR_CLASS} ${barToneClass(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
                     <span className={LABEL_CLASS} style={posVar(entry.startPct)}>
                       {entry.sub}
                     </span>
@@ -178,7 +190,7 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
                 .filter((e) => e.lane === lane)
                 .map((entry) => (
                   <div key={entry.key} title={`${entry.heading}, ${entry.sub}`}>
-                    <div className={BAR_CLASS} style={posVar(entry.startPct, entry.spanPct)} />
+                    <div className={`${BAR_CLASS} ${barToneClass(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
                     <span className={LABEL_CLASS} style={posVar(entry.startPct)}>
                       {entry.sub}
                     </span>
@@ -196,6 +208,13 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
             </span>
           </>
         )}
+
+        {/* Domain bounds echo the diagrams' own input/output markers: the
+            axis starts on unresolved --depth and ends on resolved --signal,
+            the same two positions the record actually starts and reaches
+            "now" at, not new data. */}
+        <span aria-hidden className="absolute left-0 top-0 size-2 -translate-x-1 -translate-y-1 bg-depth" />
+        <span aria-hidden className="absolute top-0 right-0 size-2 translate-x-1 -translate-y-1 bg-signal" />
       </div>
 
       <p className="mt-4 max-w-[64ch] text-14 leading-relaxed text-label">

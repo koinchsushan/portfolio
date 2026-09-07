@@ -46,10 +46,10 @@ export function Position() {
 
   return (
     <section aria-labelledby="position-heading" className="border-b border-grid bg-panel">
-      <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
+      <div className="mx-auto max-w-[1400px] px-6 py-28 sm:py-40">
         <h2
           id="position-heading"
-          className="max-w-[20ch] text-40 leading-[0.98] tracking-[-0.02em] text-bone text-balance sm:text-64"
+          className="font-display max-w-[20ch] text-40 leading-[0.98] tracking-[-0.02em] text-bone text-balance sm:text-64"
         >
           What the work adds up to
         </h2>
@@ -58,7 +58,7 @@ export function Position() {
           the screen have to be reasoned about together.
         </p>
 
-        <dl className="mt-16 grid grid-cols-1 gap-y-12 sm:grid-cols-3 sm:gap-x-10">
+        <dl className="mt-20 grid grid-cols-1 gap-y-16 sm:grid-cols-3 sm:gap-x-14">
           {metrics.map((metric, i) => (
             <div key={metric.value} className={i > 0 ? 'sm:border-l sm:border-grid sm:pl-10' : ''}>
               <Datum className="mb-3 h-3 w-24" />

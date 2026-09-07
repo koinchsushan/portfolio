@@ -30,7 +30,7 @@ export function SectionHeader({
           {eyebrow}
         </MonoLabel>
       )}
-      <Tag id={id} className={`${headingSize} leading-[0.95] tracking-[-0.02em] text-bone text-balance`}>
+      <Tag id={id} className={`font-display ${headingSize} leading-[0.95] tracking-[-0.02em] text-bone text-balance`}>
         {heading}
       </Tag>
       {lede && <p className="mt-4 max-w-[42ch] text-16 leading-relaxed text-label">{lede}</p>}

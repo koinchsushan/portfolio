@@ -8,8 +8,8 @@ import { ExternalLink } from '@/components/primitives/ExternalLink'
 export function Contact() {
   return (
     <section id="contact" aria-labelledby="contact-heading" className="graticule">
-      <div className="mx-auto max-w-[1400px] px-6 py-24 sm:py-32">
-        <h2 id="contact-heading" className="text-40 leading-[0.95] tracking-[-0.02em] text-bone sm:text-104">
+      <div className="mx-auto max-w-[1400px] px-6 py-32 sm:py-40">
+        <h2 id="contact-heading" className="font-display text-40 leading-[0.95] tracking-[-0.02em] text-bone sm:text-104">
           Contact
         </h2>
         <p className="mt-6 max-w-[40ch] text-18 leading-relaxed text-label">{identity.availability}</p>

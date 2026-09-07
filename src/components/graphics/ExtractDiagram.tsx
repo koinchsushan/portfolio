@@ -20,7 +20,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
       viewBox={`0 0 ${geo.view.w} ${geo.view.h}`}
       data-progress={progress}
       role="img"
-      className={className}
+      className={`saturate-150 ${className ?? ''}`}
       preserveAspectRatio="xMidYMid meet"
     >
       <title>{DIAGRAM_TITLE.extract}</title>
@@ -51,7 +51,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
             y1={mark.y}
             y2={mark.y}
             stroke={ramp}
-            strokeWidth={2}
+            strokeWidth={3}
             strokeOpacity={mark.opacity}
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
@@ -60,12 +60,12 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
       </g>
 
       <g data-stage="funnel" data-built={stageBuilt(progress, 1, STAGE_COUNT) ? 'true' : 'false'}>
-        <path d={geo.funnel.top} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
-        <path d={geo.funnel.bottom} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
-        <path d={geo.funnel.throatTop} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
-        <path d={geo.funnel.throatBottom} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+        <path d={geo.funnel.top} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+        <path d={geo.funnel.bottom} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+        <path d={geo.funnel.throatTop} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+        <path d={geo.funnel.throatBottom} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
         {geo.collectors.map((d, i) => (
-          <path key={i} d={d} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+          <path key={i} d={d} fill="none" stroke={ramp} strokeWidth={3} vectorEffect="non-scaling-stroke" />
         ))}
       </g>
 
@@ -85,9 +85,9 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
         ))}
         {geo.fields.map((field) => (
           <g key={field.y}>
-            <rect x={field.key.x} y={field.key.y} width={field.key.w} height={field.key.h} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+            <rect x={field.key.x} y={field.key.y} width={field.key.w} height={field.key.h} fill="none" stroke={ramp} strokeWidth={3} vectorEffect="non-scaling-stroke" />
             <rect x={field.cap.x} y={field.cap.y} width={field.cap.w} height={field.cap.h} fill={ramp} />
-            <rect x={field.value.x} y={field.value.y} width={field.value.w} height={field.value.h} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+            <rect x={field.value.x} y={field.value.y} width={field.value.w} height={field.value.h} fill="none" stroke={ramp} strokeWidth={3} vectorEffect="non-scaling-stroke" />
           </g>
         ))}
       </g>

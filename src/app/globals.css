@@ -44,6 +44,20 @@ body {
   color: var(--color-ground);
 }
 
+/* The typographic idea: one variable family carrying the whole range.
+   Display type sits at the expanded end of Archivo's width axis at a heavy
+   weight; body copy stays at the font's default width and weight. The
+   contrast between the two IS the voice, so both are named utilities rather
+   than one-off inline styles scattered across every heading. */
+.font-display {
+  font-weight: 800;
+  font-variation-settings: 'wdth' 125;
+}
+
+.font-subhead {
+  font-weight: 700;
+}
+
 /* Visible focus ring everywhere, never removed. */
 :focus-visible {
   outline: 2px solid var(--color-signal);
@@ -58,11 +72,11 @@ body {
    reads as a deliberately drawn plot ground instead of a rendering
    artifact, while staying well below body-text contrast. */
 .graticule {
-  --graticule-line: color-mix(in srgb, var(--color-grid) 62%, var(--color-bone) 38%);
+  --graticule-line: color-mix(in srgb, var(--color-grid) 35%, var(--color-bone) 65%);
   background-image:
     linear-gradient(var(--graticule-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--graticule-line) 1px, transparent 1px);
-  background-size: 56px 56px;
+  background-size: 48px 48px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

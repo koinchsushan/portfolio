@@ -281,7 +281,7 @@ export function extractGeometry(): ExtractGeometry {
   const rand = mulberry32(20260907)
   const rows = 19
   const pitch = 17
-  const alphas = [0.4, 0.62, 0.85]
+  const alphas = [0.55, 0.75, 0.95]
   const marks: ExtractGeometry['marks'] = []
   for (let r = 0; r < rows; r++) {
     const y = 44 + r * pitch
@@ -367,8 +367,8 @@ export function heroGeometry(): HeroGeometry {
       dots.push({
         x: round(x0 + i * xPitch + (rand() * 2 - 1) * 34 * slack),
         y: round(y0 + j * yPitch + (rand() * 2 - 1) * 38 * slack),
-        weight: round(3 + 1.6 * t),
-        opacity: round(0.36 + 0.64 * t),
+        weight: round(3.5 + 2.5 * t),
+        opacity: round(0.55 + 0.45 * t),
         column: i,
       })
     }

@@ -22,7 +22,7 @@ export function HeroField({ className }: { className?: string }) {
       viewBox={`0 0 ${geo.view.w} ${geo.view.h}`}
       aria-hidden="true"
       preserveAspectRatio="xMidYMid slice"
-      className={className}
+      className={`saturate-150 ${className ?? ''}`}
     >
       <defs>
         <RampGradient id={GRADIENT_ID} ramp={geo.ramp} />
@@ -50,11 +50,11 @@ export function HeroField({ className }: { className?: string }) {
         y1={geo.datum.y}
         y2={geo.datum.y}
         stroke={ramp}
-        strokeWidth={1.5}
+        strokeWidth={2.5}
         vectorEffect="non-scaling-stroke"
       />
 
-      <path d={geo.trace} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+      <path d={geo.trace} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
 
       <g data-layer="lattice">
         {geo.dots.map((dot, i) => (

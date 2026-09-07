@@ -18,7 +18,7 @@ import { SectionHeader } from '@/components/primitives/SectionHeader'
 export function Stack() {
   return (
     <section aria-labelledby="stack-heading" className="border-b border-grid">
-      <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
+      <div className="mx-auto max-w-[1400px] px-6 py-14 sm:py-20">
         <SectionHeader
           id="stack-heading"
           heading="Technical Stack"
@@ -26,7 +26,7 @@ export function Stack() {
           lede="What I reach for, and what I have actually shipped with."
         />
 
-        <div className="graticule mt-14 border border-grid">
+        <div className="graticule mt-10 border border-grid bg-panel">
           <ul aria-label="Full technology stack" className="divide-y divide-grid">
             {skillGroups.map((group) => {
               const chips = (
@@ -44,7 +44,7 @@ export function Stack() {
               return (
                 <li
                   key={group.label}
-                  className="grid grid-cols-1 gap-y-3 px-4 py-5 sm:grid-cols-[128px_1px_1fr] sm:gap-x-6 sm:px-6"
+                  className="grid grid-cols-1 gap-y-2 px-4 py-3 sm:grid-cols-[128px_1px_1fr] sm:gap-x-6 sm:px-6 sm:py-3.5"
                 >
                   <h3 className="font-mono text-14 text-bone">{group.label}</h3>
                   <Rule vertical className="hidden sm:block" />

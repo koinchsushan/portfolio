@@ -17,7 +17,7 @@ export function About() {
     <section aria-labelledby="about-heading" className="border-b border-grid">
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 px-6 py-20 sm:py-28 lg:grid-cols-12 lg:gap-6">
         <div className="lg:col-span-3">
-          <h2 id="about-heading" className="text-28 tracking-[-0.01em] text-bone sm:text-40 lg:sticky lg:top-24">
+          <h2 id="about-heading" className="font-display text-28 tracking-[-0.01em] text-bone sm:text-40 lg:sticky lg:top-24">
             About
           </h2>
         </div>

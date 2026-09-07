@@ -1,23 +1,21 @@
-import { Instrument_Sans, JetBrains_Mono } from 'next/font/google'
+import { Archivo, Spline_Sans_Mono } from 'next/font/google'
 
-// Spec calls for Uncut Sans (display/body) and Commit Mono (labels, dates,
-// metrics, stack chips), both self-hosted via next/font. Neither ships on
-// Google Fonts and neither is bundled in this environment, so both fall
-// back per the brief's own escape hatch ("fall back to Instrument Sans if
-// licensing blocks it and say so in the commit"): Instrument Sans for the
-// sans family, and JetBrains Mono, a comparable technical monospace with
-// the same tabular-figures/instrumentation character, for the mono family.
-// next/font/google self-hosts the resulting files from this app's own
-// origin at build time, so the "self-host" requirement is still met even
-// though the source files live under next/font's cache rather than
-// src/fonts/.
-export const sans = Instrument_Sans({
+// Archivo is a variable grotesque with a real width axis (62.5 to 125,
+// condensed to expanded) alongside its weight axis (100 to 900). The `axes`
+// option pulls that width axis into the self-hosted file so display type can
+// sit at the expanded end while body copy stays at the default width, one
+// family carrying the whole typographic range instead of a second face.
+// Spline Sans Mono replaces JetBrains Mono for labels, dates, metrics and
+// stack chips: distinctive without being the same genre marker every dark
+// developer portfolio reaches for.
+export const sans = Archivo({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans',
+  axes: ['wdth'],
 })
 
-export const mono = JetBrains_Mono({
+export const mono = Spline_Sans_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-mono',

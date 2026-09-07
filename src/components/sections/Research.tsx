@@ -21,7 +21,7 @@ export function Research() {
         <ul className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-grid bg-grid lg:grid-cols-3">
           <li className="flex flex-col justify-between gap-8 bg-ground p-8 lg:col-span-2 lg:row-span-2 lg:p-12">
             <div>
-              <h3 className="text-28 tracking-[-0.01em] text-bone sm:text-40">{flagship.title}</h3>
+              <h3 className="font-subhead text-28 tracking-[-0.01em] text-bone sm:text-40">{flagship.title}</h3>
               <p className="mt-4 max-w-[60ch] text-16 leading-relaxed text-label">{flagship.blurb}</p>
             </div>
             <div>
@@ -65,7 +65,7 @@ export function Research() {
           {rest.map((item) => (
             <li key={item.repo} className="flex flex-col justify-between gap-6 bg-ground p-8">
               <div>
-                <h3 className="text-22 tracking-[-0.01em] text-bone">{item.title}</h3>
+                <h3 className="font-subhead text-22 tracking-[-0.01em] text-bone">{item.title}</h3>
                 {item.draft ? (
                   <DraftNote>
                     <p className="mt-3 text-14 leading-relaxed text-label">{item.blurb}</p>

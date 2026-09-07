@@ -19,13 +19,13 @@ export function Hero() {
       aria-labelledby="hero-heading"
       className="graticule relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
-      <HeroField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-70 md:block" />
+      <HeroField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-90 md:block" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-6">
         <div className="lg:col-span-8">
           <h1
             id="hero-heading"
-            className="text-104 leading-[0.9] tracking-[-0.03em] text-bone text-balance sm:text-160"
+            className="font-display text-104 leading-[0.9] tracking-[-0.03em] text-bone text-balance sm:text-160"
           >
             {identity.name}
           </h1>
@@ -36,6 +36,7 @@ export function Hero() {
 
         <div className="flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
           <p className="font-mono text-14 text-label">
+            <span aria-hidden className="mr-1.5 inline-block size-1.5 bg-depth align-middle" />
             {identity.location} · {identity.availability}
           </p>
           <p className="flex gap-8 lg:justify-end">

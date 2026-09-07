@@ -25,7 +25,7 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
           <p className="font-mono text-14 text-label">{caseStudy.employer}</p>
           <h1
             id="case-study-heading"
-            className="mt-3 text-64 leading-[0.95] tracking-[-0.03em] text-bone text-balance sm:text-104"
+            className="font-display mt-3 text-64 leading-[0.95] tracking-[-0.03em] text-bone text-balance sm:text-104"
           >
             {caseStudy.client}
           </h1>
@@ -47,10 +47,11 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
 
       <div className="mx-auto max-w-[1400px] px-6">
         <section aria-labelledby="situation-heading" className="grid grid-cols-1 gap-8 border-b border-grid py-16 lg:grid-cols-12 lg:gap-6">
-          <h2 id="situation-heading" className="text-22 tracking-[-0.01em] text-bone lg:col-span-3">
+          <h2 id="situation-heading" className="font-subhead text-22 tracking-[-0.01em] text-bone lg:col-span-3">
+            <span aria-hidden className="mr-2 inline-block size-2 bg-depth align-middle" />
             Situation
           </h2>
-          <div className="flex flex-col gap-5 lg:col-span-8 lg:col-start-5">
+          <div className="flex flex-col gap-5 border-l-2 border-depth/40 pl-6 lg:col-span-8 lg:col-start-5">
             {caseStudy.situation.map((paragraph) => (
               <p key={paragraph} className="max-w-[68ch] text-18 leading-relaxed text-label">
                 {paragraph}
@@ -71,7 +72,12 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
         </section>
 
         <section aria-labelledby="decision-heading" className="grid grid-cols-1 gap-8 border-b border-grid py-16 lg:grid-cols-12 lg:gap-6">
-          <h2 id="decision-heading" className="text-22 tracking-[-0.01em] text-bone lg:col-span-3">
+          <h2 id="decision-heading" className="font-subhead text-22 tracking-[-0.01em] text-bone lg:col-span-3">
+            <span
+              aria-hidden
+              className="mr-2 inline-block size-2 align-middle"
+              style={{ background: 'linear-gradient(90deg, var(--color-depth), var(--color-signal))' }}
+            />
             Decision
           </h2>
           <div className="flex flex-col gap-8 lg:col-span-8 lg:col-start-5">
@@ -82,7 +88,7 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
                 </p>
               ))}
             </div>
-            <figure data-diagram={caseStudy.diagram} className="border-t border-grid pt-8">
+            <figure data-diagram={caseStudy.diagram} className="border border-grid bg-panel p-6 sm:p-8">
               <Diagram id={caseStudy.diagram} className="w-full" />
               <figcaption className="mt-4 max-w-[60ch] font-mono text-12 text-label">
                 {DIAGRAM_CAPTION[caseStudy.diagram]}
@@ -92,7 +98,8 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
         </section>
 
         <section aria-labelledby="outcome-heading" className="border-b border-grid py-16">
-          <h2 id="outcome-heading" className="text-22 tracking-[-0.01em] text-bone">
+          <h2 id="outcome-heading" className="font-subhead text-22 tracking-[-0.01em] text-bone">
+            <span aria-hidden className="mr-2 inline-block size-2 bg-signal align-middle" />
             Outcome
           </h2>
           <dl className="mt-10 grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-x-10">
@@ -109,7 +116,7 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
 
         {caseStudy.links.length > 0 && (
           <section aria-labelledby="links-heading" className="border-b border-grid py-16">
-            <h2 id="links-heading" className="text-22 tracking-[-0.01em] text-bone">
+            <h2 id="links-heading" className="font-subhead text-22 tracking-[-0.01em] text-bone">
               Related Links
             </h2>
             <ul className="mt-6 flex flex-wrap gap-x-10 gap-y-3 font-mono text-14">
