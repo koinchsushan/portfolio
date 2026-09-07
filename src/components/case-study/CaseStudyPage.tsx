@@ -2,6 +2,8 @@ import type { CaseStudy } from '@/content'
 import { ExternalLink } from '@/components/primitives/ExternalLink'
 import { ActionLink } from '@/components/primitives/ActionLink'
 import { Metric } from '@/components/primitives/Metric'
+import { Diagram } from '@/components/graphics/Diagram'
+import { DIAGRAM_CAPTION } from '@/components/graphics/geometry'
 
 interface CaseStudyPageProps {
   caseStudy: CaseStudy
@@ -12,14 +14,8 @@ interface CaseStudyPageProps {
 // `caseStudy.dates` is the visible structural marker for this case study
 // (a deliberate design decision) , `caseStudy.index` is ordering metadata
 // only and is never rendered.
-// Captions describe what each diagram shows. Task C renders the diagrams
-// themselves into this figure; the caption is the accessible description either
-// way, so it is written once here rather than duplicated in the SVG layer.
-const DIAGRAM_CAPTION: Record<string, string> = {
-  converge: 'Four separate chat implementations converging into one shared component layer that feeds all five product surfaces.',
-  split: 'A single coordinated release train splitting into five independently deploying module lanes.',
-  extract: 'An unstructured stream of inbound email resolving into structured, quotable fields.',
-}
+// DIAGRAM_CAPTION is the single source of truth in src/components/graphics/geometry.ts,
+// read here for the visible <figcaption> and by the diagram itself for its <desc>.
 
 export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps) {
   return (
@@ -86,11 +82,9 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
                 </p>
               ))}
             </div>
-            <figure
-              data-diagram={caseStudy.diagram}
-              className="flex min-h-56 items-center justify-center border border-dashed border-grid p-8"
-            >
-              <figcaption className="font-mono text-12 text-label">
+            <figure data-diagram={caseStudy.diagram} className="border-t border-grid pt-8">
+              <Diagram id={caseStudy.diagram} className="w-full" />
+              <figcaption className="mt-4 max-w-[60ch] font-mono text-12 text-label">
                 {DIAGRAM_CAPTION[caseStudy.diagram]}
               </figcaption>
             </figure>

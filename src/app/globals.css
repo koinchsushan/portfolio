@@ -51,13 +51,17 @@ body {
   border-radius: var(--radius);
 }
 
-/* A faint, contained graticule used only where a section explicitly opts
-   in (the hero), never behind running text: reinforces the "plot ground"
-   reading without touching legibility anywhere else on the page. */
+/* A contained graticule used only where a section explicitly opts in,
+   never behind running text: reinforces the "plot ground" reading without
+   touching legibility anywhere else on the page. The line colour is mixed
+   toward --bone rather than using --grid at full strength, so the pattern
+   reads as a deliberately drawn plot ground instead of a rendering
+   artifact, while staying well below body-text contrast. */
 .graticule {
+  --graticule-line: color-mix(in srgb, var(--color-grid) 62%, var(--color-bone) 38%);
   background-image:
-    linear-gradient(var(--color-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    linear-gradient(var(--graticule-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--graticule-line) 1px, transparent 1px);
   background-size: 56px 56px;
 }
 

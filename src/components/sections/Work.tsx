@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { caseStudies } from '@/content'
 import { SectionHeader } from '@/components/primitives/SectionHeader'
+import { Diagram } from '@/components/graphics/Diagram'
 
 // Region accessible name must contain "Selected Work" , the h2 text below
 // supplies it via aria-labelledby. `cs.index` is ordering metadata only and
@@ -8,6 +9,8 @@ import { SectionHeader } from '@/components/primitives/SectionHeader'
 //
 // Hairline-ruled index: each case study is a grid row divided by a single
 // top rule, not a card. Mobile collapses the three columns to one stack.
+// Each row's own transformation diagram runs the full row width beneath
+// the text, at a size where its geometry actually reads.
 export function Work() {
   return (
     <section id="work" aria-labelledby="work-heading" className="border-b border-grid">
@@ -16,7 +19,7 @@ export function Work() {
 
         <ul className="mt-14 border-t border-grid">
           {caseStudies.map((cs) => (
-            <li key={cs.slug} className="grid grid-cols-1 gap-x-8 gap-y-3 border-b border-grid py-8 lg:grid-cols-12">
+            <li key={cs.slug} className="grid grid-cols-1 gap-x-8 gap-y-8 border-b border-grid py-8 lg:grid-cols-12">
               <h3 className="lg:col-span-3">
                 <Link
                   href={`/work/${cs.slug}`}
@@ -33,6 +36,9 @@ export function Work() {
                 {cs.dates}
               </p>
               <p className="text-16 leading-relaxed text-label lg:col-span-6">{cs.constraint}</p>
+              <div className="lg:col-span-9 lg:col-start-4">
+                <Diagram id={cs.diagram} className="h-auto w-full max-w-2xl" />
+              </div>
             </li>
           ))}
         </ul>
