@@ -6,7 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 import { identity } from '@/content'
 
 export const metadata: Metadata = {
-  title: `${identity.name} — ${identity.title}`,
+  title: `${identity.name}, ${identity.title}`,
   description: identity.strapline,
 }
 

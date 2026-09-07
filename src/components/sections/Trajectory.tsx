@@ -5,7 +5,7 @@ import { roles, education, caseStudies } from '@/content'
 // CV-given order rather than re-sorted (several roles/education entries
 // overlap in date, so a single strict chronology would misrepresent them).
 //
-// Three of the four roles already have a full case study under Work — this
+// Three of the four roles already have a full case study under Work , this
 // section links out to that narrative rather than repeating its bullets
 // verbatim, so a headline figure (e.g. "450,000+") appears once on the page
 // instead of twice. The one role with no case study (London Metropolitan

@@ -14,7 +14,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const caseStudy = getCaseStudy(slug)
-  return { title: caseStudy ? `${caseStudy.client} — Case Study` : 'Case Study' }
+  return { title: caseStudy ? `${caseStudy.client}: Case Study` : 'Case Study' }
 }
 
 export default async function Work({

@@ -1,6 +1,6 @@
 import { DraftNote } from '@/components/primitives/DraftNote'
 
-// DRAFT bio. Every claim below traces to the CV — three years commercial, the
+// DRAFT bio. Every claim below traces to the CV , three years commercial, the
 // 450,000-member platform, the 10,000-emails-a-day quotation system, the
 // five-engineer team and two-week cycles, the four-into-one chat consolidation,
 // the release-train split, the research app, the MSc. Nothing is invented.
@@ -18,7 +18,7 @@ export function About() {
           two-week cycles.
         </p>
         <p>
-          The thread through all of it is the same — taking something fragmented
+          The thread through all of it is the same. Taking something fragmented
           and making it legible. Four chat implementations into one component
           layer. A coordinated release train into five independent deployments.
           Three researchers&rsquo; local scripts into an app anyone can open in a

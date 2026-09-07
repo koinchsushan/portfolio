@@ -1,6 +1,6 @@
 /**
  * Shared types for the content module. This module is the single typed
- * source of truth for every fact rendered on the site — see
+ * source of truth for every fact rendered on the site , see
  * docs/superpowers/specs/2026-09-07-portfolio-design.md §2.
  */
 
@@ -32,11 +32,11 @@ export interface CaseStudy {
   role: string
   dates: string
   stack: string[]
-  /** 2–3 short paragraphs: what existed, who it served, what was breaking. */
+  /** 2-3 short paragraphs: what existed, who it served, what was breaking. */
   situation: string[]
   /** One sentence naming what made the obvious solution unavailable. */
   constraint: string
-  /** The engineering judgement — one or more paragraphs. */
+  /** The engineering judgement, one or more paragraphs. */
   decision: string[]
   outcomes: Metric[]
   links: Link[]
@@ -83,6 +83,6 @@ export interface SkillGroup {
   label: string
   skills: string[]
   /** True when the item list is a best-effort synthesis rather than a
-   * verbatim transcription of the CV's own groupings — see report. */
+   * verbatim transcription of the CV's own groupings , see report. */
   draft?: boolean
 }

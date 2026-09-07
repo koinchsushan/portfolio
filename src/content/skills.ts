@@ -1,7 +1,7 @@
 import type { SkillGroup } from './types'
 
 // Transcribed verbatim from the CV's Skills section. These are facts about a
-// real person's experience — do not add, remove, or "modernise" an entry.
+// real person's experience , do not add, remove, or "modernise" an entry.
 export const skillGroups: SkillGroup[] = [
   {
     label: 'Languages',

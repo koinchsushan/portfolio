@@ -15,7 +15,7 @@ describe('site renders', () => {
     render(<Home />)
     // Scoped: these figures legitimately recur in case-study prose elsewhere on
     // the page. The assertion is that the position block states them, not that
-    // they appear exactly once — copy must not be shaped to satisfy a query.
+    // they appear exactly once , copy must not be shaped to satisfy a query.
     const position = screen.getByRole('region', { name: /what the work adds up to/i })
     for (const m of [/450,000\+/, /10,000\+/, /~30%/]) {
       expect(within(position).getByText(m)).toBeInTheDocument()
@@ -33,7 +33,7 @@ describe('site renders', () => {
 
   it('draft copy is visibly marked', () => {
     render(<Home />)
-    expect(screen.getAllByText(/DRAFT — owner to rewrite/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/DRAFT: owner to rewrite/).length).toBeGreaterThan(0)
   })
 
   it.each(caseStudies.map((c) => c.slug))('%s renders the full template', async (slug) => {
@@ -46,5 +46,17 @@ describe('site renders', () => {
   it('never renders a phone number', () => {
     render(<Home />)
     expect(document.body.textContent).not.toMatch(/\+?\d{10,}/)
+  })
+
+  // The em-dash is the strongest single tell of machine-written copy, and this
+  // repo had 32 of them. En-dash separators in ranges are banned with it.
+  it('ships no em-dash or en-dash in any source file', async () => {
+    const { globby } = await import('globby')
+    const { readFile } = await import('node:fs/promises')
+    const offenders: string[] = []
+    for (const f of await globby(['src/**/*.{ts,tsx,css}'])) {
+      if (/[\u2013\u2014]/.test(await readFile(f, 'utf8'))) offenders.push(f)
+    }
+    expect(offenders).toEqual([])
   })
 })

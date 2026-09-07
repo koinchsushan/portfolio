@@ -8,7 +8,7 @@ interface CaseStudyPageProps {
 }
 
 // `caseStudy.dates` is the visible structural marker for this case study
-// (a deliberate design decision) — `caseStudy.index` is ordering metadata
+// (a deliberate design decision) , `caseStudy.index` is ordering metadata
 // only and is never rendered.
 export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps) {
   return (
@@ -43,7 +43,7 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
           <p key={paragraph}>{paragraph}</p>
         ))}
         <figure data-diagram={caseStudy.diagram}>
-          <figcaption>Diagram placeholder ({caseStudy.diagram}) — a later task fills this in.</figcaption>
+          <figcaption>Diagram placeholder ({caseStudy.diagram}), filled in by a later task.</figcaption>
         </figure>
       </section>
 

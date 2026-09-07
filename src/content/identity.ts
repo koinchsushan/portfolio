@@ -1,7 +1,7 @@
 import type { Identity } from './types'
 
 // Transcribed verbatim from spec §2 "Identity". Phone number is deliberately
-// omitted — the CV carries it, the public site does not.
+// omitted , the CV carries it, the public site does not.
 export const identity: Identity = {
   name: 'Sushan Sunuwar',
   title: 'Frontend Software Engineer',
