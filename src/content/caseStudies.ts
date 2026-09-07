@@ -30,7 +30,11 @@ export const caseStudies: CaseStudy[] = [
       { value: '~3,000', label: 'users on the live product' },
       { value: '4 → 1', label: 'chat implementations consolidated into one shared layer, across 5 surfaces' },
     ],
-    links: [],
+    links: [
+      { label: 'foundermatcha.com', href: 'https://foundermatcha.com/' },
+      { label: 'App Store', href: 'https://apps.apple.com/gb/app/foundermatcha/id6502861320' },
+      { label: 'Google Play', href: 'https://play.google.com/store/apps/details?id=com.foundermatcha.fm' },
+    ],
     diagram: 'converge',
   },
   {
@@ -57,7 +61,7 @@ export const caseStudies: CaseStudy[] = [
       { value: '~30%', label: 'bundle size reduction on the highest-traffic workflows' },
       { value: '5', label: 'independently-deploying module lanes replacing one release train' },
     ],
-    links: [],
+    links: [{ label: 'vivekahealth.com', href: 'https://www.vivekahealth.com/' }],
     diagram: 'split',
   },
   {
@@ -83,7 +87,10 @@ export const caseStudies: CaseStudy[] = [
       { value: '20–30%', label: 'per-feature build time cut via the shared Ant Design component library' },
       { value: '3+', label: 'concurrent client products kept consistent in state and UI' },
     ],
-    links: [],
+    links: [
+      { label: 'proponent.com', href: 'https://www.proponent.com/' },
+      { label: 'javra.com', href: 'https://javra.com/' },
+    ],
     diagram: 'extract',
   },
 ]
