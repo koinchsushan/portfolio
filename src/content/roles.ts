@@ -65,7 +65,6 @@ export const roles: Role[] = [
       'Self-service dataset upload — validated, atomically written, revertible in one click — backed by a 21-test suite.',
       'Interactive visualisation layer: animated trial replay, spatial heatmaps, learning curves, error-pattern breakdowns across eight analyses, unified by a tokenised design system with full dark mode.',
       'Published open-source under MIT with a contributor guide and documented releases; forked by three collaborators. Co-authoring the resulting paper on the blank-card hint effect.',
-      'Repo: github.com/koinchsushan/CardsProblemAnalysis (MIT, 3 forks, no live demo)',
     ],
   },
 ]

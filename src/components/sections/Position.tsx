@@ -26,8 +26,11 @@ export function Position() {
 
   return (
     <section aria-labelledby="position-heading">
-      <h2 id="position-heading">Position</h2>
-      <p>Selected impact, in numbers.</p>
+      <h2 id="position-heading">What the work adds up to</h2>
+      <p>
+        Three years building interfaces for systems where the data model and the
+        screen have to be reasoned about together.
+      </p>
       <dl>
         {metrics.map((metric) => (
           <div key={metric.value}>

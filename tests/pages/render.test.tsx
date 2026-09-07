@@ -11,10 +11,14 @@ describe('site renders', () => {
     expect(container.querySelectorAll('section[aria-labelledby]')).toHaveLength(8)
   })
 
-  it('home shows the three verified metrics', () => {
+  it('home shows the three verified metrics in the position block', () => {
     render(<Home />)
+    // Scoped: these figures legitimately recur in case-study prose elsewhere on
+    // the page. The assertion is that the position block states them, not that
+    // they appear exactly once — copy must not be shaped to satisfy a query.
+    const position = screen.getByRole('region', { name: /what the work adds up to/i })
     for (const m of [/450,000\+/, /10,000\+/, /~30%/]) {
-      expect(screen.getByText(m)).toBeInTheDocument()
+      expect(within(position).getByText(m)).toBeInTheDocument()
     }
   })
 

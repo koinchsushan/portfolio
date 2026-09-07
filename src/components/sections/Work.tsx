@@ -17,6 +17,7 @@ export function Work() {
             <p>
               {cs.employer} · {cs.role} · {cs.dates}
             </p>
+            <p>{cs.constraint}</p>
           </li>
         ))}
       </ul>
