@@ -1,0 +1,35 @@
+/**
+ * Design tokens, dark instrumentation language: a plot ground and a
+ * graticule, not "developer dark mode". See task-B-brief.md.
+ *
+ * --signal and --depth form a ramp that encodes magnitude (sequence,
+ * progress, position in a series). Never used as a decorative highlight.
+ * --signal appears at most once per viewport as a flat accent.
+ */
+
+:root {
+  /* Palette, exact spec values. */
+  --ground: #0b1015;
+  --panel: #131b22;
+  --grid: #22303a;
+  --label: #8a9ba8;
+  --bone: #e9e7e2;
+  --signal: #e3b23c;
+  --depth: #2a7b8c;
+
+  /* One corner-radius system: sharp, small and consistent. */
+  --radius: 2px;
+
+  /* Fluid type scale, clamp(min, preferred, max) tuned so the largest
+     steps still fit inside a min-h-[100dvh] hero without forcing scroll. */
+  --fs-12: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
+  --fs-14: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
+  --fs-16: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+  --fs-18: clamp(1.0625rem, 1rem + 0.3vw, 1.125rem);
+  --fs-22: clamp(1.1875rem, 1.1rem + 0.45vw, 1.375rem);
+  --fs-28: clamp(1.375rem, 1.25rem + 0.6vw, 1.75rem);
+  --fs-40: clamp(1.75rem, 1.45rem + 1.5vw, 2.5rem);
+  --fs-64: clamp(2.25rem, 1.65rem + 3vw, 4rem);
+  --fs-104: clamp(2.75rem, 1.5rem + 6.25vw, 6.5rem);
+  --fs-160: clamp(3rem, 0.8rem + 11vw, 10rem);
+}

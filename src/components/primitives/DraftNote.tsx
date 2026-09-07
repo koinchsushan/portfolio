@@ -8,10 +8,10 @@ import type { ReactNode } from 'react'
  */
 export function DraftNote({ children }: { children: ReactNode }) {
   return (
-    <div data-draft="true">
+    <div data-draft="true" className="border-l-2 border-signal pl-4">
       {children}
-      <p>
-        <strong>DRAFT: owner to rewrite</strong>
+      <p className="mt-3 font-mono text-12 text-signal">
+        <strong className="font-mono font-normal">DRAFT: owner to rewrite</strong>
       </p>
     </div>
   )

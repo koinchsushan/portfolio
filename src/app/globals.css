@@ -1,26 +1,68 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "../styles/tokens.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ground: var(--ground);
+  --color-panel: var(--panel);
+  --color-grid: var(--grid);
+  --color-label: var(--label);
+  --color-bone: var(--bone);
+  --color-signal: var(--signal);
+  --color-depth: var(--depth);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --text-12: var(--fs-12);
+  --text-14: var(--fs-14);
+  --text-16: var(--fs-16);
+  --text-18: var(--fs-18);
+  --text-22: var(--fs-22);
+  --text-28: var(--fs-28);
+  --text-40: var(--fs-40);
+  --text-64: var(--fs-64);
+  --text-104: var(--fs-104);
+  --text-160: var(--fs-160);
+
+  --radius-sharp: var(--radius);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ground);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-ground);
+}
+
+/* Visible focus ring everywhere, never removed. */
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* A faint, contained graticule used only where a section explicitly opts
+   in (the hero), never behind running text: reinforces the "plot ground"
+   reading without touching legibility anywhere else on the page. */
+.graticule {
+  background-image:
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }

@@ -59,4 +59,16 @@ describe('site renders', () => {
     }
     expect(offenders).toEqual([])
   })
+
+  // All colour comes from the tokens in src/styles/tokens.css, mapped into
+  // Tailwind utilities via @theme. No component should hardcode a hex value.
+  it('ships no raw 6-digit hex colour in any component', async () => {
+    const { globby } = await import('globby')
+    const { readFile } = await import('node:fs/promises')
+    const offenders: string[] = []
+    for (const f of await globby(['src/components/**/*.{ts,tsx}', 'src/app/**/*.{ts,tsx}'])) {
+      if (/#[0-9a-f]{6}\b/i.test(await readFile(f, 'utf8'))) offenders.push(f)
+    }
+    expect(offenders).toEqual([])
+  })
 })
