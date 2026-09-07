@@ -12,6 +12,15 @@ interface CaseStudyPageProps {
 // `caseStudy.dates` is the visible structural marker for this case study
 // (a deliberate design decision) , `caseStudy.index` is ordering metadata
 // only and is never rendered.
+// Captions describe what each diagram shows. Task C renders the diagrams
+// themselves into this figure; the caption is the accessible description either
+// way, so it is written once here rather than duplicated in the SVG layer.
+const DIAGRAM_CAPTION: Record<string, string> = {
+  converge: 'Four separate chat implementations converging into one shared component layer that feeds all five product surfaces.',
+  split: 'A single coordinated release train splitting into five independently deploying module lanes.',
+  extract: 'An unstructured stream of inbound email resolving into structured, quotable fields.',
+}
+
 export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps) {
   return (
     <article aria-labelledby="case-study-heading">
@@ -82,7 +91,7 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
               className="flex min-h-56 items-center justify-center border border-dashed border-grid p-8"
             >
               <figcaption className="font-mono text-12 text-label">
-                Diagram placeholder ({caseStudy.diagram}), filled in by a later task.
+                {DIAGRAM_CAPTION[caseStudy.diagram]}
               </figcaption>
             </figure>
           </div>

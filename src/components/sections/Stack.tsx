@@ -17,7 +17,7 @@ export function Stack() {
           id="stack-heading"
           heading="Technical Stack"
           headingSize="text-40 sm:text-64"
-          lede="Reserved here as a flat reference; a later pass renders the same set as a 3D object."
+          lede="What I reach for, and what I have actually shipped with."
         />
 
         <ul
