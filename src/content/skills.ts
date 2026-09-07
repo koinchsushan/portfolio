@@ -1,61 +1,64 @@
 import type { SkillGroup } from './types'
 
-// Spec §2 "Skills" gives only the ten verbatim group labels from the CV, not
-// their individual items — the item lists below are assembled solely from
-// technology names verified elsewhere in spec §2 (the role stack lines and
-// bullets), sorted into their most obvious CV grouping. The grouping itself
-// is a best-effort reconstruction, not a transcription, so every group is
-// flagged `draft: true` for the owner to check against the CV's actual
-// skills section before publishing.
+// Transcribed verbatim from the CV's Skills section. These are facts about a
+// real person's experience — do not add, remove, or "modernise" an entry.
 export const skillGroups: SkillGroup[] = [
   {
     label: 'Languages',
-    skills: ['TypeScript', 'Python', 'SQL', 'R'],
-    draft: true,
+    skills: ['TypeScript', 'JavaScript (ES6+)', 'Python', 'SQL', 'HTML5', 'CSS3'],
   },
   {
     label: 'Frontend',
-    skills: ['React', 'Flutter', 'Redux'],
-    draft: true,
+    skills: [
+      'React', 'Next.js', 'Redux', 'Redux-Saga', 'React Query',
+      'Context API', 'Angular', 'Chart.js', 'Flutter',
+    ],
   },
   {
     label: 'Design Systems & UI',
-    skills: ['Material UI', 'Styled-components', 'Ant Design', 'Figma', 'Chart.js'],
-    draft: true,
+    skills: [
+      'Design tokens', 'Component libraries', 'Material UI', 'Ant Design',
+      'Tailwind CSS', 'Styled-components', 'SASS', 'Figma-to-code', 'Responsive design',
+    ],
   },
   {
     label: 'Accessibility & Performance',
-    skills: ['WCAG 2.1 AA', 'Core Web Vitals'],
-    draft: true,
+    skills: [
+      'WCAG 2.1 AA', 'Semantic HTML', 'ARIA', 'Core Web Vitals',
+      'Code splitting', 'Lazy loading', 'Tree shaking',
+    ],
   },
   {
     label: 'Architecture',
-    skills: ['Single-SPA', 'Webpack', 'Vite'],
-    draft: true,
+    skills: [
+      'Micro-frontends', 'Single-SPA', 'Clean Architecture', 'MVVM',
+      'Component-driven design', 'SSR/SSG', 'Legacy-system integration', 'Agile/Scrum',
+    ],
   },
   {
     label: 'Backend & APIs',
-    skills: ['Flask', 'REST APIs', 'jQuery', '.NET MVC'],
-    draft: true,
+    skills: ['Flask', 'Node.js', 'REST API design', 'GraphQL', 'WebSockets', 'Webhooks', 'Axios'],
   },
   {
     label: 'AI-Assisted Development',
-    skills: ['LangGraph', 'Claude Code'],
-    draft: true,
+    skills: ['Claude Code', 'GitHub Copilot', 'Codex'],
   },
   {
     label: 'Cloud & Infrastructure',
-    skills: ['Firebase', 'GitLab CI'],
-    draft: true,
+    skills: ['Firebase', 'Railway', 'Render', 'Docker', 'Stripe'],
   },
   {
     label: 'Testing & CI/CD',
-    skills: ['Jest', 'React Testing Library', 'TDD', 'GitLab CI'],
-    draft: true,
+    skills: [
+      'Jest', 'Vitest', 'React Testing Library', 'pytest', 'TDD',
+      'ESLint', 'Prettier', 'Husky', 'GitLab CI', 'GitHub Actions', 'Git',
+    ],
   },
   {
     label: 'Data',
-    skills: ['Pandas', 'Matplotlib', 'SHAP', 'Predictive modelling'],
-    draft: true,
+    skills: [
+      'Pandas', 'Matplotlib', 'scikit-learn', 'Statistical modelling',
+      'SHAP', 'Power BI', 'Data visualisation',
+    ],
   },
 ]

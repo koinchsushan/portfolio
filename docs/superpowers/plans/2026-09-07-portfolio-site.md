@@ -1350,3 +1350,71 @@ Nothing is "done" without output pasted back:
 | No a11y violations | `npx playwright test` |
 | Budgets met | Lighthouse, 4 runs |
 | Form works | live submission received |
+
+---
+
+# PLAN AMENDMENT — 2026-09-07 (supersedes Tasks 3–21)
+
+Owner direction mid-execution: *"Do not over-engineer it, it's just a portfolio.
+The app looks too test-heavy. Cut down the test and review so I'll burn fewer
+tokens."* Accepted. This amendment supersedes the task list above from Task 3 on.
+
+## What is cut
+
+**Tests.** The original plan specified ~16 test files. Seven survive, chosen
+because they protect something a human cannot eyeball:
+
+| Keep | Why it survives |
+|---|---|
+| `tests/guards/confidentiality.test.ts` | Protects a real client's confidentiality and the owner's phone number. Silent failure mode. |
+| `tests/content/integrity.test.ts` | Protects against fabricated facts on a real person's CV. Silent failure mode. |
+| `tests/design/tokens.test.ts` | Cheap, catches palette drift across many files. |
+| `tests/lib/capability.test.ts` | Gates every 3D/motion fallback. Can't be eyeballed — you'd need four devices. |
+| `tests/lib/contactSchema.test.ts` + `tests/api/contact.test.ts` | Real backend logic with spam handling. |
+| `tests/pages/render.test.tsx` | One smoke test: routes render, no crash, draft markers visible. |
+| `tests/a11y/axe.spec.ts` | Keyboard + contrast, once, at the end. |
+
+**Deleted outright:** per-component tests for primitives, Reveal, Boot, Diagram
+geometry, Portrait, LogoRow, layout shell, resume route, SEO metadata. These
+test visual code the owner will judge by looking at it. TDD earns its keep on
+logic and silent failures, not on whether a heading renders.
+
+**Reviews.** Per-task reviewer dispatch drops from every task to three:
+Task A (all site content), Task E (contact form), and the final pass. Visual
+tasks are reviewed by the owner at the two stage checkpoints, which is the
+correct reviewer for visual work.
+
+**Tasks.** 21 → 12, by merging tasks that share files and a single test cycle.
+
+## Amended task list
+
+| # | Was | Scope | Test | Reviewed |
+|---|---|---|---|---|
+| A | 3,4,5,6 | Layout shell, 8 home sections, 3 case-study routes, `/research`, `/resume` | one render smoke test | yes |
+| B | 7,8,11 | Tokens, type scale, primitives, applied across every component; monochrome logo row | tokens test | no |
+| C | 9 | Three generative SVG diagrams | none | no |
+| D | 10 | Portrait duotone + About layout | none | no |
+| E | 12,13 | `useReducedMotion`, `useCapability`, Lenis, Reveal, Magnetic | capability test | no |
+| F | 14 | SIGNATURE 1 — hero liquid shader + static poster | none | no |
+| G | 15 | SIGNATURE 2 — cursor-reactive truncated icosahedron | none | no |
+| H | 16,17,18 | SIGNATURE 3 — pinned narrative, boot loader, route transitions | none | no |
+| I | 19 | Contact form: Zod, Resend, honeypot, timing, rate limit | schema + route tests | yes |
+| J | 20,21 | SEO/OG/sitemap/JSON-LD, axe pass, Lighthouse, deploy | axe spec | yes (final) |
+
+**STAGE CHECKPOINTS UNCHANGED.** Owner reviews after Task A (words), after
+Task D (looks), and after Task H (motion). Those are the real quality gates.
+
+## Design skills — correction
+
+The original plan was written without invoking the design skills the owner
+named in the brief. Before Task B, load `frontend-design` and `taste-skill` and
+let them critique the spec's §3 design system (palette, type, spacing) before it
+is implemented. The spec's §3 is a proposal, not settled: if those skills say
+the palette or type pairing reads as templated, change it and note the change.
+
+## Unchanged
+
+Everything in Global Constraints still binds — confidentiality, no invented
+facts, no phone number, `output: 'export'` never set, the mobile and
+reduced-motion fallbacks, and the performance budgets. Cutting tests does not
+cut requirements.
