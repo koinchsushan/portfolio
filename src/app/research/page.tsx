@@ -60,10 +60,10 @@ export default function ResearchPage() {
                     <dd className="text-bone">{item.forks}</dd>
                   </>
                 )}
-                {typeof item.liveDemo === 'boolean' && (
+                {item.liveDemo === true && (
                   <>
                     <dt className="text-label">Live demo</dt>
-                    <dd className="text-bone">{item.liveDemo ? 'Yes' : 'No'}</dd>
+                    <dd className="text-bone">Available</dd>
                   </>
                 )}
               </dl>
