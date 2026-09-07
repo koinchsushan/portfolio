@@ -67,7 +67,7 @@ not. Contact is email, LinkedIn, and the form.
 - **Viveka Health** may be named as the platform worked on via Viveka Services.
 - **No borrowed screenshots or product imagery** from any client, employer, or
   their marketing sites. Verified there is nothing appropriate to take in any case.
-- **Client logos**: permitted, monochrome only, rendered in `steel`. No brand colours.
+- **Client logos**: permitted, monochrome only, rendered in `label`. No brand colours.
 - **Foundermatcha**: use Sushan's own figure of ~3,000 users. Do NOT use the
   company's forward-looking public targets (20,000 by 2027) or its university
   partnership claims — those are the company's, not his.
@@ -184,25 +184,49 @@ Testing & CI/CD · Data
 
 ### Palette
 
-Cool base, single warm accent. Explicitly avoids the purple/cyan dev-portfolio
-default and the currently ubiquitous acid lime.
+**Revised after a `frontend-design` critique.** The first proposal — near-black
+`#08090C` plus a vermilion `#FF5A1F` accent — is a documented AI-design default,
+not a choice. Replaced with a system derived from Sushan's actual subject matter.
+
+The through-line across every project he has shipped is **turning unstructured
+mess into structured legibility**: RFQ emails into quotes, three researchers'
+local scripts into one readable web app, four chat implementations into one,
+a release-train monolith into independent module lanes. His research work is
+literally instrumentation — heatmaps, learning curves, trial replay.
+
+So the palette is scientific instrumentation, not developer dark mode. A deep
+blue-black plot ground, a graticule, and a two-hue ramp that **encodes
+magnitude** rather than shouting for attention.
 
 | Token | Hex | Role |
 |---|---|---|
-| `--ink` | `#08090C` | base canvas |
-| `--carbon` | `#101319` | raised surfaces, cards |
-| `--steel` | `#7B8794` | secondary text, hairlines, client logos |
-| `--bone` | `#ECEAE5` | primary text — warm off-white, never `#FFFFFF` |
-| `--ember` | `#FF5A1F` | the single accent |
-| `--abyss` | `#0B1F3A` | gradient stop, shader-only — not a UI colour |
+| `--ground` | `#0B1015` | base — a plot background, blue-black, not neutral void |
+| `--panel` | `#131B22` | raised surfaces |
+| `--grid` | `#22303A` | hairlines, rules, the graticule |
+| `--label` | `#8A9BA8` | secondary text, cool grey-blue |
+| `--bone` | `#E9E7E2` | primary text — warm off-white against the cool ground |
+| `--signal` | `#E3B23C` | warm amber. Instrument panel, brass, sodium lamp |
+| `--depth` | `#2A7B8C` | teal. The ramp's cool end |
 
 Rules:
-- `ember` appears at most **once per viewport**. Active states, one word in a
-  headline, the cursor. Never a background fill for a large area.
-- Gradients exist only in the hero shader and 3D object lighting: `ink → abyss`
-  with an `ember` bleed. All UI surfaces are flat.
-- Contrast: `bone` on `ink` = 15.8:1. `steel` on `ink` = 5.9:1 — body-legal but
-  reserved for secondary text at 16px+. `ember` on `ink` = 6.4:1.
+- `--signal` and `--depth` form a **ramp**, and the ramp encodes something real:
+  progress through a diagram, magnitude in a chart, sequence in a timeline.
+  Never a decorative highlight sprayed across a page.
+- `--signal` appears at most once per viewport as a flat accent.
+- Gradients exist only in the hero shader and 3D lighting: `ground → depth`
+  with a `signal` bleed at the warm end. UI surfaces are flat.
+- Warm text on a cool ground is the deliberate tension; do not neutralise it.
+- Contrast: `bone` on `ground` 14.9:1. `label` on `ground` 6.8:1. `signal` on
+  `ground` 9.1:1. All clear WCAG AA.
+
+### Structural markers
+
+**Revised.** The original `01 / 02 / 03` case-study numbering was decoration —
+the reader gains nothing from knowing Viveka is "02". Replaced with **dates**
+as the structural marker, which encode something true: the arc runs Nepal →
+a Netherlands client → US healthcare → a London startup, and reverse
+chronology is the actual sequence. Set in mono, they carry the timeline
+without a separate ornament.
 
 ### Typography
 
@@ -266,7 +290,7 @@ Boot (0) is an overlay, not a movement. Movements are 1–8.
 Loader. Functional cover for WebGL context creation and shader compilation, not
 decoration.
 
-- Mono percentage counter, `steel` → `bone`, plus a hairline that draws itself
+- Mono percentage counter, `label` → `bone`, plus a hairline that draws itself
 - **Hard 1.4s cap** regardless of load state
 - Skippable on any keypress, click or tap
 - `sessionStorage`-gated: repeat visits within a session skip entirely
@@ -274,15 +298,15 @@ decoration.
 
 ### 1 · Hero — SIGNATURE 1: liquid field
 
-Full-viewport fragment shader. Slow curl-noise flow field, `ink → abyss`, with
-`ember` filaments at low density. Cursor velocity displaces the field with decay.
+Full-viewport fragment shader. Slow curl-noise flow field, `ground → depth`, with
+`signal` filaments at low density. Cursor velocity displaces the field with decay.
 
 Over it: name at display scale (160px desktop), title, strapline, availability
 line, and two CTAs (View work / Get in touch).
 
 ### 2 · Position
 
-High-contrast statement block. Four lines of type at 64px, one `ember` word.
+High-contrast statement block. Four lines of type at 64px, one `signal` word.
 Below: three mono metrics from the CV —
 `450,000+ members` · `10,000+ documents / day` · `~30% bundle reduction`
 
@@ -320,7 +344,7 @@ the case studies while giving the site a fourth act.
 
 Presentation: three hairline-ruled rows, mono metadata (year, stack, licence,
 forks), title at 40px, one line of description. Hover lifts the row and reveals
-an `ember` arrow. No cards, no thumbnails. Links to `/research`.
+an `signal` arrow. No cards, no thumbnails. Links to `/research`.
 
 ### 5 · Stack — SIGNATURE 2: cursor-reactive 3D object
 
@@ -344,12 +368,12 @@ Timeline: Tribhuvan BSc (Nepal) → Javra, intern → junior → frontend (Propo
 Netherlands) → Viveka Health (US healthcare) → MSc Distinction → Foundermatcha +
 LMU research. Mono dates, hairline rules, reveal only.
 
-Below: client logo row, monochrome `steel`, small.
+Below: client logo row, monochrome `label`, small.
 
 ### 7 · About
 
 Bio plus headshot at ~240px beside the text, not above it. Headshot duotone-mapped
-`steel` → `bone` via CSS `filter` + blend so it sits inside the palette rather
+`label` → `bone` via CSS `filter` + blend so it sits inside the palette rather
 than reading as a LinkedIn crop. Source photo is cool-toned, which suits this.
 
 Bio copy is a **DRAFT for owner rewrite** — see §12.
@@ -406,7 +430,7 @@ CLS ≤ 0.02. Lighthouse 95+ mobile / 90+ desktop.
   fixed hero angle, pinned sequences → static layout.
 - Full keyboard path including the 3D object (§5.4).
 - Semantic landmarks, one `h1`, ordered headings, skip link.
-- Visible focus ring in `ember`, 2px offset, never removed.
+- Visible focus ring in `signal`, 2px offset, never removed.
 - Canvas content mirrored in visually-hidden text.
 - Descriptive alt text on the headshot and all logos.
 - Contrast verified against §3.

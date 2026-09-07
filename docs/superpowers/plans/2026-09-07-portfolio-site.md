@@ -24,8 +24,8 @@ Every task's requirements implicitly include this section. Values are verbatim f
 - **No phone number** anywhere in the repo or built output. Contact is email + LinkedIn + form.
 - **No invented facts.** Every metric, date, title and outcome traces to the CV. Anything requiring the owner's knowledge is marked `DRAFT — owner to rewrite`.
 - **Foundermatcha figures:** use ~3,000 users. Never the company's 20,000-by-2027 target or its university partnerships.
-- **No borrowed client imagery.** Client logos permitted, monochrome `steel` only.
-- **Colour:** `--ember` at most once per viewport. Never `#FFFFFF` — use `--bone`.
+- **No borrowed client imagery.** Client logos permitted, monochrome `label` only.
+- **Colour:** `--signal` at most once per viewport. Never `#FFFFFF` — use `--bone`.
 - **Motion:** every signature moment ships a static composition for `prefers-reduced-motion: reduce`.
 - **Budgets:** initial JS ≤ 120kb gz excluding deferred 3D. LCP ≤ 1.8s on 4G. CLS ≤ 0.02. Lighthouse 95+ mobile / 90+ desktop.
 - **Fonts:** Uncut Sans + Commit Mono, self-hosted via `next/font/local`. Never Space Grotesk + Inter.
@@ -592,7 +592,7 @@ Deliverable: the site looks like something. Still no motion.
 - Test: `tests/design/tokens.test.ts`
 
 **Interfaces:**
-- Produces: CSS custom properties `--ink --carbon --steel --bone --ember --abyss`; fluid type scale `--fs-{12,14,16,18,22,28,40,64,104,160}`; spacing `--sp-{4..256}`; easings `--ease-entrance`, `--ease-micro`. Tailwind v4 `@theme` maps these to utilities.
+- Produces: CSS custom properties `--ground --panel --grid --label --bone --signal --depth`; fluid type scale `--fs-{12,14,16,18,22,28,40,64,104,160}`; spacing `--sp-{4..256}`; easings `--ease-entrance`, `--ease-micro`. Tailwind v4 `@theme` maps these to utilities.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -605,8 +605,8 @@ const css = readFileSync('src/styles/tokens.css', 'utf8')
 describe('design tokens', () => {
   it('defines the six palette tokens with the spec values', () => {
     for (const [name, hex] of Object.entries({
-      ink: '#08090C', carbon: '#101319', steel: '#7B8794',
-      bone: '#ECEAE5', ember: '#FF5A1F', abyss: '#0B1F3A',
+      ground: '#0B1015', panel: '#131B22', grid: '#22303A', label: '#8A9BA8',
+      bone: '#E9E7E2', signal: '#E3B23C', depth: '#2A7B8C',
     })) {
       expect(css).toMatch(new RegExp(`--${name}:\\s*${hex}`, 'i'))
     }
@@ -740,7 +740,7 @@ describe('Diagram', () => {
 ```
 
 - [ ] **Step 2: Run it** — FAIL.
-- [ ] **Step 3: Implement.** Pure SVG, palette tokens only, `ember` on at most one element per diagram. `role="img"` + `<title>`. `progress` maps to `data-built` per stage — no animation library involved, so the same component serves the static, reduced-motion, and scroll-driven cases.
+- [ ] **Step 3: Implement.** Pure SVG, palette tokens only, `signal` on at most one element per diagram. `role="img"` + `<title>`. `progress` maps to `data-built` per stage — no animation library involved, so the same component serves the static, reduced-motion, and scroll-driven cases.
 - [ ] **Step 4: PASS. Step 5: Commit.**
 
 ---
@@ -754,7 +754,7 @@ describe('Diagram', () => {
 - Test: `tests/components/portrait.test.tsx`
 
 **Interfaces:**
-- Produces: `<Portrait />` — `next/image`, width 240, `sizes="240px"`, duotone via CSS `filter: grayscale(1) contrast(1.05)` plus a `--steel`→`--bone` gradient overlay in `mix-blend-mode: color`. Descriptive alt text. Never a hero element.
+- Produces: `<Portrait />` — `next/image`, width 240, `sizes="240px"`, duotone via CSS `filter: grayscale(1) contrast(1.05)` plus a `--label`→`--bone` gradient overlay in `mix-blend-mode: color`. Descriptive alt text. Never a hero element.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -786,7 +786,7 @@ describe('Portrait', () => {
 - Test: `tests/design/system.test.tsx`
 
 **Interfaces:**
-- Produces: `<LogoRow />` — five monochrome marks (Viveka Health, Proponent, Javra, Foundermatcha, London Met) as inline SVG with `fill="currentColor"`, coloured `--steel`.
+- Produces: `<LogoRow />` — five monochrome marks (Viveka Health, Proponent, Javra, Foundermatcha, London Met) as inline SVG with `fill="currentColor"`, coloured `--label`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -946,7 +946,7 @@ describe('Reveal', () => {
 - Consumes: `useCapability()`.
 - Produces: `<HeroCanvas />` — `next/dynamic` with `ssr: false`; renders `<img src="/hero-poster.webp">` at identical dimensions until the canvas is ready, and permanently when `tier !== 'full'`.
 
-Shader: curl-noise flow field, `--ink`→`--abyss`, low-density `--ember` filaments, displaced by cursor velocity with exponential decay. DPR capped at 1.5. rAF paused via IntersectionObserver and `visibilitychange`.
+Shader: curl-noise flow field, `--ground`→`--depth`, low-density `--signal` filaments, displaced by cursor velocity with exponential decay. DPR capped at 1.5. rAF paused via IntersectionObserver and `visibilitychange`.
 
 - [ ] **Step 1: Write the failing test**
 
