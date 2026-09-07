@@ -18,12 +18,13 @@ function portraitFileExists(): boolean {
 }
 
 /**
- * The About portrait. `public/sushan.jpg` may not exist yet , the owner has
- * not saved it in , so this checks the filesystem at render time and falls
- * back to a same-size placeholder rather than asking next/image to load a
- * missing file (which would 404 the `<img>`, not fail the build, but would
- * leave a broken image on a shipped page). The moment the real file lands
- * at that path, this renders it with no code change.
+ * The About portrait. The source is an 800x800 JPEG at `public/sushan.jpg`,
+ * downsampled from a 1.7MB PNG: it renders at 240px, so 800 covers 3x retina
+ * with room to spare and costs 113KB instead of 1.76MB.
+ *
+ * The filesystem check stays. It costs nothing at build time, and it means a
+ * missing or renamed file degrades to a sized placeholder rather than
+ * shipping a broken image on a live page.
  *
  * Duotone: the source photo is cool-toned office light, so mapping its
  * shadows to `--label` and its highlights to `--bone` sits it into the
@@ -45,7 +46,7 @@ export function Portrait() {
         <>
           <Image
             src={PORTRAIT_PATH}
-            alt="Sushan Sunuwar at his desk, lit by cool grey-blue office light"
+            alt="Sushan Sunuwar, head and shoulders, in a dark blazer against a bright office interior"
             width={WIDTH}
             height={HEIGHT}
             sizes="240px"
