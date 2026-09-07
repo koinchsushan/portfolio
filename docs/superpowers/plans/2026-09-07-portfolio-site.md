@@ -140,10 +140,19 @@ describe('confidentiality guard', () => {
     expect(violations).toEqual([])
   })
 
-  it('detects a forbidden token when one is present', () => {
-    // Proves the guard actually works, without naming anything.
-    const canary = Buffer.from('cHJvcXVvdGU=', 'base64').toString('utf8')
-    expect(FORBIDDEN_TOKEN_HASHES.has(sha(canary))).toBe(true)
+  it('tokenizes and matches, proven with a sentinel', () => {
+    // Proves the tokenize -> hash -> lookup path really fires, using a nonsense
+    // sentinel. Never encode a real forbidden term here in any form: a reversible
+    // encoding in a public repo defeats the guard entirely.
+    const sentinel = 'zzqqxsentinel42'
+    const localSet = new Set([sha(sentinel)])
+    const tokens = tokenize(`some prose containing ${sentinel} inline.`)
+    expect(tokens.some((t) => localSet.has(sha(t)))).toBe(true)
+  })
+
+  it('does not match on innocuous prose', () => {
+    const localSet = new Set([sha('zzqqxsentinel42')])
+    expect(tokenize('React TypeScript Proponent Javra').some((t) => localSet.has(sha(t)))).toBe(false)
   })
 })
 ```
@@ -415,8 +424,10 @@ describe('home page', () => {
 
   it('links each case study to its route', () => {
     render(<Home />)
+    // Scoped to the work region: Task 11 adds a logo row to this same page.
+    const work = screen.getByRole('region', { name: /selected work/i })
     for (const slug of ['foundermatcha', 'viveka-health', 'proponent']) {
-      expect(screen.getByRole('link', { name: new RegExp(slug.split('-')[0], 'i') }))
+      expect(within(work).getByRole('link', { name: new RegExp(slug.split('-')[0], 'i') }))
         .toHaveAttribute('href', `/work/${slug}`)
     }
   })
@@ -429,8 +440,9 @@ describe('home page', () => {
 
   it('exposes the full stack as text for screen readers and SEO', () => {
     render(<Home />)
+    // Assertions may only name technologies present in the CV skill groups.
     expect(screen.getByText('Single-SPA')).toBeInTheDocument()
-    expect(screen.getByText('React Three Fiber', { exact: false })).toBeDefined()
+    expect(screen.getByText('Redux-Saga')).toBeInTheDocument()
   })
 
   it('marks draft copy visibly', () => {
@@ -683,7 +695,7 @@ The thing that replaces screenshots. Three SVG diagrams, one per case study, eac
 
 **Interfaces:**
 - Consumes: `DiagramId` from `@/content`.
-- Produces: `<Diagram id={DiagramId} progress={number} title={string} />` where `progress` is 0–1 and drives staged construction. At `progress=1` every diagram is fully built — that is the static and reduced-motion state. `geometry.ts` exports pure functions returning path data, so they are unit-testable without rendering.
+- Produces: `<Diagram id={DiagramId} progress={number} title={string} />` where `progress` is 0–1 and drives staged construction. The root element carries `data-progress={progress}` (Task 16 asserts on it) **and** each stage carries `data-stage` plus `data-built={'true'|'false'}`. At `progress=1` every diagram is fully built — that is the static and reduced-motion state. `geometry.ts` exports pure functions returning path data, so they are unit-testable without rendering.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1139,7 +1151,7 @@ Ask: *"Stage 3 done — all three signature moments. Check it on your phone. Any
 - Test: `tests/lib/contactSchema.test.ts`, `tests/api/contact.test.ts`
 
 **Interfaces:**
-- Produces: `contactSchema` (Zod) shared client and server — `{ name: string(2..80), email: email(), message: string(20..2000), website: string().max(0) }` where `website` is the honeypot. Route returns `202` on success, `400` on validation failure, `429` when rate-limited.
+- Produces: `contactSchema` (Zod) shared client and server — `{ name: string(2..80), email: email(), message: string(20..2000), website: string().max(0), startedAt: number().int().positive() }` where `website` is the honeypot and `startedAt` is the epoch-ms the form was first focused. The route rejects with `400` when `Date.now() - startedAt < 1500`. Route returns `202` on success, `400` on validation failure, `429` when rate-limited.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1148,7 +1160,7 @@ import { describe, it, expect } from 'vitest'
 import { contactSchema } from '@/lib/contactSchema'
 
 describe('contactSchema', () => {
-  const valid = { name: 'Ada', email: 'a@b.com', message: 'x'.repeat(25), website: '' }
+  const valid = { name: 'Ada', email: 'a@b.com', message: 'x'.repeat(25), website: '', startedAt: Date.now() - 5000 }
 
   it('accepts a well-formed message', () => {
     expect(contactSchema.safeParse(valid).success).toBe(true)
