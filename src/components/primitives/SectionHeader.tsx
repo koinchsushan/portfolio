@@ -20,7 +20,7 @@ export function SectionHeader({
   heading: ReactNode
   headingSize?: string
   lede?: ReactNode
-  as?: ElementType
+  as?: ElementType<{ id?: string; className?: string; children?: ReactNode }>
   className?: string
 }) {
   return (

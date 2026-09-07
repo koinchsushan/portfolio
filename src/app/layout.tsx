@@ -4,6 +4,7 @@ import { sans, mono } from './fonts'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { Nav } from '@/components/layout/Nav'
 import { Footer } from '@/components/layout/Footer'
+import { SmoothScroll } from '@/components/motion/SmoothScroll'
 import { identity } from '@/content'
 
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
+        <SmoothScroll />
         <SkipLink />
         <Nav />
         <main id="main" className="pt-16">

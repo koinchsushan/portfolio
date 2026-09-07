@@ -14,7 +14,7 @@ export function MonoLabel({
   className = '',
 }: {
   children: ReactNode
-  as?: ElementType
+  as?: ElementType<{ className?: string; children?: ReactNode }>
   eyebrow?: boolean
   className?: string
 }) {

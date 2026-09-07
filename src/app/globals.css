@@ -84,3 +84,26 @@ body {
     scroll-behavior: smooth;
   }
 }
+
+/* The `lite` capability tier's stand-in for the WebGL hero field: two soft,
+   slow-drifting colour fields (no shader, just background-position) mixed
+   from the same ground/depth/signal tokens, held well below the SVG
+   lattice's own contrast so it reads as atmosphere, not a competing shape. */
+.hero-gradient-mesh {
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--color-depth) 55%, transparent) 0%, transparent 62%),
+    radial-gradient(circle, color-mix(in srgb, var(--color-signal) 32%, transparent) 0%, transparent 58%);
+  background-repeat: no-repeat;
+  background-size: 85% 85%, 65% 65%;
+  background-position: 20% 30%, 80% 75%;
+  animation: hero-gradient-drift 26s ease-in-out infinite;
+}
+
+@keyframes hero-gradient-drift {
+  0%, 100% {
+    background-position: 20% 30%, 80% 75%;
+  }
+  50% {
+    background-position: 60% 45%, 30% 60%;
+  }
+}

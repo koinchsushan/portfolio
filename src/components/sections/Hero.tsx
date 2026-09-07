@@ -1,6 +1,7 @@
 import { identity } from '@/content'
 import { ActionLink } from '@/components/primitives/ActionLink'
 import { HeroField } from '@/components/graphics/HeroField'
+import { HeroCanvas } from '@/components/sections/HeroCanvas'
 
 // Asymmetric split: headline left-weighted across 8 of 12 columns, meta and
 // CTAs anchored bottom-right in the remaining negative space. -mt-16 cancels
@@ -19,6 +20,8 @@ export function Hero() {
       aria-labelledby="hero-heading"
       className="graticule relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
+      <HeroCanvas className="pointer-events-none absolute inset-0 overflow-hidden" />
+
       <HeroField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-90 md:block" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-6">
@@ -36,7 +39,6 @@ export function Hero() {
 
         <div className="flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
           <p className="font-mono text-14 text-label">
-            <span aria-hidden className="mr-1.5 inline-block size-1.5 bg-depth align-middle" />
             {identity.location} · {identity.availability}
           </p>
           <p className="flex gap-8 lg:justify-end">
