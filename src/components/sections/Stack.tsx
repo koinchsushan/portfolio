@@ -2,6 +2,7 @@ import { skillGroups } from '@/content'
 import { DraftNote } from '@/components/primitives/DraftNote'
 import { Rule } from '@/components/primitives/Rule'
 import { SectionHeader } from '@/components/primitives/SectionHeader'
+import { StackCanvas } from '@/components/sections/StackCanvas'
 
 // Plain-text mirror of the ten CV skill groupings. A later task turns this
 // into a 3D object; this list stays as its permanent accessible equivalent,
@@ -19,12 +20,15 @@ export function Stack() {
   return (
     <section aria-labelledby="stack-heading" className="border-b border-grid">
       <div className="mx-auto max-w-[1400px] px-6 py-14 sm:py-20">
-        <SectionHeader
-          id="stack-heading"
-          heading="Technical Stack"
-          headingSize="text-40 sm:text-64"
-          lede="What I reach for, and what I have actually shipped with."
-        />
+        <div className="grid gap-8 sm:grid-cols-[1fr_280px] sm:items-end sm:gap-10">
+          <SectionHeader
+            id="stack-heading"
+            heading="Technical Stack"
+            headingSize="text-40 sm:text-64"
+            lede="What I reach for, and what I have actually shipped with."
+          />
+          <StackCanvas className="sm:justify-self-end sm:w-[280px]" />
+        </div>
 
         <div className="graticule mt-10 border border-grid bg-panel">
           <ul aria-label="Full technology stack" className="divide-y divide-grid">
