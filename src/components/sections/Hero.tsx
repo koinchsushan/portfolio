@@ -20,7 +20,11 @@ export function Hero() {
       aria-labelledby="hero-heading"
       className="graticule relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
-      <HeroCanvas className="pointer-events-none absolute inset-0 overflow-hidden" />
+      {/* The field is a substrate, not the subject. At full strength the flow
+          reads as a generic mesh-gradient background and competes with the
+          lattice, the trace and the strapline; held back it behaves like the
+          measurement noise the drawn layer resolves out of. */}
+      <HeroCanvas className="pointer-events-none absolute inset-0 overflow-hidden opacity-50" />
 
       <HeroField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-90 md:block" />
 
