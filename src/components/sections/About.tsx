@@ -1,4 +1,5 @@
 import { DraftNote } from '@/components/primitives/DraftNote'
+import { Portrait } from '@/components/about/Portrait'
 
 // DRAFT bio. Every claim below traces to the CV , three years commercial, the
 // 450,000-member platform, the 10,000-emails-a-day quotation system, the
@@ -7,8 +8,10 @@ import { DraftNote } from '@/components/primitives/DraftNote'
 // It is prose the owner has not approved, so it stays wrapped in DraftNote.
 //
 // Editorial offset: the heading sits in a narrow left margin rather than
-// above the body, and the prose column starts one grid track further right,
-// leaving a visible gap between them instead of a shared left edge.
+// above the body, the prose column starts one grid track further right, and
+// the portrait sits in its own column past the prose , beside the bio, never
+// above it, and capped at 240px so it never becomes the largest thing on the
+// screen. Below lg all three stack (heading, bio, portrait), in that order.
 export function About() {
   return (
     <section aria-labelledby="about-heading" className="border-b border-grid">
@@ -18,7 +21,7 @@ export function About() {
             About
           </h2>
         </div>
-        <div className="lg:col-span-7 lg:col-start-5">
+        <div className="lg:col-span-5 lg:col-start-5">
           <DraftNote>
             <div className="flex flex-col gap-6 text-18 leading-relaxed text-label">
               <p className="max-w-[62ch]">
@@ -42,6 +45,9 @@ export function About() {
               </p>
             </div>
           </DraftNote>
+        </div>
+        <div className="lg:col-span-3 lg:col-start-10">
+          <Portrait />
         </div>
       </div>
     </section>

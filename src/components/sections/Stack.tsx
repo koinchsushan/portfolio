@@ -1,14 +1,20 @@
 import { skillGroups } from '@/content'
 import { DraftNote } from '@/components/primitives/DraftNote'
+import { Rule } from '@/components/primitives/Rule'
 import { SectionHeader } from '@/components/primitives/SectionHeader'
 
 // Plain-text mirror of the ten CV skill groupings. A later task turns this
-// into a 3D object; this list stays as its permanent accessible equivalent.
+// into a 3D object; this list stays as its permanent accessible equivalent,
+// so the semantics here (one <ul>, one <li> per group, real chip <li>s)
+// cannot change shape even though the presentation below does.
 //
-// Dense mono grid, not ten stacked <ul>s: ten groups laid out as columns in
-// a five-across grid at desktop, each group a small hairline-topped block of
-// chip-styled skills. Scans as a reference table rather than a wall of
-// bulleted nouns.
+// Reference plate, not a chip cloud: the ten groups are a real instrument
+// spec sheet (languages, frameworks, tooling, ...), so they get a left rail
+// of mono group labels over the graticule ground, one row per group, with a
+// hairline under every row and a single rule threading the whole plate
+// where the rail meets the chips. Nothing here encodes a skill "level" ,
+// there is no such data, so every chip renders identically regardless of
+// which group it sits in.
 export function Stack() {
   return (
     <section aria-labelledby="stack-heading" className="border-b border-grid">
@@ -20,31 +26,34 @@ export function Stack() {
           lede="What I reach for, and what I have actually shipped with."
         />
 
-        <ul
-          aria-label="Full technology stack"
-          className="mt-14 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-5"
-        >
-          {skillGroups.map((group) => {
-            const chips = (
-              <ul className="mt-3 flex flex-wrap gap-1.5">
-                {group.skills.map((skill) => (
-                  <li
-                    key={skill}
-                    className="rounded-[var(--radius)] border border-grid px-2 py-1 font-mono text-12 leading-none text-label"
-                  >
-                    {skill}
-                  </li>
-                ))}
-              </ul>
-            )
-            return (
-              <li key={group.label} className="border-t border-grid pt-4">
-                <h3 className="font-mono text-14 text-label">{group.label}</h3>
-                {group.draft ? <DraftNote>{chips}</DraftNote> : chips}
-              </li>
-            )
-          })}
-        </ul>
+        <div className="graticule mt-14 border border-grid">
+          <ul aria-label="Full technology stack" className="divide-y divide-grid">
+            {skillGroups.map((group) => {
+              const chips = (
+                <ul className="flex flex-wrap gap-1.5">
+                  {group.skills.map((skill) => (
+                    <li
+                      key={skill}
+                      className="rounded-[var(--radius)] border border-grid bg-ground px-2 py-1 font-mono text-12 leading-none text-label"
+                    >
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              )
+              return (
+                <li
+                  key={group.label}
+                  className="grid grid-cols-1 gap-y-3 px-4 py-5 sm:grid-cols-[128px_1px_1fr] sm:gap-x-6 sm:px-6"
+                >
+                  <h3 className="font-mono text-14 text-bone">{group.label}</h3>
+                  <Rule vertical className="hidden sm:block" />
+                  {group.draft ? <DraftNote>{chips}</DraftNote> : chips}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
       </div>
     </section>
   )

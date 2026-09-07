@@ -2,6 +2,7 @@ import { roles, education, caseStudies } from '@/content'
 import { Rule } from '@/components/primitives/Rule'
 import { ActionLink } from '@/components/primitives/ActionLink'
 import { SectionHeader } from '@/components/primitives/SectionHeader'
+import { TrajectoryAxis } from '@/components/graphics/TrajectoryAxis'
 
 // The timeline from `roles` + `education`, kept in each array's own
 // CV-given order rather than re-sorted (several roles/education entries
@@ -17,11 +18,18 @@ import { SectionHeader } from '@/components/primitives/SectionHeader'
 // Rule-anchored timeline: a mono date rail on the left, a hairline on the
 // right of it, content in the remaining space, one row per entry, separated
 // by horizontal rules rather than dot markers.
+//
+// Above that list, `TrajectoryAxis` draws the same dates as a real time
+// axis, because the list on its own hides a true fact: the MSc, the London
+// Metropolitan University research role and Foundermatcha run across
+// genuinely overlapping stretches of time, not one after another.
 export function Trajectory() {
   return (
     <section id="trajectory" aria-labelledby="trajectory-heading" className="border-b border-grid">
       <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
         <SectionHeader id="trajectory-heading" heading="Trajectory" headingSize="text-40 sm:text-64" />
+
+        <TrajectoryAxis roles={roles} education={education} />
 
         <div className="mt-16">
           <h3 id="trajectory-experience-heading" className="font-mono text-14 text-label">

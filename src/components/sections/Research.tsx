@@ -6,7 +6,10 @@ import { SectionHeader } from '@/components/primitives/SectionHeader'
 
 // Bento with unequal cells: the flagship study (year, stack, licence, forks)
 // gets a large tile; the other two studies, which carry only a title and a
-// blurb, share the remaining column as two smaller tiles.
+// blurb, share the remaining column as two smaller tiles. The asymmetry is
+// real, not decorative: only the flagship carries a public licence and fork
+// count, so only it earns the spec-strip treatment below , a rule-divided
+// mono metadata row rather than a caption, reading as a data sheet field.
 export function Research() {
   const [flagship, ...rest] = research
 
@@ -31,21 +34,21 @@ export function Research() {
                   ))}
                 </ul>
               )}
-              <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-2 font-mono text-12 text-label">
+              <dl className="mt-6 flex flex-wrap divide-x divide-grid border-t border-grid font-mono text-12 text-label">
                 {flagship.year && (
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-1.5 py-2 pr-6">
                     <dt>Year</dt>
                     <dd className="text-bone">{flagship.year}</dd>
                   </div>
                 )}
                 {flagship.licence && (
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-1.5 py-2 px-6">
                     <dt>Licence</dt>
                     <dd className="text-bone">{flagship.licence}</dd>
                   </div>
                 )}
                 {typeof flagship.forks === 'number' && (
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-1.5 py-2 pl-6">
                     <dt>Forks</dt>
                     <dd className="text-bone">{flagship.forks}</dd>
                   </div>
