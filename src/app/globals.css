@@ -107,3 +107,51 @@ body {
     background-position: 60% 45%, 30% 60%;
   }
 }
+
+/* Route transitions (SIGNATURE 3's connective tissue). `RouteTransition`
+   only ever calls `document.startViewTransition` where the API exists and
+   motion is welcome, so these rules have nothing to disable elsewhere,
+   they simply never get a transition to attach to. The reveal itself is a
+   plain, guaranteed-safe clip-path wipe; the grain layered on top of it is
+   a procedural feTurbulence mask, the same "measured field, not a photo"
+   idea as the hero shader's curl noise, done here in CSS instead of GLSL
+   so a route change stays cheap on every capability tier. If the mask
+   fails to parse in some engine, `mask-image` simply has no effect and the
+   wipe still plays correctly without it, texture is never load-bearing.
+*/
+:root {
+  --route-wipe-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0.35'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::view-transition-old(root) {
+  animation: route-wipe-out 200ms ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: route-wipe-in 460ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  mask-image: var(--route-wipe-grain);
+  mask-size: 180px 180px;
+  mask-repeat: repeat;
+}
+
+@keyframes route-wipe-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes route-wipe-in {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0s !important;
+  }
+}
