@@ -10,15 +10,15 @@ import { HeroCanvas } from '@/components/sections/HeroCanvas'
 // elements below the h1: the combined role/strapline line, the combined
 // location/availability line, and the CTA row.
 //
-// HeroField sits on the graticule ground as the page's largest visual
-// element and its thesis: it is decorative relative to the four text nodes
-// above (aria-hidden, purely additive), so it is dropped below md rather
-// than resized, keeping the mobile hero to name, role and the two links.
+// HeroField is the page's largest visual element and its thesis: it is
+// decorative relative to the four text nodes above (aria-hidden, purely
+// additive), so it is dropped below md rather than resized, keeping the
+// mobile hero to name, role and the two links.
 export function Hero() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="graticule relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
+      className="relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
       {/* The field is a substrate, not the subject. At full strength the flow
           reads as a generic mesh-gradient background and competes with the

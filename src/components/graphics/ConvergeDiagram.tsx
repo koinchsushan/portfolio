@@ -25,7 +25,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
       <title>{DIAGRAM_TITLE.converge}</title>
       <desc>{DIAGRAM_CAPTION.converge}</desc>
       <defs>
-        <RampGradient id={GRADIENT_ID} ramp={geo.ramp} />
+        <RampGradient id={GRADIENT_ID} ramp={geo.ramp} tightness={0.45} />
       </defs>
 
       <g aria-hidden="true">
@@ -52,29 +52,35 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
             vectorEffect="non-scaling-stroke"
           />
         ))}
+        <text x={geo.bounds.x1} y={geo.bounds.top - 6} fontFamily="var(--font-mono)" fontSize={12} fill="var(--color-label)">
+          {geo.inputs.length} in
+        </text>
+        <text x={geo.bounds.x2} y={geo.bounds.top - 6} textAnchor="end" fontFamily="var(--font-mono)" fontSize={12} fill="var(--color-label)">
+          {geo.outputs.length} out
+        </text>
       </g>
 
       <g data-stage="inputs" data-built={stageBuilt(progress, 0, STAGE_COUNT) ? 'true' : 'false'}>
         {geo.inputs.map((input) => (
           <g key={input.y}>
-            <path d={input.lead} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
-            <path d={input.curve} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+            <path d={input.lead} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+            <path d={input.curve} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             <rect x={input.marker.x} y={input.marker.y} width={input.marker.size} height={input.marker.size} fill={ramp} />
           </g>
         ))}
       </g>
 
       <g data-stage="spine" data-built={stageBuilt(progress, 1, STAGE_COUNT) ? 'true' : 'false'}>
-        <line x1={geo.spine.x1} x2={geo.spine.x1} y1={geo.spine.capTop} y2={geo.spine.capBottom} stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
-        <line x1={geo.spine.x1} x2={geo.spine.x2} y1={geo.spine.y} y2={geo.spine.y} stroke={ramp} strokeWidth={7} vectorEffect="non-scaling-stroke" />
-        <line x1={geo.spine.x2} x2={geo.spine.x2} y1={geo.spine.capTop} y2={geo.spine.capBottom} stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+        <line x1={geo.spine.x1} x2={geo.spine.x1} y1={geo.spine.capTop} y2={geo.spine.capBottom} stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+        <line x1={geo.spine.x1} x2={geo.spine.x2} y1={geo.spine.y} y2={geo.spine.y} stroke={ramp} strokeWidth={4} vectorEffect="non-scaling-stroke" />
+        <line x1={geo.spine.x2} x2={geo.spine.x2} y1={geo.spine.capTop} y2={geo.spine.capBottom} stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
       </g>
 
       <g data-stage="outputs" data-built={stageBuilt(progress, 2, STAGE_COUNT) ? 'true' : 'false'}>
         {geo.outputs.map((output) => (
           <g key={output.y}>
-            <path d={output.curve} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
-            <path d={output.lead} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+            <path d={output.curve} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+            <path d={output.lead} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             <rect x={output.marker.x} y={output.marker.y} width={output.marker.size} height={output.marker.size} fill={ramp} />
           </g>
         ))}

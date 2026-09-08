@@ -11,11 +11,10 @@ import { StackCanvas } from '@/components/sections/StackCanvas'
 //
 // Reference plate, not a chip cloud: the ten groups are a real instrument
 // spec sheet (languages, frameworks, tooling, ...), so they get a left rail
-// of mono group labels over the graticule ground, one row per group, with a
-// hairline under every row and a single rule threading the whole plate
-// where the rail meets the chips. Nothing here encodes a skill "level" ,
-// there is no such data, so every chip renders identically regardless of
-// which group it sits in.
+// of mono group labels, one row per group, with a hairline under every row
+// and a single rule threading the whole plate where the rail meets the
+// chips. Nothing here encodes a skill "level" , there is no such data, so
+// every chip renders identically regardless of which group it sits in.
 export function Stack() {
   return (
     <section aria-labelledby="stack-heading" className="border-b border-grid">
@@ -30,7 +29,7 @@ export function Stack() {
           <StackCanvas className="sm:justify-self-end sm:w-[280px]" />
         </div>
 
-        <div className="graticule mt-10 border border-grid bg-panel">
+        <div className="mt-10 border border-grid bg-panel">
           <ul aria-label="Full technology stack" className="divide-y divide-grid">
             {skillGroups.map((group) => {
               const chips = (

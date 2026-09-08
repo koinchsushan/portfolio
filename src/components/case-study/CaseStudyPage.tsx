@@ -20,7 +20,7 @@ interface CaseStudyPageProps {
 export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps) {
   return (
     <article aria-labelledby="case-study-heading">
-      <header className="graticule border-b border-grid pt-16 pb-16 sm:pt-20 sm:pb-20">
+      <header className="border-b border-grid pt-16 pb-16 sm:pt-20 sm:pb-20">
         <div className="mx-auto max-w-[1400px] px-6">
           <p className="font-mono text-14 text-label">{caseStudy.employer}</p>
           <h1

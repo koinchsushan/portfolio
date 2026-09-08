@@ -34,12 +34,12 @@ function portraitFileExists(): boolean {
  * leaving black alone, then `screen` with the shadow colour pulls black
  * toward `--label` while leaving white alone.
  */
-export function Portrait() {
+export function Portrait({ className = '' }: { className?: string }) {
   const hasPhoto = portraitFileExists()
 
   return (
     <div
-      className="relative isolate w-full max-w-[240px] overflow-hidden border border-grid bg-panel"
+      className={`relative isolate w-full max-w-[240px] overflow-hidden border border-grid bg-panel ${className}`.trim()}
       style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
     >
       {hasPhoto ? (
@@ -56,7 +56,7 @@ export function Portrait() {
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-label mix-blend-screen" />
         </>
       ) : (
-        <div className="graticule flex h-full w-full flex-col items-center justify-center gap-2 text-center">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
           <span className="font-mono text-12 uppercase tracking-[0.14em] text-label">Portrait pending</span>
         </div>
       )}

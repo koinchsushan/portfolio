@@ -148,7 +148,7 @@ export function convergeGeometry(): ConvergeGeometry {
   // so the whole figure reads inside one rectangle.
   const inputYs = [40, 120, 200, 280]
   const outputYs = [40, 100, 160, 220, 280]
-  const size = 12
+  const size = 8
 
   return {
     view,

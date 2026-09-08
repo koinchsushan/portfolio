@@ -30,7 +30,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
       <title>{DIAGRAM_TITLE.split}</title>
       <desc>{DIAGRAM_CAPTION.split}</desc>
       <defs>
-        <RampGradient id={GRADIENT_ID} ramp={geo.ramp} />
+        <RampGradient id={GRADIENT_ID} ramp={geo.ramp} tightness={0.45} />
       </defs>
 
       <g aria-hidden="true">
@@ -74,7 +74,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           One release train
         </text>
         {geo.lanes.map((lane) => (
-          <path key={lane.laneY} d={lane.bundle} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+          <path key={lane.laneY} d={lane.bundle} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
         ))}
       </g>
 
@@ -90,14 +90,14 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           vectorEffect="non-scaling-stroke"
         />
         {geo.lanes.map((lane) => (
-          <path key={lane.laneY} d={lane.fan} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+          <path key={lane.laneY} d={lane.fan} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
         ))}
       </g>
 
       <g data-stage="lanes" data-built={stageBuilt(progress, 2, STAGE_COUNT) ? 'true' : 'false'}>
         {geo.lanes.map((lane) => (
           <g key={lane.laneY}>
-            <path d={lane.run} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
+            <path d={lane.run} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             {lane.deploys.map((x) => (
               <line
                 key={x}
@@ -110,7 +110,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
                 vectorEffect="non-scaling-stroke"
               />
             ))}
-            <path d={lane.arrow} fill="none" stroke={ramp} strokeWidth={3} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d={lane.arrow} fill="none" stroke={ramp} strokeWidth={2} strokeLinejoin="miter" vectorEffect="non-scaling-stroke" />
             <text
               x={geo.labelX + 8}
               y={lane.laneY - 12}

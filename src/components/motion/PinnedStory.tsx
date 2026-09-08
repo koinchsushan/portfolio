@@ -15,10 +15,22 @@ const BEATS: { key: BeatKey; label: string }[] = [
   { key: 'outcome', label: 'Outcome' },
 ]
 
-/** Minimum scroll distance a study pins for, so four beats never feel rushed. */
-const MIN_PIN_DISTANCE_PX = 2400
+/** Minimum scroll distance a study pins for. Four short, deliberate steps ,
+ *  not a long drag, per owner review (Task K). */
+const MIN_PIN_DISTANCE_PX = 1200
 
-function beatBody(key: BeatKey, study: CaseStudy) {
+/** Cuts prose to its first sentence. Never invents text: only ever returns a
+ * prefix of what `src/content/` already states. Used solely for the pinned
+ * teaser frame , the full paragraph still reads on `/work/<slug>` and in the
+ * unpinned `lite`/`static` composition below. */
+function firstSentence(text: string): string {
+  const cut = text.indexOf('. ')
+  return cut === -1 ? text : text.slice(0, cut + 1)
+}
+
+/** Full beat content, every paragraph. Used by the unpinned `lite`/`static`
+ * composition, which stacks all four beats at full length with no pinning. */
+function beatBodyFull(key: BeatKey, study: CaseStudy) {
   switch (key) {
     case 'situation':
       return study.situation.map((paragraph) => (
@@ -47,6 +59,31 @@ function beatBody(key: BeatKey, study: CaseStudy) {
   }
 }
 
+/** Trimmed teaser for the pinned, fixed-height frame: the lead sentence of
+ * the first paragraph for prose beats, the full (already short) constraint,
+ * and the full outcome list (three short lines). The home page is a teaser;
+ * `/work/<slug>` carries the rest. */
+function beatBodyLead(key: BeatKey, study: CaseStudy) {
+  switch (key) {
+    case 'situation':
+      return <p className="text-16 leading-relaxed text-label">{firstSentence(study.situation[0])}</p>
+    case 'constraint':
+      return <p className="text-16 leading-relaxed text-bone">{study.constraint}</p>
+    case 'decision':
+      return <p className="text-16 leading-relaxed text-label">{firstSentence(study.decision[0])}</p>
+    case 'outcome':
+      return (
+        <ul className="flex flex-col gap-2">
+          {study.outcomes.map((metric) => (
+            <li key={metric.value} className="text-16 leading-relaxed text-label">
+              <span className="font-mono text-bone">{metric.value}</span> {metric.label}
+            </li>
+          ))}
+        </ul>
+      )
+  }
+}
+
 /**
  * SIGNATURE 3: the pinned case-study narrative. On `full` tier, the whole
  * row pins (`top top`, `scrub: 1`) and scrolling scrubs a single `progress`
@@ -57,13 +94,20 @@ function beatBody(key: BeatKey, study: CaseStudy) {
  * from that same number. This component only drives the contract, it never
  * redraws the diagram.
  *
+ * Task K rewrite: only the current beat renders, inside a fixed-height
+ * frame sized for the longest teaser across every study, crossfading as
+ * `progress` advances. Nothing about the pinned viewport grows or shrinks
+ * as the beat changes, so the active beat and the diagram it accompanies
+ * stay on screen together for the whole pin, and the crossfade itself is
+ * visible instead of scrolling past before the next beat arrives.
+ *
  * `lite` and `static` never register a ScrollTrigger and never pin at all,
  * scroll-jacking on touch is exactly where sites like this break. Both
- * tiers render the same four beats simply stacked, at full opacity, with
- * the diagram already fully built (`progress={1}`) , `static` is also
- * where `prefers-reduced-motion` lands (see `useCapability`), so reduced
- * motion gets this same complete, static composition, not merely paused
- * animation.
+ * tiers render the same four beats simply stacked, at full opacity and full
+ * length, with the diagram already fully built (`progress={1}`) , `static`
+ * is also where `prefers-reduced-motion` lands (see `useCapability`), so
+ * reduced motion gets this same complete, static composition, not merely
+ * paused animation.
  */
 export function PinnedStory({ study }: { study: CaseStudy }) {
   const { tier } = useCapability()
@@ -88,7 +132,7 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
         ScrollTrigger.create({
           trigger: node,
           start: 'top top',
-          end: () => `+=${Math.max(window.innerHeight * 2.5, MIN_PIN_DISTANCE_PX)}`,
+          end: () => `+=${Math.max(window.innerHeight * 1.2, MIN_PIN_DISTANCE_PX)}`,
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
@@ -124,7 +168,6 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
           </Link>
         </h3>
         <p className="mt-3 font-mono text-12 leading-relaxed text-label">
-          <span aria-hidden className="mr-1.5 inline-block size-1.5 bg-depth align-middle" />
           {study.employer}
           <br />
           {study.role}
@@ -133,31 +176,53 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
         </p>
       </div>
 
-      <div className="flex flex-col gap-6 lg:col-span-4">
-        {BEATS.map((beat, index) => (
-          <div
-            key={beat.key}
-            data-beat={beat.key}
-            data-built={index <= activeBeat ? 'true' : 'false'}
-            style={pinned ? { opacity: index === activeBeat ? 1 : 0.32 } : undefined}
-            className="transition-opacity duration-300"
-          >
-            <h4 className="flex items-center gap-2 font-mono text-12 uppercase tracking-[0.14em] text-label">
-              <span aria-hidden className={`inline-block size-1.5 ${index === activeBeat ? 'bg-signal' : 'bg-grid'}`} />
-              {beat.label}
-            </h4>
-            <div className="mt-2 flex flex-col gap-3">{beatBody(beat.key, study)}</div>
+      <div className="lg:col-span-4">
+        {pinned ? (
+          <>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {BEATS.map((beat, index) => (
+                <span
+                  key={beat.key}
+                  className={`border-b-2 pb-1 font-mono text-12 uppercase tracking-[0.14em] transition-colors duration-300 ${
+                    index === activeBeat ? 'border-signal text-bone' : 'border-transparent text-label'
+                  }`}
+                >
+                  {beat.label}
+                </span>
+              ))}
+            </div>
+            {/* Fixed-height frame: reserved for the longest beat teaser across
+                every case study, so crossfading beats never reflows the pinned
+                viewport (Task K). */}
+            <div className="relative mt-4 h-[230px] sm:h-[190px]">
+              {BEATS.map((beat, index) => (
+                <div
+                  key={beat.key}
+                  data-beat={beat.key}
+                  data-built={index <= activeBeat ? 'true' : 'false'}
+                  aria-hidden={index !== activeBeat}
+                  style={{ opacity: index === activeBeat ? 1 : 0 }}
+                  className="absolute inset-0 flex flex-col gap-3 transition-opacity duration-300"
+                >
+                  {beatBodyLead(beat.key, study)}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {BEATS.map((beat, index) => (
+              <div key={beat.key} data-beat={beat.key} data-built={index <= activeBeat ? 'true' : 'false'}>
+                <h4 className="font-mono text-12 uppercase tracking-[0.14em] text-label">{beat.label}</h4>
+                <div className="mt-2 flex flex-col gap-3">{beatBodyFull(beat.key, study)}</div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
 
       <div className="border border-grid bg-panel p-6 lg:col-span-5">
         <Diagram id={study.diagram} progress={diagramProgress} className="h-auto w-full" />
-        {pinned && (
-          <p aria-hidden className="mt-3 text-right font-mono text-12 text-label tabular-nums">
-            {Math.round(progress * 100)}%
-          </p>
-        )}
       </div>
     </li>
   )

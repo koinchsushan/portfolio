@@ -163,7 +163,11 @@ export function StackCanvas({ className }: { className?: string }) {
         ))}
       </div>
 
-      <p aria-live="polite" className="mt-3 min-h-[2.5em] font-mono text-14 text-label">
+      {/* min-h is sized for the longest skill/context pair in stackFaces.ts
+          (Chart.js's, three wrapped lines at this 280px panel width), so
+          focusing any face , including the longest one , never reflows the
+          page (Task K). Measured, not guessed: see task-K-report.md. */}
+      <p aria-live="polite" className="mt-3 min-h-[6em] font-mono text-14 text-label">
         {activeFace ? (
           <>
             <span className="text-bone">{activeFace.label ?? activeFace.skill}</span>
