@@ -2,13 +2,23 @@ import type { CSSProperties } from 'react'
 import type { Education, Role } from '@/content'
 import {
   entriesOverlap,
+  findAxisBreak,
   parseDateRange,
   positionEntries,
   timelineDomain,
   yearTicks,
+  type AxisBreak,
   type PositionedEntry,
+  type DateRange,
   type TimelineEntry,
 } from './timeline'
+
+/** Years only. The bars carry the precision; this is the readable summary. */
+function yearSpan(range: DateRange): string {
+  const from = range.start.getFullYear()
+  const to = range.current ? 'now' : String(range.end.getFullYear())
+  return String(from) === to ? String(from) : `${from} to ${to}`
+}
 
 /**
  * The one fact a bulleted list cannot show: these roles and this masters
@@ -41,7 +51,24 @@ const BAR_CLASS =
   'absolute left-0 top-[var(--pos)] h-[var(--span)] w-2 md:left-[var(--pos)] md:top-1/2 md:h-2 md:w-[var(--span)] md:-translate-y-1/2'
 
 const LABEL_CLASS =
-  'absolute left-4 top-[var(--pos)] max-w-[7.5rem] font-mono text-12 leading-tight text-label md:left-[var(--pos)] md:top-0 md:max-w-[9rem] md:pt-0.5'
+  'absolute hidden left-4 top-[var(--pos)] max-w-[7.5rem] font-mono text-12 leading-tight text-label md:block md:left-[var(--pos)] md:top-0 md:max-w-[9rem] md:pt-0.5'
+
+// An entry whose bar starts past NEAR_END_THRESHOLD gets this instead: same
+// anchor point, but the label is pulled back over its own start with a
+// transform (bottom-anchored below md, right-anchored at md+) so it grows
+// inward, toward the middle of the plot, rather than outward past the
+// frame. Anchoring with a transform keeps the anchor point itself, --pos,
+// identical to the plain label, so it is still exactly where the bar
+// starts , only the direction the text grows from flips.
+const LABEL_CLASS_END =
+  'absolute hidden left-4 top-[var(--pos)] max-w-[7.5rem] -translate-y-full font-mono text-12 leading-tight text-label md:block md:left-[var(--pos)] md:top-0 md:max-w-[9rem] md:translate-y-0 md:-translate-x-full md:pt-0.5 md:text-right'
+
+// Past this point a start-anchored label's max-width would carry it past
+// the plot's far edge on any width this axis actually renders at; entries
+// starting later than this anchor from their end instead (see
+// LABEL_CLASS_END). A position, not a per-entry constant: every entry is
+// tested against the same threshold, whichever ones end up past it.
+const NEAR_END_THRESHOLD = 80
 
 const TICK_LINE_CLASS =
   'absolute left-0 right-0 top-[var(--pos)] h-px bg-grid md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:h-full md:w-px'
@@ -49,11 +76,17 @@ const TICK_LINE_CLASS =
 const TICK_LABEL_CLASS =
   'absolute left-1.5 top-[var(--pos)] font-mono text-12 text-label md:left-[var(--pos)] md:top-auto md:bottom-0 md:ml-1'
 
-// One small uppercase mono label per track, drawn once per track at its
-// first lane's top-left corner, so Commercial / Research / Education read
-// as a legend baked into the axis itself, not only in the key above it.
+// One small uppercase mono label per track, drawn in a header strip that is
+// its own reserved slot in the cross axis (see computeTrackLayout below),
+// never a lane an entry could ever be positioned into. That holds no matter
+// where an entry's own --pos lands, including an entry starting at exactly
+// 0 percent, because the header occupies space entry lanes are never given
+// in the first place, in both orientations: it fills the whole strip, top
+// to bottom below md (a column header above a vertical lane) and reads
+// vertically there so a narrow column still contains it; at md+ it reads
+// normally along the top of a horizontal row.
 const TRACK_LABEL_CLASS =
-  'pointer-events-none absolute left-1.5 top-1 font-mono text-12 uppercase tracking-[0.08em] text-label/70'
+  'pointer-events-none absolute inset-0 flex items-center overflow-hidden px-1 [writing-mode:vertical-lr] font-mono text-12 uppercase tracking-[0.08em] text-label/70 md:items-start md:px-1.5 md:pt-1 md:[writing-mode:horizontal-tb]'
 
 // The Nepal-to-London marker: a dashed rule in dim --label (never --signal,
 // that budget is spent elsewhere on the page) crossing every track at once.
@@ -66,6 +99,17 @@ const MARKER_LINE_CLASS =
 
 const MARKER_LABEL_CLASS =
   'absolute left-1.5 top-[var(--pos)] -mt-4 font-mono text-12 text-label md:left-[var(--pos)] md:top-0 md:mt-0 md:ml-1.5'
+
+// The axis break: two short tilted strokes centred on the tick lane at the
+// break point, the standard double-slash cut mark for a compressed axis, so
+// the compression is declared rather than hidden. Deliberately a small mark
+// on the axis itself, not a rule crossing every track , that reads as a
+// second Nepal-to-London marker, which is a dashed line spanning the whole
+// plot on purpose.
+const AXIS_BREAK_CLASS =
+  'absolute left-0 right-0 top-[var(--pos)] flex items-center justify-center gap-1 md:top-0 md:bottom-0 md:left-[var(--pos)] md:right-auto md:flex-col md:justify-center'
+
+const AXIS_BREAK_TICK_CLASS = 'h-3 w-px rotate-[20deg] bg-label md:h-px md:w-3'
 
 type AxisVars = CSSProperties & { '--pos'?: string; '--span'?: string }
 
@@ -145,24 +189,54 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
   const researchEntries: TimelineEntry[] = researchRoles.map((r) => toEntry(r.org, r.title, r.org, r.dates))
   const eduEntries: TimelineEntry[] = education.map((e) => toEntry(e.institution, e.award, e.institution, e.dates))
 
-  const domain = timelineDomain([...commercialEntries, ...researchEntries, ...eduEntries])
-  const commercialPositioned = positionEntries(commercialEntries, domain)
-  const researchPositioned = positionEntries(researchEntries, domain)
-  const eduPositioned = positionEntries(eduEntries, domain)
-  const ticks = yearTicks(domain)
+  const allEntries = [...commercialEntries, ...researchEntries, ...eduEntries]
+  const domain = timelineDomain(allEntries)
+
+  // The years 2018 to roughly 2022 carry a single entry (the BSc) while
+  // everything else, including the three genuinely overlapping spans this
+  // axis exists to show, land after it; a plain linear scale would spend
+  // half the width on the former. `findAxisBreak` derives where to pivot
+  // from the data itself, and every position below is pushed through the
+  // same break so ordering, and overlaps, survive the compression exactly.
+  const axisBreak = findAxisBreak(allEntries, domain)
+
+  const commercialPositioned = positionEntries(commercialEntries, domain, axisBreak)
+  const researchPositioned = positionEntries(researchEntries, domain, axisBreak)
+  const eduPositioned = positionEntries(eduEntries, domain, axisBreak)
+  const ticks = yearTicks(domain, axisBreak)
 
   const commercialLanes = laneCount(commercialPositioned)
   const researchLanes = laneCount(researchPositioned)
   const eduLanes = laneCount(eduPositioned)
 
   // Tick row reads thinner than a data lane; every track lane is equal
-  // weight so bars read at the same scale across all three tracks.
+  // weight so bars read at the same scale across all three tracks. Each
+  // track also reserves a header slot, sized for one line of mono-12 text,
+  // that carries only its name , never an entry, at any zoom, in either
+  // orientation, because entries are only ever placed into a lane slot.
   const TICK_WEIGHT = 0.55
-  const slots = computeSlots([TICK_WEIGHT, ...Array(commercialLanes + researchLanes + eduLanes).fill(1)])
+  const TRACK_HEADER_WEIGHT = 0.6
+
+  const trackDefs = [
+    { name: 'Commercial', positioned: commercialPositioned, bar: barToneClass, lanes: commercialLanes },
+    { name: 'Research', positioned: researchPositioned, bar: barHatchClass, lanes: researchLanes },
+    { name: 'Education', positioned: eduPositioned, bar: barOutlineClass, lanes: eduLanes },
+  ].filter((track) => track.lanes > 0)
+
+  const slots = computeSlots([
+    TICK_WEIGHT,
+    ...trackDefs.flatMap((track) => [TRACK_HEADER_WEIGHT, ...Array(track.lanes).fill(1)]),
+  ])
   const tickSlot = slots[0]
-  const commercialSlots = slots.slice(1, 1 + commercialLanes)
-  const researchSlots = slots.slice(1 + commercialLanes, 1 + commercialLanes + researchLanes)
-  const eduSlots = slots.slice(1 + commercialLanes + researchLanes)
+
+  let cursor = 1
+  const tracks = trackDefs.map((track) => {
+    const headerSlot = slots[cursor]
+    cursor += 1
+    const laneSlots = slots.slice(cursor, cursor + track.lanes)
+    cursor += track.lanes
+    return { ...track, headerSlot, laneSlots }
+  })
 
   // London Metropolitan University is, by its own name, a London
   // institution: the earliest entry that names it is the one genuine point
@@ -178,11 +252,9 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
 
   const domainLabel = `${domain.start.getFullYear()} to present`
 
-  const tracks = [
-    { name: 'Commercial', slots: commercialSlots, positioned: commercialPositioned, bar: barToneClass },
-    { name: 'Research', slots: researchSlots, positioned: researchPositioned, bar: barHatchClass },
-    { name: 'Education', slots: eduSlots, positioned: eduPositioned, bar: barOutlineClass },
-  ]
+  const axisDescription = axisBreak
+    ? `the years before ${axisBreak.date.getFullYear()} are compressed, marked by the break in the axis, so the overlapping periods after it stay readable; those overlaps are real`
+    : `drawn to scale so overlapping periods overlap on the axis`
 
   return (
     <div className="mt-6">
@@ -207,10 +279,10 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
 
       <div
         role="img"
-        aria-label={`Timeline of commercial roles, research and education, ${domainLabel}, drawn to scale so overlapping periods overlap on the axis.`}
+        aria-label={`Timeline of commercial roles, research and education, ${domainLabel}: ${axisDescription}.`}
         className="relative mt-3 h-[30rem] w-full border border-grid bg-panel md:h-[14rem]"
       >
-        {/* Year ticks */}
+        {/* Year ticks, plus the axis-break notch if the axis has one */}
         <div className={LANE_CLASS} style={posVar(tickSlot.pos, tickSlot.span)} aria-hidden>
           <div className="relative h-full w-full">
             {ticks.map((tick) => (
@@ -221,33 +293,44 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
                 </span>
               </div>
             ))}
+            {axisBreak && (
+              <div className={AXIS_BREAK_CLASS} style={posVar(axisBreak.screenPct)}>
+                <span className={AXIS_BREAK_TICK_CLASS} />
+                <span className={AXIS_BREAK_TICK_CLASS} />
+              </div>
+            )}
           </div>
         </div>
 
-        {tracks.map((track) =>
-          track.slots.map((slot, lane) => (
-            <div
-              key={`${track.name}-lane-${lane}`}
-              className={LANE_CLASS}
-              style={posVar(slot.pos, slot.span)}
-              aria-hidden
-            >
+        {tracks.map((track) => (
+          <div key={`${track.name}-group`}>
+            <div className={LANE_CLASS} style={posVar(track.headerSlot.pos, track.headerSlot.span)} aria-hidden>
               <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
-                {lane === 0 && <span className={TRACK_LABEL_CLASS}>{track.name}</span>}
-                {track.positioned
-                  .filter((e) => e.lane === lane)
-                  .map((entry) => (
-                    <div key={entry.key} title={`${entry.heading}, ${entry.sub}, ${entry.range.current ? 'current' : ''}`}>
-                      <div className={`${BAR_CLASS} ${track.bar(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
-                      <span className={LABEL_CLASS} style={posVar(entry.startPct)}>
-                        {entry.sub}
-                      </span>
-                    </div>
-                  ))}
+                <span className={TRACK_LABEL_CLASS}>{track.name}</span>
               </div>
             </div>
-          )),
-        )}
+
+            {track.laneSlots.map((slot, lane) => (
+              <div key={`${track.name}-lane-${lane}`} className={LANE_CLASS} style={posVar(slot.pos, slot.span)} aria-hidden>
+                <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
+                  {track.positioned
+                    .filter((e) => e.lane === lane)
+                    .map((entry) => (
+                      <div key={entry.key} title={`${entry.heading}, ${entry.sub}, ${entry.range.current ? 'current' : ''}`}>
+                        <div className={`${BAR_CLASS} ${track.bar(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
+                        <span
+                          className={entry.startPct >= NEAR_END_THRESHOLD ? LABEL_CLASS_END : LABEL_CLASS}
+                          style={posVar(entry.startPct)}
+                        >
+                          {entry.sub}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
 
         {londonEntry && (
           <>
@@ -266,9 +349,45 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
         <span aria-hidden className="absolute top-0 right-0 size-2 translate-x-1 -translate-y-1 bg-signal" />
       </div>
 
+      {/* Below md each track column is only about 60px wide, far too narrow to
+          carry a 30-character name without spilling past the viewport. On small
+          screens the bars keep the shape of the story and the names move to a
+          real list underneath. That also gives this chart genuine text content
+          rather than only its role="img" summary. */}
+      <ul className="mt-6 space-y-4 md:hidden">
+        {tracks.map((track) => (
+          <li key={`${track.name}-list`}>
+            <p className="font-mono text-12 uppercase tracking-[0.08em] text-label/70">{track.name}</p>
+            <ul className="mt-1 space-y-1">
+              {track.positioned.map((entry) => (
+                <li key={`${entry.key}-list`} className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="text-14 text-bone">{entry.sub}</span>
+                  <span className="font-mono text-12 text-label">{yearSpan(entry.range)}</span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+
+      {/* The caption has to match what the axis actually does. Claiming
+          "drawn to scale" stopped being true the moment the early years were
+          compressed, so the broken case says so and names the break. */}
       <p className="mt-4 max-w-[64ch] text-14 leading-relaxed text-label">
-        Drawn to scale rather than listed: the masters, the research role and Foundermatcha
-        run across genuinely overlapping stretches of the same years, not one after another.
+        {axisBreak ? (
+          <>
+            The years before {axisBreak.date.getFullYear()} carry one entry, so the axis is
+            broken there and they are compressed into a fifth of its width. Bars are to scale
+            within each region, and the overlaps are real: the masters, the research role and
+            Foundermatcha run across the same stretches of the same years rather than one
+            after another.
+          </>
+        ) : (
+          <>
+            Drawn to scale rather than listed: the masters, the research role and Foundermatcha
+            run across genuinely overlapping stretches of the same years, not one after another.
+          </>
+        )}
         {overlapSentences.length > 0 &&
           ` ${overlapSentences.length} pair${overlapSentences.length === 1 ? '' : 's'} of entries below overlap in date.`}
       </p>

@@ -89,6 +89,65 @@ function pct(date: Date, domain: TimelineDomain): number {
 }
 
 /**
+ * A broken axis: the stretch before `date` is compressed into `screenPct`
+ * percent of the drawn width instead of its true linear share (`rawPct`).
+ * Everything after the break gets the rest. `rawPct` and `screenPct` are
+ * both cached here because every date on the axis has to pass through the
+ * same two numbers to stay consistent with the break.
+ */
+export interface AxisBreak {
+  date: Date
+  rawPct: number
+  screenPct: number
+}
+
+/** Percent of the drawn width given to everything before the break, per the
+ *  brief's "roughly 15 to 20 percent" call: enough to acknowledge the early
+ *  years exist without spending real width on a single entry. */
+const PRE_BREAK_SHARE = 18
+
+/**
+ * Finds where a broken axis should pivot, from the data itself rather than
+ * a fixed date: the start of the second entry to begin, chronologically,
+ * floored to 1 Jan of that year. One entry alone before that point cannot
+ * make a lopsided axis, so a break only ever appears once a second entry's
+ * start actually creates one, and it always lands on a real change in the
+ * data rather than an arbitrary constant.
+ */
+export function findAxisBreak(
+  entries: TimelineEntry[],
+  domain: TimelineDomain,
+  preBreakShare: number = PRE_BREAK_SHARE,
+): AxisBreak | null {
+  const starts = [...new Set(entries.map((e) => e.range.start.getTime()))].sort((a, b) => a - b)
+  if (starts.length < 2) return null
+
+  const breakDate = new Date(new Date(starts[1]).getFullYear(), 0, 1)
+  const rawPct = pct(breakDate, domain)
+  // A break only makes sense strictly inside the domain; at either edge it
+  // would compress everything or nothing, so skip it rather than draw a
+  // break that does nothing.
+  if (rawPct <= 0 || rawPct >= 100) return null
+
+  return { date: breakDate, rawPct, screenPct: preBreakShare }
+}
+
+/**
+ * Maps a linear (raw) percent position onto the broken axis: everything
+ * before the break is rescaled into `screenPct`'s share of the width,
+ * everything after into the remainder. Both halves are separately linear,
+ * so the map is continuous and strictly increasing wherever the input is,
+ * meaning two dates that are ordered, or that overlap, stay ordered, or
+ * overlapping, after the transform , only proportional duration changes.
+ */
+function toScreenPct(rawPct: number, axisBreak: AxisBreak | null): number {
+  if (!axisBreak) return rawPct
+  const { rawPct: breakRaw, screenPct: breakScreen } = axisBreak
+  if (rawPct <= breakRaw) return (rawPct / breakRaw) * breakScreen
+  return breakScreen + ((rawPct - breakRaw) / (100 - breakRaw)) * (100 - breakScreen)
+}
+
+/**
  * Greedy interval-scheduling lane assignment, earliest start first: an
  * entry reuses the first lane whose last-placed entry has already ended by
  * the time this one starts, and only opens a new lane when every existing
@@ -118,11 +177,15 @@ export function assignLanes(entries: TimelineEntry[]): number[] {
   return lanes
 }
 
-export function positionEntries(entries: TimelineEntry[], domain: TimelineDomain): PositionedEntry[] {
+export function positionEntries(
+  entries: TimelineEntry[],
+  domain: TimelineDomain,
+  axisBreak: AxisBreak | null = null,
+): PositionedEntry[] {
   const lanes = assignLanes(entries)
   return entries.map((entry, i) => {
-    const startPct = pct(entry.range.start, domain)
-    const endPct = pct(entry.range.end, domain)
+    const startPct = toScreenPct(pct(entry.range.start, domain), axisBreak)
+    const endPct = toScreenPct(pct(entry.range.end, domain), axisBreak)
     return { ...entry, lane: lanes[i], startPct, spanPct: Math.max(endPct - startPct, 0.5) }
   })
 }
@@ -133,12 +196,12 @@ export interface YearTick {
 }
 
 /** One tick per calendar year whose Jan 1 falls inside the domain. */
-export function yearTicks(domain: TimelineDomain): YearTick[] {
+export function yearTicks(domain: TimelineDomain, axisBreak: AxisBreak | null = null): YearTick[] {
   const ticks: YearTick[] = []
   for (let year = domain.start.getFullYear(); year <= domain.end.getFullYear(); year++) {
     const jan1 = new Date(year, 0, 1).getTime()
     if (jan1 < domain.start.getTime() || jan1 > domain.end.getTime()) continue
-    ticks.push({ year, pct: pct(new Date(year, 0, 1), domain) })
+    ticks.push({ year, pct: toScreenPct(pct(new Date(year, 0, 1), domain), axisBreak) })
   }
   return ticks
 }
