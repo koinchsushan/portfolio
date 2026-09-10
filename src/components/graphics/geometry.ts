@@ -124,6 +124,29 @@ export interface AvoidBox {
 /** True when a circle at (cx, cy) with radius r overlaps `box`, both in the
  *  same user-space units. Used to drop individual lattice points out of a
  *  live text region rather than painting over it. */
+/**
+ * How much to shrink a lattice point sitting over reserved copy. Returns 1
+ * well clear of the box, falls to `min` inside it, and eases across `margin`
+ * so the field thins toward the text instead of showing a hard-edged hole.
+ * The points already grow left to right, so thinning them here reads as part
+ * of that gradient rather than as damage to it.
+ */
+export function avoidScale(
+  box: AvoidBox | null | undefined,
+  x: number,
+  y: number,
+  margin = 110,
+  min = 0.24,
+): number {
+  if (!box) return 1
+  const dx = Math.max(box.x - x, 0, x - (box.x + box.w))
+  const dy = Math.max(box.y - y, 0, y - (box.y + box.h))
+  const distance = Math.hypot(dx, dy)
+  if (distance >= margin) return 1
+  const t = distance / margin
+  return min + (1 - min) * (t * t * (3 - 2 * t))
+}
+
 export function circleIntersectsBox(box: AvoidBox, cx: number, cy: number, r: number): boolean {
   return !(cx + r < box.x || cx - r > box.x + box.w || cy + r < box.y || cy - r > box.y + box.h)
 }

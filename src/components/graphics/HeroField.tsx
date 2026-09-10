@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { circleIntersectsBox, heroGeometry, type AvoidBox } from './geometry'
+import { avoidScale, heroGeometry, type AvoidBox } from './geometry'
 import { RampGradient } from './RampGradient'
 
 const GRADIENT_ID = 'hero-ramp'
@@ -28,9 +28,7 @@ export const HeroField = forwardRef<SVGSVGElement, { className?: string; avoidBo
     const geo = heroGeometry()
     const ramp = `url(#${GRADIENT_ID})`
 
-    const dots = avoidBox ? geo.dots.filter((dot) => !circleIntersectsBox(avoidBox, dot.x, dot.y, dot.weight / 2)) : geo.dots
-    const showTerminal =
-      !avoidBox || !circleIntersectsBox(avoidBox, geo.terminal.x, geo.terminal.y, geo.terminal.size / 2)
+    const terminalScale = avoidScale(avoidBox, geo.terminal.x, geo.terminal.y)
 
     return (
       <svg
@@ -74,12 +72,28 @@ export const HeroField = forwardRef<SVGSVGElement, { className?: string; avoidBo
         <path d={geo.trace} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
 
         <g data-layer="lattice">
-          {dots.map((dot, i) => (
-            <circle key={i} cx={dot.x} cy={dot.y} r={dot.weight / 2} fill={ramp} fillOpacity={dot.opacity} />
-          ))}
+          {geo.dots.map((dot, i) => {
+            const scale = avoidScale(avoidBox, dot.x, dot.y)
+            return (
+              <circle
+                key={i}
+                cx={dot.x}
+                cy={dot.y}
+                r={(dot.weight / 2) * scale}
+                fill={ramp}
+                fillOpacity={dot.opacity * (0.4 + 0.6 * scale)}
+              />
+            )
+          })}
         </g>
 
-        {showTerminal && <circle cx={geo.terminal.x} cy={geo.terminal.y} r={geo.terminal.size / 2} fill={ramp} />}
+        <circle
+          cx={geo.terminal.x}
+          cy={geo.terminal.y}
+          r={(geo.terminal.size / 2) * terminalScale}
+          fill={ramp}
+          fillOpacity={0.4 + 0.6 * terminalScale}
+        />
       </svg>
     )
   },

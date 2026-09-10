@@ -134,7 +134,7 @@ export function Hero() {
           <h1
             id="hero-heading"
             ref={name.ref}
-            className={`font-display text-104 ${name.className} leading-[0.9] tracking-[-0.04em] text-bone text-balance sm:text-160`}
+            className={`font-display text-64 ${name.className} leading-[0.92] tracking-[-0.035em] text-bone text-balance sm:text-104`}
           >
             {identity.name}
           </h1>
@@ -147,11 +147,11 @@ export function Hero() {
           </p>
         </div>
 
-        <div ref={metaRef} className="flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
-          <p className="font-mono text-14 text-label">
+        <div ref={metaRef} className="over-field flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
+          <p className="font-mono text-16 text-bone sm:text-18">
             {identity.location} · {identity.availability}
           </p>
-          <p className="flex gap-8 lg:justify-end">
+          <p className="flex gap-8 text-18 lg:justify-end sm:text-22">
             <ActionLink href="#work">View work</ActionLink>
             <ActionLink href="#contact" variant="quiet">
               Get in touch
