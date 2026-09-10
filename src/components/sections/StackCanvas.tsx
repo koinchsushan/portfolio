@@ -15,13 +15,11 @@ import type { StackPalette } from '@/components/three/StackObject'
  */
 function readStackPalette(): StackPalette | null {
   const style = getComputedStyle(document.documentElement)
-  const label = style.getPropertyValue('--label').trim()
-  const bone = style.getPropertyValue('--bone').trim()
+  const ink = style.getPropertyValue('--ink').trim()
   const signal = style.getPropertyValue('--signal').trim()
-  const panel = style.getPropertyValue('--panel').trim()
-  const grid = style.getPropertyValue('--grid').trim()
-  if (!label || !bone || !signal || !panel || !grid) return null
-  return { label, bone, signal, panel, grid }
+  const surface = style.getPropertyValue('--surface').trim()
+  if (!ink || !signal || !surface) return null
+  return { ink, signal, surface }
 }
 
 // `ssr: false` keeps `three`, `@react-three/drei` and `simple-icons` out of
@@ -155,7 +153,7 @@ export function StackCanvas({ className }: { className?: string }) {
             onClick={() => setActiveIndex((prev) => (prev === index ? null : index))}
             onFocus={() => setHoveredIndex(index)}
             onBlur={() => setHoveredIndex((prev) => (prev === index ? null : prev))}
-            className="sr-only rounded-[var(--radius)] border border-grid bg-panel px-2 py-1 font-mono text-12 leading-none text-bone focus:not-sr-only"
+            className="sr-only rounded-[var(--radius)] border border-rule bg-surface px-2 py-1 font-mono text-12 leading-none text-ink focus:not-sr-only"
           >
             {face.label ?? face.skill}
             {face.context ? `. ${face.context}` : ''}
@@ -167,10 +165,10 @@ export function StackCanvas({ className }: { className?: string }) {
           (Chart.js's, three wrapped lines at this 280px panel width), so
           focusing any face , including the longest one , never reflows the
           page (Task K). Measured, not guessed: see task-K-report.md. */}
-      <p aria-live="polite" className="mt-3 min-h-[6em] font-mono text-14 text-label">
+      <p aria-live="polite" className="mt-3 min-h-[6em] font-mono text-14 text-muted">
         {activeFace ? (
           <>
-            <span className="text-bone">{activeFace.label ?? activeFace.skill}</span>
+            <span className="text-ink">{activeFace.label ?? activeFace.skill}</span>
             {activeFace.context ? <span> , {activeFace.context}</span> : null}
           </>
         ) : (

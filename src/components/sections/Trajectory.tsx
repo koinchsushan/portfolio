@@ -25,25 +25,25 @@ import { TrajectoryAxis } from '@/components/graphics/TrajectoryAxis'
 // genuinely overlapping stretches of time, not one after another.
 export function Trajectory() {
   return (
-    <section id="trajectory" aria-labelledby="trajectory-heading" className="border-b border-grid">
+    <section id="trajectory" aria-labelledby="trajectory-heading" className="border-b border-rule">
       <div className="mx-auto max-w-[1400px] px-6 py-16 sm:py-20">
         <SectionHeader id="trajectory-heading" heading="Trajectory" headingSize="text-40 sm:text-64" />
 
         <TrajectoryAxis roles={roles} education={education} />
 
         <div className="mt-12">
-          <h3 id="trajectory-experience-heading" className="font-mono text-14 text-label">
+          <h3 id="trajectory-experience-heading" className="font-mono text-14 text-muted">
             Experience
           </h3>
-          <ol aria-labelledby="trajectory-experience-heading" className="mt-4 border-t border-grid">
+          <ol aria-labelledby="trajectory-experience-heading" className="mt-4 border-t border-rule">
             {roles.map((role) => {
               const caseStudy = caseStudies.find((cs) => cs.employer === role.org)
               return (
                 <li
                   key={`${role.org}-${role.dates}`}
-                  className="grid grid-cols-1 gap-y-3 border-b border-grid py-6 sm:grid-cols-[112px_1px_1fr] sm:gap-x-8"
+                  className="grid grid-cols-1 gap-y-3 border-b border-rule py-6 sm:grid-cols-[112px_1px_1fr] sm:gap-x-8"
                 >
-                  <p className="font-mono text-12 leading-relaxed text-label">
+                  <p className="font-mono text-12 leading-relaxed text-muted">
                     {role.dates}
                     {role.location ? (
                       <>
@@ -54,16 +54,16 @@ export function Trajectory() {
                   </p>
                   <Rule vertical className="hidden sm:block" />
                   <div>
-                    <h4 className="font-subhead text-22 tracking-[-0.01em] text-bone">
+                    <h4 className="font-subhead text-22 tracking-[-0.01em] text-ink">
                       {role.title} · {role.org}
                     </h4>
-                    {role.context && <p className="mt-2 max-w-[60ch] text-16 leading-relaxed text-label">{role.context}</p>}
+                    {role.context && <p className="mt-2 max-w-[60ch] text-16 leading-relaxed text-muted">{role.context}</p>}
                     {role.progression && (
-                      <p className="mt-2 font-mono text-12 text-label">
+                      <p className="mt-2 font-mono text-12 text-muted">
                         {role.progression.join(' → ')}
                       </p>
                     )}
-                    <p aria-label={`${role.org} technologies`} className="mt-3 font-mono text-12 text-label">
+                    <p aria-label={`${role.org} technologies`} className="mt-3 font-mono text-12 text-muted">
                       {role.stack.join(' · ')}
                     </p>
                     {caseStudy ? (
@@ -75,7 +75,7 @@ export function Trajectory() {
                     ) : (
                       <ul className="mt-4 flex flex-col gap-2">
                         {role.bullets.map((bullet) => (
-                          <li key={bullet} className="max-w-[64ch] text-16 leading-relaxed text-label">
+                          <li key={bullet} className="max-w-[64ch] text-16 leading-relaxed text-muted">
                             {bullet}
                           </li>
                         ))}
@@ -89,16 +89,16 @@ export function Trajectory() {
         </div>
 
         <div className="mt-12">
-          <h3 id="trajectory-education-heading" className="font-mono text-14 text-label">
+          <h3 id="trajectory-education-heading" className="font-mono text-14 text-muted">
             Education
           </h3>
-          <ol aria-labelledby="trajectory-education-heading" className="mt-4 border-t border-grid">
+          <ol aria-labelledby="trajectory-education-heading" className="mt-4 border-t border-rule">
             {education.map((ed) => (
               <li
                 key={`${ed.institution}-${ed.dates}`}
-                className="grid grid-cols-1 gap-y-3 border-b border-grid py-6 sm:grid-cols-[112px_1px_1fr] sm:gap-x-8"
+                className="grid grid-cols-1 gap-y-3 border-b border-rule py-6 sm:grid-cols-[112px_1px_1fr] sm:gap-x-8"
               >
-                <p className="font-mono text-12 leading-relaxed text-label">
+                <p className="font-mono text-12 leading-relaxed text-muted">
                   {ed.dates}
                   {ed.location ? (
                     <>
@@ -109,16 +109,16 @@ export function Trajectory() {
                 </p>
                 <Rule vertical className="hidden sm:block" />
                 <div>
-                  <h4 className="font-subhead text-22 tracking-[-0.01em] text-bone">
+                  <h4 className="font-subhead text-22 tracking-[-0.01em] text-ink">
                     {ed.award} · {ed.institution}
                   </h4>
-                  {ed.project && <p className="mt-2 max-w-[60ch] text-16 leading-relaxed text-label">{ed.project}</p>}
+                  {ed.project && <p className="mt-2 max-w-[60ch] text-16 leading-relaxed text-muted">{ed.project}</p>}
                   {ed.modules && (
                     <ul className="mt-3 flex flex-wrap gap-2">
                       {ed.modules.map((module) => (
                         <li
                           key={module}
-                          className="rounded-[var(--radius)] border border-grid px-2 py-1 font-mono text-12 leading-none text-label"
+                          className="rounded-[var(--radius)] border border-rule px-2 py-1 font-mono text-12 leading-none text-muted"
                         >
                           {module}
                         </li>

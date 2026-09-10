@@ -36,7 +36,7 @@ export function HeroField({ className }: { className?: string }) {
             x2={column.x}
             y1={24}
             y2={geo.view.h - 24}
-            stroke="var(--color-grid)"
+            stroke="var(--color-rule)"
             strokeOpacity={column.opacity}
             strokeWidth={1}
             vectorEffect="non-scaling-stroke"

@@ -13,11 +13,11 @@ import { PinnedStory } from '@/components/motion/PinnedStory'
 // unpinned, diagram already built , see `PinnedStory` for the tier split.
 export function Work() {
   return (
-    <section id="work" aria-labelledby="work-heading" className="border-b border-grid">
+    <section id="work" aria-labelledby="work-heading" className="border-b border-rule">
       <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
         <SectionHeader id="work-heading" heading="Selected Work" headingSize="text-40 sm:text-64" />
 
-        <ul className="mt-14 border-t border-grid">
+        <ul className="mt-14 border-t border-rule">
           {caseStudies.map((cs) => (
             <PinnedStory key={cs.slug} study={cs} />
           ))}

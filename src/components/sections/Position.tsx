@@ -49,31 +49,31 @@ export function Position() {
   const heading = useRevealText<HTMLHeadingElement>('onView')
 
   return (
-    <section id="position" aria-labelledby="position-heading" className="border-b border-grid bg-panel">
+    <section id="position" aria-labelledby="position-heading" className="border-b border-rule bg-surface">
       <div className="mx-auto max-w-[1400px] px-6 py-28 sm:py-40">
         <h2
           id="position-heading"
           ref={heading.ref}
-          className={`font-display max-w-[20ch] text-40 ${heading.className} leading-[0.98] tracking-[-0.03em] text-bone text-balance sm:text-64`}
+          className={`font-display max-w-[20ch] text-40 ${heading.className} leading-[0.98] tracking-[-0.03em] text-ink text-balance sm:text-64`}
         >
           What the work adds up to
         </h2>
-        <p className="mt-6 max-w-[52ch] text-18 leading-relaxed text-label">
+        <p className="mt-6 max-w-[52ch] text-18 leading-relaxed text-muted">
           Three years building interfaces for systems where the data model and
           the screen have to be reasoned about together.
         </p>
 
         <dl className="mt-20 grid grid-cols-1 gap-y-16 sm:grid-cols-3 sm:gap-x-14">
           {metrics.map((metric, i) => (
-            <div key={metric.value} className={i > 0 ? 'sm:border-l sm:border-grid sm:pl-10' : ''}>
+            <div key={metric.value} className={i > 0 ? 'sm:border-l sm:border-rule sm:pl-10' : ''}>
               <Datum className="mb-3 h-3 w-24" />
               <dt>
-                <Metric value={metric.value} tone={i === 0 ? 'signal' : 'bone'} className="sm:text-64" />
+                <Metric value={metric.value} tone={i === 0 ? 'signal' : 'ink'} className="sm:text-64" />
               </dt>
               {UNITS[metric.value] && (
-                <p className="mt-2 font-mono text-12 tracking-[0.08em] text-label">{UNITS[metric.value]}</p>
+                <p className="mt-2 font-mono text-12 tracking-[0.08em] text-muted">{UNITS[metric.value]}</p>
               )}
-              <dd className="mt-3 max-w-[24ch] text-14 leading-snug text-label">{metric.label}</dd>
+              <dd className="mt-3 max-w-[24ch] text-14 leading-snug text-muted">{metric.label}</dd>
             </div>
           ))}
         </dl>

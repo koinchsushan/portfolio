@@ -16,7 +16,7 @@ export function Datum({ className = '' }: { className?: string }) {
         y1={11}
         x2={96}
         y2={11}
-        stroke="var(--color-grid)"
+        stroke="var(--color-rule)"
         strokeWidth={1}
         vectorEffect="non-scaling-stroke"
       />
@@ -27,7 +27,7 @@ export function Datum({ className = '' }: { className?: string }) {
           y1={x === 48 ? 0 : 6}
           x2={x}
           y2={11}
-          stroke="var(--color-grid)"
+          stroke="var(--color-rule)"
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />

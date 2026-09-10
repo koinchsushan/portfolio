@@ -36,36 +36,36 @@ const LANE_CLASS =
 // colour is the one real piece of data this component adds on top of
 // position: `current` (already parsed from the CV date string, never
 // invented) reads as resolved --signal, and every closed period reads as
-// dim --label, the tonal ramp's own "unresolved" end.
+// dim --muted, the tonal ramp's own "unresolved" end.
 const BAR_CLASS =
   'absolute left-0 top-[var(--pos)] h-[var(--span)] w-2 md:left-[var(--pos)] md:top-1/2 md:h-2 md:w-[var(--span)] md:-translate-y-1/2'
 
 const LABEL_CLASS =
-  'absolute left-4 top-[var(--pos)] max-w-[7.5rem] font-mono text-12 leading-tight text-label md:left-[var(--pos)] md:top-0 md:max-w-[9rem] md:pt-0.5'
+  'absolute left-4 top-[var(--pos)] max-w-[7.5rem] font-mono text-12 leading-tight text-muted md:left-[var(--pos)] md:top-0 md:max-w-[9rem] md:pt-0.5'
 
 const TICK_LINE_CLASS =
-  'absolute left-0 right-0 top-[var(--pos)] h-px bg-grid md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:h-full md:w-px'
+  'absolute left-0 right-0 top-[var(--pos)] h-px bg-rule md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:h-full md:w-px'
 
 const TICK_LABEL_CLASS =
-  'absolute left-1.5 top-[var(--pos)] font-mono text-12 text-label md:left-[var(--pos)] md:top-auto md:bottom-0 md:ml-1'
+  'absolute left-1.5 top-[var(--pos)] font-mono text-12 text-muted md:left-[var(--pos)] md:top-auto md:bottom-0 md:ml-1'
 
 // One small uppercase mono label per track, drawn once per track at its
 // first lane's top-left corner, so Commercial / Research / Education read
 // as a legend baked into the axis itself, not only in the key above it.
 const TRACK_LABEL_CLASS =
-  'pointer-events-none absolute left-1.5 top-1 font-mono text-12 uppercase tracking-[0.08em] text-label/70'
+  'pointer-events-none absolute left-1.5 top-1 font-mono text-12 uppercase tracking-[0.08em] text-muted/70'
 
-// The Nepal-to-London marker: a dashed rule in dim --label (never --signal,
+// The Nepal-to-London marker: a dashed rule in dim --muted (never --signal,
 // that budget is spent elsewhere on the page) crossing every track at once.
-// --label is the tonal ramp's "unresolved" colour, and this line marks
+// --muted is the tonal ramp's "unresolved" colour, and this line marks
 // exactly the point the record moves from an earlier country to the current
 // one, so the colour carries the same meaning here as it does inside the
 // diagrams.
 const MARKER_LINE_CLASS =
-  'absolute left-0 right-0 top-[var(--pos)] border-t border-dashed border-label md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:border-t-0 md:border-l md:h-full'
+  'absolute left-0 right-0 top-[var(--pos)] border-t border-dashed border-muted md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:border-t-0 md:border-l md:h-full'
 
 const MARKER_LABEL_CLASS =
-  'absolute left-1.5 top-[var(--pos)] -mt-4 font-mono text-12 text-label md:left-[var(--pos)] md:top-0 md:mt-0 md:ml-1.5'
+  'absolute left-1.5 top-[var(--pos)] -mt-4 font-mono text-12 text-muted md:left-[var(--pos)] md:top-0 md:mt-0 md:ml-1.5'
 
 type AxisVars = CSSProperties & { '--pos'?: string; '--span'?: string }
 
@@ -84,22 +84,22 @@ function computeSlots(weights: number[]): { pos: number; span: number }[] {
   })
 }
 
-/** Resolved (still running) reads --signal; every closed period reads dim --label.
+/** Resolved (still running) reads --signal; every closed period reads dim --muted.
  *  Three distinct fill treatments, one per track, so the overlap between
  *  commercial work, research and education reads from shape alone, not
  *  colour alone (the tonal ramp still carries current-vs-closed). */
 function barToneClass(current: boolean): string {
-  return current ? 'bg-signal' : 'bg-label'
+  return current ? 'bg-signal' : 'bg-muted'
 }
 
 function barHatchClass(current: boolean): string {
   return current
     ? 'bg-[repeating-linear-gradient(135deg,var(--color-signal)_0px,var(--color-signal)_2px,transparent_2px,transparent_5px)]'
-    : 'bg-[repeating-linear-gradient(135deg,var(--color-label)_0px,var(--color-label)_2px,transparent_2px,transparent_5px)]'
+    : 'bg-[repeating-linear-gradient(135deg,var(--color-muted)_0px,var(--color-muted)_2px,transparent_2px,transparent_5px)]'
 }
 
 function barOutlineClass(current: boolean): string {
-  return current ? 'border-2 border-signal bg-transparent' : 'border-2 border-label bg-transparent'
+  return current ? 'border-2 border-signal bg-transparent' : 'border-2 border-muted bg-transparent'
 }
 
 /** The one role in `roles` that is research rather than commercial work,
@@ -186,19 +186,19 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
 
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-12 text-label">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-12 text-muted">
         <span className="inline-flex items-center gap-2">
-          <span aria-hidden className="h-2 w-5 bg-label" /> Commercial
+          <span aria-hidden className="h-2 w-5 bg-muted" /> Commercial
         </span>
         <span className="inline-flex items-center gap-2">
           <span
             aria-hidden
-            className="h-2 w-5 bg-[repeating-linear-gradient(135deg,var(--color-label)_0px,var(--color-label)_2px,transparent_2px,transparent_5px)]"
+            className="h-2 w-5 bg-[repeating-linear-gradient(135deg,var(--color-muted)_0px,var(--color-muted)_2px,transparent_2px,transparent_5px)]"
           />
           Research
         </span>
         <span className="inline-flex items-center gap-2">
-          <span aria-hidden className="h-2 w-5 border-2 border-label" /> Education
+          <span aria-hidden className="h-2 w-5 border-2 border-muted" /> Education
         </span>
         <span className="inline-flex items-center gap-2">
           <span aria-hidden className="size-2 bg-signal" /> In progress
@@ -208,7 +208,7 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
       <div
         role="img"
         aria-label={`Timeline of commercial roles, research and education, ${domainLabel}, drawn to scale so overlapping periods overlap on the axis.`}
-        className="relative mt-3 h-[30rem] w-full border border-grid bg-panel md:h-[14rem]"
+        className="relative mt-3 h-[30rem] w-full border border-rule bg-surface md:h-[14rem]"
       >
         {/* Year ticks */}
         <div className={LANE_CLASS} style={posVar(tickSlot.pos, tickSlot.span)} aria-hidden>
@@ -232,7 +232,7 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
               style={posVar(slot.pos, slot.span)}
               aria-hidden
             >
-              <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
+              <div className="relative h-full w-full border-t border-rule md:border-t-0 md:border-l">
                 {lane === 0 && <span className={TRACK_LABEL_CLASS}>{track.name}</span>}
                 {track.positioned
                   .filter((e) => e.lane === lane)
@@ -259,14 +259,14 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
         )}
 
         {/* Domain bounds echo the diagrams' own input/output markers: the
-            axis starts on unresolved --label and ends on resolved --signal,
+            axis starts on unresolved --muted and ends on resolved --signal,
             the same two positions the record actually starts and reaches
             "now" at, not new data. */}
-        <span aria-hidden className="absolute left-0 top-0 size-2 -translate-x-1 -translate-y-1 bg-label" />
+        <span aria-hidden className="absolute left-0 top-0 size-2 -translate-x-1 -translate-y-1 bg-muted" />
         <span aria-hidden className="absolute top-0 right-0 size-2 translate-x-1 -translate-y-1 bg-signal" />
       </div>
 
-      <p className="mt-4 max-w-[64ch] text-14 leading-relaxed text-label">
+      <p className="mt-4 max-w-[64ch] text-14 leading-relaxed text-muted">
         Drawn to scale rather than listed: the masters, the research role and Foundermatcha
         run across genuinely overlapping stretches of the same years, not one after another.
         {overlapSentences.length > 0 &&

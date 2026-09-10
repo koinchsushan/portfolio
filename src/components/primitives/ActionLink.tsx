@@ -21,8 +21,8 @@ export function ActionLink({
     'group inline-flex items-center gap-2 font-mono text-14 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4'
   const styles =
     variant === 'primary'
-      ? 'text-bone hover:text-signal'
-      : 'text-label hover:text-bone'
+      ? 'text-ink hover:text-signal'
+      : 'text-muted hover:text-ink'
 
   return (
     <Link href={href} className={`${base} ${styles} ${className}`}>

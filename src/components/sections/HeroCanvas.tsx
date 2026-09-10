@@ -13,11 +13,11 @@ import type { HeroPalette } from '@/components/three/HeroField'
  */
 function readPalette(): HeroPalette | null {
   const style = getComputedStyle(document.documentElement)
-  const ground = style.getPropertyValue('--ground').trim()
-  const muted = style.getPropertyValue('--label').trim()
+  const paper = style.getPropertyValue('--paper').trim()
+  const rule = style.getPropertyValue('--rule').trim()
   const signal = style.getPropertyValue('--signal').trim()
-  if (!ground || !muted || !signal) return null
-  return { ground, muted, signal }
+  if (!paper || !rule || !signal) return null
+  return { paper, rule, signal }
 }
 
 // `ssr: false` only works inside a Client Component (this file), and it is

@@ -26,38 +26,30 @@ function portraitFileExists(): boolean {
  * missing or renamed file degrades to a sized placeholder rather than
  * shipping a broken image on a live page.
  *
- * Duotone: the source photo is cool-toned office light, so mapping its
- * shadows to `--label` and its highlights to `--bone` sits it into the
- * palette instead of reading as a dropped-in headshot. Grayscale first,
- * then two blend layers reproduce the classic two-colour duotone curve:
- * `multiply` with the highlight colour pulls white toward `--bone` while
- * leaving black alone, then `screen` with the shadow colour pulls black
- * toward `--label` while leaving white alone.
+ * Task N: the duotone treatment (grayscale plus a multiply/screen colour
+ * pair) was tuned for a dark ground and the owner asked for it removed
+ * entirely, not remapped , the photograph renders plain.
  */
 export function Portrait({ className = '' }: { className?: string }) {
   const hasPhoto = portraitFileExists()
 
   return (
     <div
-      className={`relative isolate w-full max-w-[240px] overflow-hidden border border-grid bg-panel ${className}`.trim()}
+      className={`relative isolate w-full max-w-[240px] overflow-hidden border border-rule bg-surface ${className}`.trim()}
       style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
     >
       {hasPhoto ? (
-        <>
-          <Image
-            src={PORTRAIT_PATH}
-            alt="Sushan Sunuwar, head and shoulders, in a dark blazer against a bright office interior"
-            width={WIDTH}
-            height={HEIGHT}
-            sizes="240px"
-            className="h-full w-full object-cover grayscale"
-          />
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-bone mix-blend-multiply" />
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-label mix-blend-screen" />
-        </>
+        <Image
+          src={PORTRAIT_PATH}
+          alt="Sushan Sunuwar, head and shoulders, in a dark blazer against a bright office interior"
+          width={WIDTH}
+          height={HEIGHT}
+          sizes="240px"
+          className="h-full w-full object-cover"
+        />
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
-          <span className="font-mono text-12 uppercase tracking-[0.14em] text-label">Portrait pending</span>
+          <span className="font-mono text-12 uppercase tracking-[0.14em] text-muted">Portrait pending</span>
         </div>
       )}
     </div>

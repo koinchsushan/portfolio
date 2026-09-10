@@ -8,7 +8,7 @@ const GRADIENT_ID = 'converge-ramp'
  * Four in, one through, five out. Every flow-carrying line (input leads,
  * the converging curves, the spine, the diverging curves, output leads) is
  * stroked with the same ramp gradient, so each element's own x position is
- * what decides whether it reads dim and unresolved, amber, or mid-transition.
+ * what decides whether it reads dim and unresolved, signal blue, or mid-transition.
  */
 export function ConvergeDiagram({ progress = 1, className }: { progress?: number; className?: string }) {
   const geo = convergeGeometry()
@@ -35,7 +35,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
           width={geo.bounds.x2 - geo.bounds.x1}
           height={geo.bounds.bottom - geo.bounds.top}
           fill="none"
-          stroke="var(--color-grid)"
+          stroke="var(--color-rule)"
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />
@@ -46,7 +46,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
             x2={x}
             y1={geo.bounds.top}
             y2={geo.bounds.bottom}
-            stroke="var(--color-grid)"
+            stroke="var(--color-rule)"
             strokeWidth={1}
             strokeDasharray="2 4"
             vectorEffect="non-scaling-stroke"
@@ -58,7 +58,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
           fontFamily="var(--font-mono)"
           fontSize={11}
           letterSpacing="0.04em"
-          fill="var(--color-label)"
+          fill="var(--color-muted)"
         >
           {String(geo.inputs.length).padStart(2, '0')} CHAT IMPLEMENTATIONS
         </text>
@@ -69,7 +69,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
           fontFamily="var(--font-mono)"
           fontSize={11}
           letterSpacing="0.04em"
-          fill="var(--color-label)"
+          fill="var(--color-muted)"
         >
           {String(geo.outputs.length).padStart(2, '0')} PRODUCT SURFACES
         </text>
@@ -80,7 +80,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
           fontFamily="var(--font-mono)"
           fontSize={10}
           letterSpacing="0.04em"
-          fill="var(--color-label)"
+          fill="var(--color-muted)"
         >
           01 SHARED COMPONENT LAYER
         </text>
@@ -97,7 +97,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
               y={input.marker.y - 5}
               fontFamily="var(--font-mono)"
               fontSize={9}
-              fill="var(--color-label)"
+              fill="var(--color-muted)"
             >
               {`#${String(i + 1).padStart(2, '0')}`}
             </text>
@@ -123,7 +123,7 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
               textAnchor="end"
               fontFamily="var(--font-mono)"
               fontSize={9}
-              fill="var(--color-label)"
+              fill="var(--color-muted)"
             >
               {`#${String(i + 1).padStart(2, '0')}`}
             </text>

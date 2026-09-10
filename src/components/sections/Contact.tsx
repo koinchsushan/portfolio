@@ -5,7 +5,7 @@ import { identity } from '@/content'
 import { ExternalLink } from '@/components/primitives/ExternalLink'
 import { useRevealText } from '@/lib/useRevealText'
 
-// Closing composition: one dominant amber CTA (the email link) against a
+// Closing composition: one dominant cobalt CTA (the email link) against a
 // quiet right-hand column of real, already-stated facts (location, the
 // outbound links) rather than empty space, now that the background grid
 // is gone (Task K). Below lg the two columns stack, hairline-divided.
@@ -20,11 +20,11 @@ export function Contact() {
             <h2
               id="contact-heading"
               ref={heading.ref}
-              className={`font-display text-40 ${heading.className} leading-[0.95] tracking-[-0.03em] text-bone sm:text-104`}
+              className={`font-display text-40 ${heading.className} leading-[0.95] tracking-[-0.03em] text-ink sm:text-104`}
             >
               Contact
             </h2>
-            <p className="mt-6 max-w-[40ch] text-18 leading-relaxed text-label">{identity.availability}</p>
+            <p className="mt-6 max-w-[40ch] text-18 leading-relaxed text-muted">{identity.availability}</p>
 
             <a
               href={`mailto:${identity.email}`}
@@ -34,26 +34,26 @@ export function Contact() {
             </a>
           </div>
 
-          <div className="flex flex-col gap-8 border-t border-grid pt-8 lg:col-span-4 lg:col-start-9 lg:justify-end lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
+          <div className="flex flex-col gap-8 border-t border-rule pt-8 lg:col-span-4 lg:col-start-9 lg:justify-end lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
             <div>
-              <p className="font-mono text-12 uppercase tracking-[0.14em] text-label">Based in</p>
-              <p className="mt-2 text-16 text-bone">{identity.location}</p>
+              <p className="font-mono text-12 uppercase tracking-[0.14em] text-muted">Based in</p>
+              <p className="mt-2 text-16 text-ink">{identity.location}</p>
             </div>
             <ul className="flex flex-col gap-3 font-mono text-14">
               <li>
-                <ExternalLink href={`https://${identity.linkedin}`} className="text-label">
+                <ExternalLink href={`https://${identity.linkedin}`} className="text-muted">
                   LinkedIn
                 </ExternalLink>
               </li>
               <li>
-                <ExternalLink href={`https://${identity.github}`} className="text-label">
+                <ExternalLink href={`https://${identity.github}`} className="text-muted">
                   GitHub
                 </ExternalLink>
               </li>
               <li>
                 <Link
                   href="/resume"
-                  className="text-label transition-colors hover:text-bone focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+                  className="text-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
                 >
                   Résumé (PDF)
                 </Link>

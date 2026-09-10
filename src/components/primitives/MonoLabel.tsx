@@ -18,6 +18,6 @@ export function MonoLabel({
   eyebrow?: boolean
   className?: string
 }) {
-  const eyebrowClass = eyebrow ? 'uppercase tracking-[0.14em] text-signal' : 'text-label'
+  const eyebrowClass = eyebrow ? 'uppercase tracking-[0.14em] text-signal' : 'text-muted'
   return <Tag className={`font-mono text-12 ${eyebrowClass} ${className}`}>{children}</Tag>
 }

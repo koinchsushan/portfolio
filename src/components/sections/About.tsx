@@ -19,14 +19,14 @@ import { Portrait } from '@/components/about/Portrait'
 // thing the eye lands on. Below sm the two stack, portrait first.
 export function About() {
   return (
-    <section id="about" aria-labelledby="about-heading" className="border-b border-grid">
+    <section id="about" aria-labelledby="about-heading" className="border-b border-rule">
       <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
         <SectionHeader id="about-heading" heading="About" headingSize="text-40 sm:text-64" />
 
         <DraftNote bordered={false} className="mt-8 sm:mt-10">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-[200px_minmax(0,68ch)] sm:gap-10">
             <Portrait className="sm:self-start" />
-            <div className="flex flex-col gap-6 text-18 leading-relaxed text-label">
+            <div className="flex flex-col gap-6 text-18 leading-relaxed text-muted">
               <p>
                 I build interfaces and the systems underneath them. Three years so far:
                 a US healthcare platform serving 450,000 union members, an aerospace

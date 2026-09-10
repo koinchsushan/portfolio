@@ -40,7 +40,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           width={boundsX2 - boundsX1}
           height={boundsBottom - boundsTop}
           fill="none"
-          stroke="var(--color-grid)"
+          stroke="var(--color-rule)"
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />
@@ -50,7 +50,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           fontFamily="var(--font-mono)"
           fontSize={11}
           letterSpacing="0.04em"
-          fill="var(--color-label)"
+          fill="var(--color-muted)"
         >
           01 COORDINATED RELEASE TRAIN
         </text>
@@ -61,7 +61,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           fontFamily="var(--font-mono)"
           fontSize={11}
           letterSpacing="0.04em"
-          fill="var(--color-label)"
+          fill="var(--color-muted)"
         >
           {String(geo.lanes.length).padStart(2, '0')} MODULE LANES
         </text>
@@ -74,7 +74,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           width={geo.capsule.w}
           height={geo.capsule.h}
           fill="none"
-          stroke="var(--color-grid)"
+          stroke="var(--color-rule)"
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />
@@ -85,13 +85,13 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
             x2={x}
             y1={geo.capsule.y}
             y2={geo.capsule.y + geo.capsule.h}
-            stroke="var(--color-grid)"
+            stroke="var(--color-rule)"
             strokeWidth={1}
             strokeDasharray="2 3"
             vectorEffect="non-scaling-stroke"
           />
         ))}
-        <text x={geo.capsule.x + geo.capsule.w / 2} y={geo.noteY} textAnchor="middle" fontFamily="var(--font-mono)" fontSize={13} fill="var(--color-label)">
+        <text x={geo.capsule.x + geo.capsule.w / 2} y={geo.noteY} textAnchor="middle" fontFamily="var(--font-mono)" fontSize={13} fill="var(--color-muted)">
           One release train
         </text>
         {geo.releases.map((x, i) => (
@@ -102,7 +102,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
             textAnchor="middle"
             fontFamily="var(--font-mono)"
             fontSize={9}
-            fill="var(--color-label)"
+            fill="var(--color-muted)"
           >
             {`cut ${i + 1}`}
           </text>
@@ -118,7 +118,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           x2={geo.splitRule.x}
           y1={geo.splitRule.y1}
           y2={geo.splitRule.y2}
-          stroke="var(--color-grid)"
+          stroke="var(--color-rule)"
           strokeWidth={1}
           strokeDasharray="2 4"
           vectorEffect="non-scaling-stroke"
@@ -139,7 +139,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
                 x2={x}
                 y1={lane.laneY - 6}
                 y2={lane.laneY + 6}
-                stroke="var(--color-label)"
+                stroke="var(--color-muted)"
                 strokeWidth={1}
                 vectorEffect="non-scaling-stroke"
               />
@@ -150,7 +150,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
               y={lane.laneY - 12}
               fontFamily="var(--font-mono)"
               fontSize={14}
-              fill="var(--color-label)"
+              fill="var(--color-muted)"
             >
               {`0${geo.lanes.indexOf(lane) + 1}`} {lane.label}
             </text>
@@ -159,7 +159,7 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
               y={lane.laneY + 20}
               fontFamily="var(--font-mono)"
               fontSize={10}
-              fill="var(--color-label)"
+              fill="var(--color-muted)"
             >
               {`${lane.deploys.length} deploys`}
             </text>

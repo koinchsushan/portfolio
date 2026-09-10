@@ -45,13 +45,23 @@ import {
  * which reads the custom properties before mounting this canvas, exactly the
  * pattern `HeroCanvas` uses for the hero shader. Nothing in this file names a
  * colour.
+ *
+ * Task N, light inversion: the dark build painted every face --panel (dark)
+ * with --bone marks and lit it with real shading, the ordinary way to model
+ * a solid. On paper that is a black blob , a dark object reading as a hole
+ * in the page rather than an instrument. Inverted, not remapped: faces are
+ * now --surface (light, flat, matte, `flatShading` plus a high roughness so
+ * specular highlights never blow out to white-on-white), unresolved marks
+ * are --ink (never dim --muted, an icon that small needs full contrast to
+ * read at all) and the focused face's mark lifts to --signal. A light solid
+ * on a light ground has no silhouette from shading alone, so the edge
+ * geometry is now outlined in --ink rather than the barely-there --rule the
+ * dark build used, the one deliberate addition edge definition needed.
  */
 export interface StackPalette {
-  label: string
-  bone: string
+  ink: string
   signal: string
-  panel: string
-  grid: string
+  surface: string
 }
 
 export type StackMode = 'full' | 'lite'
@@ -252,20 +262,28 @@ function StackScene({ paused, palette, mode, activeIndex, hoveredIndex, rotation
     }
   }, [iconGeometries, hitGeometries])
 
-  const labelColor = palette.label
+  const inkColor = palette.ink
   const liftedColor = palette.signal
 
   return (
     <group ref={groupRef}>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[2.4, 3.1, 4]} intensity={0.85} />
-      <directionalLight position={[-2.2, -1.4, -3]} intensity={0.3} />
+      {/* Flatter, more diffuse lighting than the dark build used: a light
+          matte face (`roughness` up, `metalness` off) under strong
+          directional light can blow out to white-on-white and erase itself,
+          exactly the failure a light object on a light ground risks. Softer
+          light plus the --ink edge outline below carry the shape instead. */}
+      <ambientLight intensity={0.85} />
+      <directionalLight position={[2.4, 3.1, 4]} intensity={0.4} />
+      <directionalLight position={[-2.2, -1.4, -3]} intensity={0.22} />
 
       <mesh geometry={solidGeometry}>
-        <meshStandardMaterial color={palette.panel} flatShading roughness={0.6} metalness={0.12} />
+        <meshStandardMaterial color={palette.surface} flatShading roughness={0.95} metalness={0} />
       </mesh>
+      {/* The silhouette definition a light object needs against a light
+          ground: an --ink outline, held to low opacity so it reads as a
+          drawn edge rather than a heavy wireframe. */}
       <lineSegments geometry={edgesGeometry}>
-        <lineBasicMaterial color={palette.grid} transparent opacity={0.65} />
+        <lineBasicMaterial color={palette.ink} transparent opacity={0.3} />
       </lineSegments>
 
       {faceData.map(({ layout, content, icon }, i) => {
@@ -275,7 +293,7 @@ function StackScene({ paused, palette, mode, activeIndex, hoveredIndex, rotation
         )
         const position = layout.centroid.clone().addScaledVector(layout.normal, FACE_EPSILON)
         const isActive = activeIndex === i || hoveredIndex === i
-        const color = isActive ? liftedColor : labelColor
+        const color = isActive ? liftedColor : inkColor
 
         const handlePointerOver = (event: { stopPropagation: () => void }) => {
           event.stopPropagation()

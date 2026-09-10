@@ -1,32 +1,40 @@
 /**
- * Design tokens, dark instrumentation language: a plot ground and a
- * graticule, not "developer dark mode". See task-B-brief.md.
+ * Design tokens, light instrumentation language: a plot ground and a
+ * graticule read on paper, not "developer dark mode inverted with a filter".
+ * See task-N-brief.md, the full light inversion.
  *
  * One accent. --signal is the only saturated colour on the page and reads
  * at most once per viewport as a flat accent (the diagram ramp is exempt,
  * there the ramp IS the content). Every ramp on the site is tonal: unresolved
- * geometry reads as dim, desaturated --label, resolved geometry reads as
- * --signal. Signal emerging from noise in one hue, not two , see
- * task-L-brief.md.
+ * geometry reads as dim, desaturated --muted, resolved geometry reads as
+ * --signal. Signal emerging from noise in one hue, not two.
  */
 
 :root {
-  /* Palette, exact spec values. A warm near-black ground (hue ~32, the same
-     warm family as --signal) rather than a cold blue-black, so the six
-     tokens read as one authored, tonal scale with a single accent breaking
-     out of it, not "dark mode plus a swatch of teal". */
-  --ground: #100e0c;
-  --panel: #1e1a15;
-  --grid: #3a332c;
-  --label: #a79f96;
-  --bone: #edeae9;
-  --signal: #e3b23c;
+  /* Palette, exact spec values. A COOL-neutral paper (hue drifts toward
+     blue-grey, never warm) with a cobalt accent, deliberately not the warm
+     cream-plus-brass/terracotta family AI defaults to on light grounds: see
+     task-N-brief.md's explicit ban on that. The six tokens read as one
+     authored, tonal scale with a single accent breaking out of it. */
+  --paper: #f2f3f1;
+  --surface: #fbfbfa;
+  --rule: #dcddd9;
+  /* #6c7075 (the exact spec value) measured 4.48:1 on --paper, just under
+     the 4.5:1 AA floor for the normal-weight body sizes this token carries.
+     Darkened two steps to #6a6e73 along the same cool-neutral ratio (no hue
+     drift) to clear AA with margin: 4.61:1 on paper, 4.96:1 on surface. */
+  --muted: #6a6e73;
+  --ink: #16171b;
+  --signal: #2a4dd0;
 
   /* One corner-radius system: sharp, small and consistent. */
   --radius: 2px;
 
   /* Fluid type scale, clamp(min, preferred, max) tuned so the largest
-     steps still fit inside a min-h-[100dvh] hero without forcing scroll. */
+     steps still fit inside a min-h-[100dvh] hero without forcing scroll.
+     The 160 step's ceiling was brought down from 160px (Task N): 160px of
+     ultra-bold expanded type was part of what read as dated. Large and
+     light, at a lower ceiling, reads more current than large and heavy. */
   --fs-12: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
   --fs-14: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
   --fs-16: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
@@ -36,5 +44,5 @@
   --fs-40: clamp(1.75rem, 1.45rem + 1.5vw, 2.5rem);
   --fs-64: clamp(2.25rem, 1.65rem + 3vw, 4rem);
   --fs-104: clamp(2.75rem, 1.5rem + 6.25vw, 6.5rem);
-  --fs-160: clamp(3rem, 0.8rem + 11vw, 10rem);
+  --fs-160: clamp(3rem, 1rem + 7.5vw, 8rem);
 }
