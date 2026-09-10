@@ -92,8 +92,11 @@ body {
 }
 
 .reveal-text.reveal-pending {
-  opacity: 0;
-  filter: blur(10px);
+  /* Not 0: the hero h1 is the LCP element, and text that never paints until
+     a transition runs both delays LCP and risks being invisible if that
+     transition is throttled. A floor keeps it legible in every frame. */
+  opacity: 0.55;
+  filter: blur(6px);
 }
 
 @media (prefers-reduced-motion: reduce) {

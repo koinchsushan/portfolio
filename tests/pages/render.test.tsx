@@ -1,5 +1,6 @@
-import { render, screen, within } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { render, screen, within, act } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { useRevealText } from '@/lib/useRevealText'
 import Home from '@/app/page'
 import Work from '@/app/work/[slug]/page'
 import { caseStudies } from '@/content'
@@ -70,5 +71,55 @@ describe('site renders', () => {
       if (/#[0-9a-f]{6}\b/i.test(await readFile(f, 'utf8'))) offenders.push(f)
     }
     expect(offenders).toEqual([])
+  })
+})
+
+describe('text reveal never gates content', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  // A hidden or backgrounded tab suspends IntersectionObserver, and the reveal
+  // starts text blurred and semi-transparent. If it waited only on the
+  // observer, a heading could stay unreadable indefinitely. This shipped once:
+  // the hero h1 sat at opacity 0.165 with an 8px blur on a hidden tab.
+  // (rAF is deliberately NOT mocked here: stubbing it breaks React's own act
+  // scheduling, and the observer path is the real-world failure anyway.)
+  it('resolves even when IntersectionObserver never fires', () => {
+    vi.useFakeTimers()
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        observe() {}
+        disconnect() {}
+      },
+    )
+
+    function Heading() {
+      const { ref, className } = useRevealText<HTMLHeadingElement>('onView')
+      return (
+        <h2 ref={ref} className={className} data-testid="heading">
+          Selected Work
+        </h2>
+      )
+    }
+
+    render(<Heading />)
+    const heading = screen.getByTestId('heading')
+    expect(heading.className).toContain('reveal-pending')
+
+    act(() => {
+      vi.advanceTimersByTime(3000)
+    })
+    expect(heading.className).not.toContain('reveal-pending')
+  })
+
+  it('never starts fully transparent, so the hero h1 still paints for LCP', async () => {
+    const { readFile } = await import('node:fs/promises')
+    const css = await readFile('src/app/globals.css', 'utf8')
+    const pending = css.match(/\.reveal-text\.reveal-pending\s*\{[^}]*\}/)?.[0] ?? ''
+    expect(pending).not.toMatch(/opacity:\s*0\s*;/)
   })
 })

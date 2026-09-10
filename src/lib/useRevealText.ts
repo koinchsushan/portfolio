@@ -22,6 +22,12 @@ export type RevealMode = 'immediate' | 'onView'
  *     hydrated tree rather than flashing sharp-then-blurred.
  *   - Reduced motion never adds the class, so that composition is complete
  *     and static from the very first frame, not merely "animation off".
+ *   - A `setTimeout` safety net ALWAYS clears the pending state, in both
+ *     modes. rAF and IntersectionObserver are both suspended while a tab is
+ *     hidden or backgrounded, so relying on either alone can leave text
+ *     blurred and near-transparent indefinitely. `setTimeout` still fires
+ *     when hidden (throttled, but it fires), so the text is guaranteed to
+ *     resolve no matter what the browser does with the other two.
  *
  * `mode: 'immediate'` clears the pending state a couple of frames after
  * mount, for text already in the viewport on load (the hero). `mode:
@@ -41,6 +47,10 @@ export function useRevealText<T extends HTMLElement>(mode: RevealMode = 'onView'
   useEffect(() => {
     if (!pending) return
 
+    // Guaranteed resolution. Never let text depend on rAF or an observer to
+    // become legible: both are suspended on a hidden tab.
+    const safety = window.setTimeout(() => setPending(false), mode === 'immediate' ? 400 : 2500)
+
     if (mode === 'immediate') {
       // Two rAFs: the first lets the just-applied pending (blurred) frame
       // actually paint, the second is where the transition to resolved
@@ -50,6 +60,7 @@ export function useRevealText<T extends HTMLElement>(mode: RevealMode = 'onView'
         inner = window.requestAnimationFrame(() => setPending(false))
       })
       return () => {
+        window.clearTimeout(safety)
         window.cancelAnimationFrame(outer)
         window.cancelAnimationFrame(inner)
       }
@@ -57,6 +68,7 @@ export function useRevealText<T extends HTMLElement>(mode: RevealMode = 'onView'
 
     const node = ref.current
     if (!node || typeof IntersectionObserver === 'undefined') {
+      window.clearTimeout(safety)
       setPending(false)
       return
     }
@@ -71,7 +83,10 @@ export function useRevealText<T extends HTMLElement>(mode: RevealMode = 'onView'
       { threshold: 0.4 },
     )
     observer.observe(node)
-    return () => observer.disconnect()
+    return () => {
+      window.clearTimeout(safety)
+      observer.disconnect()
+    }
   }, [pending, mode])
 
   return { ref, className: pending ? 'reveal-text reveal-pending' : 'reveal-text' }
