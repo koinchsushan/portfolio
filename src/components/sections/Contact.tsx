@@ -3,13 +3,22 @@
 import Link from 'next/link'
 import { identity } from '@/content'
 import { ExternalLink } from '@/components/primitives/ExternalLink'
-import { ContactForm } from '@/components/contact/ContactForm'
+import dynamic from 'next/dynamic'
 import { useRevealText } from '@/lib/useRevealText'
 
 // Closing composition: one dominant amber CTA (the email link) against a
 // quiet right-hand column of real, already-stated facts (location, the
 // outbound links) rather than empty space, now that the background grid
 // is gone (Task K). Below lg the two columns stack, hairline-divided.
+// The form and its Zod schema were 105.8 KB gz of the initial payload, eagerly
+// loaded for a control at the very bottom of the page that most visitors never
+// reach. Split out and mounted on intersection, matching HeroCanvas. The
+// placeholder reserves the form's height so nothing shifts when it arrives.
+const ContactForm = dynamic(() => import('@/components/contact/ContactForm').then((m) => m.ContactForm), {
+  ssr: false,
+  loading: () => <div aria-hidden className="min-h-[26rem]" />,
+})
+
 export function Contact() {
   const heading = useRevealText<HTMLHeadingElement>('onView')
 
