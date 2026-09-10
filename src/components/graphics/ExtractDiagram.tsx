@@ -40,6 +40,49 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />
+        <text
+          x={geo.ramp.x1}
+          y={28}
+          fontFamily="var(--font-mono)"
+          fontSize={11}
+          letterSpacing="0.04em"
+          fill="var(--color-label)"
+        >
+          UNSTRUCTURED EMAIL STREAM
+        </text>
+        <text
+          x={geo.ramp.x2}
+          y={28}
+          textAnchor="end"
+          fontFamily="var(--font-mono)"
+          fontSize={11}
+          letterSpacing="0.04em"
+          fill="var(--color-label)"
+        >
+          {String(geo.fields.length).padStart(2, '0')} STRUCTURED QUOTE FIELDS
+        </text>
+        <text
+          x={geo.guides[0].x}
+          y={geo.guides[0].y1 - 8}
+          textAnchor="middle"
+          fontFamily="var(--font-mono)"
+          fontSize={9}
+          letterSpacing="0.06em"
+          fill="var(--color-label)"
+        >
+          KEY
+        </text>
+        <text
+          x={geo.guides[1].x}
+          y={geo.guides[1].y1 - 8}
+          textAnchor="middle"
+          fontFamily="var(--font-mono)"
+          fontSize={9}
+          letterSpacing="0.06em"
+          fill="var(--color-label)"
+        >
+          VALUE
+        </text>
       </g>
 
       <g data-stage="field" data-built={stageBuilt(progress, 0, STAGE_COUNT) ? 'true' : 'false'}>
@@ -83,8 +126,18 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
             vectorEffect="non-scaling-stroke"
           />
         ))}
-        {geo.fields.map((field) => (
+        {geo.fields.map((field, i) => (
           <g key={field.y}>
+            <text
+              x={field.key.x - 8}
+              y={field.y + 3}
+              textAnchor="end"
+              fontFamily="var(--font-mono)"
+              fontSize={9}
+              fill="var(--color-label)"
+            >
+              {`#${String(i + 1).padStart(2, '0')}`}
+            </text>
             <rect x={field.key.x} y={field.key.y} width={field.key.w} height={field.key.h} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             <rect x={field.cap.x} y={field.cap.y} width={field.cap.w} height={field.cap.h} fill={ramp} />
             <rect x={field.value.x} y={field.value.y} width={field.value.w} height={field.value.h} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />

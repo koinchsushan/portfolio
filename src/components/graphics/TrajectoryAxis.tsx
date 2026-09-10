@@ -49,6 +49,12 @@ const TICK_LINE_CLASS =
 const TICK_LABEL_CLASS =
   'absolute left-1.5 top-[var(--pos)] font-mono text-12 text-label md:left-[var(--pos)] md:top-auto md:bottom-0 md:ml-1'
 
+// One small uppercase mono label per track, drawn once per track at its
+// first lane's top-left corner, so Commercial / Research / Education read
+// as a legend baked into the axis itself, not only in the key above it.
+const TRACK_LABEL_CLASS =
+  'pointer-events-none absolute left-1.5 top-1 font-mono text-12 uppercase tracking-[0.08em] text-label/70'
+
 // The Nepal-to-London marker: a dashed rule in dim --label (never --signal,
 // that budget is spent elsewhere on the page) crossing every track at once.
 // --label is the tonal ramp's "unresolved" colour, and this line marks
@@ -78,10 +84,29 @@ function computeSlots(weights: number[]): { pos: number; span: number }[] {
   })
 }
 
-/** Resolved (still running) reads --signal; every closed period reads dim --label. */
+/** Resolved (still running) reads --signal; every closed period reads dim --label.
+ *  Three distinct fill treatments, one per track, so the overlap between
+ *  commercial work, research and education reads from shape alone, not
+ *  colour alone (the tonal ramp still carries current-vs-closed). */
 function barToneClass(current: boolean): string {
   return current ? 'bg-signal' : 'bg-label'
 }
+
+function barHatchClass(current: boolean): string {
+  return current
+    ? 'bg-[repeating-linear-gradient(135deg,var(--color-signal)_0px,var(--color-signal)_2px,transparent_2px,transparent_5px)]'
+    : 'bg-[repeating-linear-gradient(135deg,var(--color-label)_0px,var(--color-label)_2px,transparent_2px,transparent_5px)]'
+}
+
+function barOutlineClass(current: boolean): string {
+  return current ? 'border-2 border-signal bg-transparent' : 'border-2 border-label bg-transparent'
+}
+
+/** The one role in `roles` that is research rather than commercial work,
+ *  identified the same way the axis identifies the Nepal-to-London move:
+ *  by matching a name already present in the CV data, never invented. */
+const RESEARCH_ORG = 'London Metropolitan University'
+
 
 function laneCount(entries: PositionedEntry[]): number {
   return entries.length === 0 ? 0 : Math.max(...entries.map((e) => e.lane)) + 1
@@ -102,34 +127,42 @@ function findOverlapSentences(all: (PositionedEntry & { display: string })[]): s
 export function TrajectoryAxis({ roles, education }: { roles: Role[]; education: Education[] }) {
   const now = new Date()
 
-  const roleEntries: TimelineEntry[] = roles.map((r) => ({
-    key: r.org,
-    heading: r.title,
-    sub: r.org,
-    range: parseDateRange(r.dates, now),
-  }))
-  const eduEntries: TimelineEntry[] = education.map((e) => ({
-    key: e.institution,
-    heading: e.award,
-    sub: e.institution,
-    range: parseDateRange(e.dates, now),
-  }))
+  // Three tracks, not two: research (the London Metropolitan University
+  // role) reads as its own lane rather than folded in with paid commercial
+  // work, so the genuine overlap between Foundermatcha, the research role
+  // and the MSc is legible as three distinguishable shapes, not one.
+  const commercialRoles = roles.filter((r) => r.org !== RESEARCH_ORG)
+  const researchRoles = roles.filter((r) => r.org === RESEARCH_ORG)
 
-  const domain = timelineDomain([...roleEntries, ...eduEntries])
-  const rolesPositioned = positionEntries(roleEntries, domain)
+  const toEntry = (key: string, heading: string, sub: string, dates: string): TimelineEntry => ({
+    key,
+    heading,
+    sub,
+    range: parseDateRange(dates, now),
+  })
+
+  const commercialEntries: TimelineEntry[] = commercialRoles.map((r) => toEntry(r.org, r.title, r.org, r.dates))
+  const researchEntries: TimelineEntry[] = researchRoles.map((r) => toEntry(r.org, r.title, r.org, r.dates))
+  const eduEntries: TimelineEntry[] = education.map((e) => toEntry(e.institution, e.award, e.institution, e.dates))
+
+  const domain = timelineDomain([...commercialEntries, ...researchEntries, ...eduEntries])
+  const commercialPositioned = positionEntries(commercialEntries, domain)
+  const researchPositioned = positionEntries(researchEntries, domain)
   const eduPositioned = positionEntries(eduEntries, domain)
   const ticks = yearTicks(domain)
 
-  const roleLanes = laneCount(rolesPositioned)
+  const commercialLanes = laneCount(commercialPositioned)
+  const researchLanes = laneCount(researchPositioned)
   const eduLanes = laneCount(eduPositioned)
 
-  // Tick row reads thinner than a data lane; role/education lanes are equal
-  // weight so their bars read at the same scale.
+  // Tick row reads thinner than a data lane; every track lane is equal
+  // weight so bars read at the same scale across all three tracks.
   const TICK_WEIGHT = 0.55
-  const slots = computeSlots([TICK_WEIGHT, ...Array(roleLanes + eduLanes).fill(1)])
+  const slots = computeSlots([TICK_WEIGHT, ...Array(commercialLanes + researchLanes + eduLanes).fill(1)])
   const tickSlot = slots[0]
-  const roleSlots = slots.slice(1, 1 + roleLanes)
-  const eduSlots = slots.slice(1 + roleLanes)
+  const commercialSlots = slots.slice(1, 1 + commercialLanes)
+  const researchSlots = slots.slice(1 + commercialLanes, 1 + commercialLanes + researchLanes)
+  const eduSlots = slots.slice(1 + commercialLanes + researchLanes)
 
   // London Metropolitan University is, by its own name, a London
   // institution: the earliest entry that names it is the one genuine point
@@ -138,18 +171,44 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
   const londonEntry = eduPositioned.find((e) => e.sub.includes('London'))
 
   const overlapSentences = findOverlapSentences([
-    ...rolesPositioned.map((e) => ({ ...e, display: `${e.sub} (${roles.find((r) => r.org === e.key)?.dates})` })),
+    ...commercialPositioned.map((e) => ({ ...e, display: `${e.sub} (${roles.find((r) => r.org === e.key)?.dates})` })),
+    ...researchPositioned.map((e) => ({ ...e, display: `${e.sub} (${roles.find((r) => r.org === e.key)?.dates})` })),
     ...eduPositioned.map((e) => ({ ...e, display: `${e.sub} (${education.find((ed) => ed.institution === e.key)?.dates})` })),
   ])
 
   const domainLabel = `${domain.start.getFullYear()} to present`
 
+  const tracks = [
+    { name: 'Commercial', slots: commercialSlots, positioned: commercialPositioned, bar: barToneClass },
+    { name: 'Research', slots: researchSlots, positioned: researchPositioned, bar: barHatchClass },
+    { name: 'Education', slots: eduSlots, positioned: eduPositioned, bar: barOutlineClass },
+  ]
+
   return (
     <div className="mt-6">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-12 text-label">
+        <span className="inline-flex items-center gap-2">
+          <span aria-hidden className="h-2 w-5 bg-label" /> Commercial
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span
+            aria-hidden
+            className="h-2 w-5 bg-[repeating-linear-gradient(135deg,var(--color-label)_0px,var(--color-label)_2px,transparent_2px,transparent_5px)]"
+          />
+          Research
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span aria-hidden className="h-2 w-5 border-2 border-label" /> Education
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span aria-hidden className="size-2 bg-signal" /> In progress
+        </span>
+      </div>
+
       <div
         role="img"
-        aria-label={`Timeline of roles and education, ${domainLabel}, drawn to scale so overlapping periods overlap on the axis.`}
-        className="relative h-[26rem] w-full border border-grid bg-panel md:h-[13rem]"
+        aria-label={`Timeline of commercial roles, research and education, ${domainLabel}, drawn to scale so overlapping periods overlap on the axis.`}
+        className="relative mt-3 h-[30rem] w-full border border-grid bg-panel md:h-[14rem]"
       >
         {/* Year ticks */}
         <div className={LANE_CLASS} style={posVar(tickSlot.pos, tickSlot.span)} aria-hidden>
@@ -165,41 +224,30 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
           </div>
         </div>
 
-        {/* Experience: one lane per genuinely-overlapping cluster of roles */}
-        {roleSlots.map((slot, lane) => (
-          <div key={`role-lane-${lane}`} className={LANE_CLASS} style={posVar(slot.pos, slot.span)} aria-hidden>
-            <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
-              {rolesPositioned
-                .filter((e) => e.lane === lane)
-                .map((entry) => (
-                  <div key={entry.key} title={`${entry.heading}, ${entry.sub}, ${entry.range.current ? 'current' : ''}`}>
-                    <div className={`${BAR_CLASS} ${barToneClass(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
-                    <span className={LABEL_CLASS} style={posVar(entry.startPct)}>
-                      {entry.sub}
-                    </span>
-                  </div>
-                ))}
+        {tracks.map((track) =>
+          track.slots.map((slot, lane) => (
+            <div
+              key={`${track.name}-lane-${lane}`}
+              className={LANE_CLASS}
+              style={posVar(slot.pos, slot.span)}
+              aria-hidden
+            >
+              <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
+                {lane === 0 && <span className={TRACK_LABEL_CLASS}>{track.name}</span>}
+                {track.positioned
+                  .filter((e) => e.lane === lane)
+                  .map((entry) => (
+                    <div key={entry.key} title={`${entry.heading}, ${entry.sub}, ${entry.range.current ? 'current' : ''}`}>
+                      <div className={`${BAR_CLASS} ${track.bar(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
+                      <span className={LABEL_CLASS} style={posVar(entry.startPct)}>
+                        {entry.sub}
+                      </span>
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
-        ))}
-
-        {/* Education: its own track, separate from paid roles */}
-        {eduSlots.map((slot, lane) => (
-          <div key={`edu-lane-${lane}`} className={LANE_CLASS} style={posVar(slot.pos, slot.span)} aria-hidden>
-            <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
-              {eduPositioned
-                .filter((e) => e.lane === lane)
-                .map((entry) => (
-                  <div key={entry.key} title={`${entry.heading}, ${entry.sub}`}>
-                    <div className={`${BAR_CLASS} ${barToneClass(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
-                    <span className={LABEL_CLASS} style={posVar(entry.startPct)}>
-                      {entry.sub}
-                    </span>
-                  </div>
-                ))}
-            </div>
-          </div>
-        ))}
+          )),
+        )}
 
         {londonEntry && (
           <>

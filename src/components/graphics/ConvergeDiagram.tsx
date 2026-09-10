@@ -52,20 +52,55 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
             vectorEffect="non-scaling-stroke"
           />
         ))}
-        <text x={geo.bounds.x1} y={geo.bounds.top - 6} fontFamily="var(--font-mono)" fontSize={12} fill="var(--color-label)">
-          {geo.inputs.length} in
+        <text
+          x={geo.bounds.x1}
+          y={geo.bounds.top - 10}
+          fontFamily="var(--font-mono)"
+          fontSize={11}
+          letterSpacing="0.04em"
+          fill="var(--color-label)"
+        >
+          {String(geo.inputs.length).padStart(2, '0')} CHAT IMPLEMENTATIONS
         </text>
-        <text x={geo.bounds.x2} y={geo.bounds.top - 6} textAnchor="end" fontFamily="var(--font-mono)" fontSize={12} fill="var(--color-label)">
-          {geo.outputs.length} out
+        <text
+          x={geo.bounds.x2}
+          y={geo.bounds.top - 10}
+          textAnchor="end"
+          fontFamily="var(--font-mono)"
+          fontSize={11}
+          letterSpacing="0.04em"
+          fill="var(--color-label)"
+        >
+          {String(geo.outputs.length).padStart(2, '0')} PRODUCT SURFACES
+        </text>
+        <text
+          x={(geo.spine.x1 + geo.spine.x2) / 2}
+          y={geo.spine.capBottom + 22}
+          textAnchor="middle"
+          fontFamily="var(--font-mono)"
+          fontSize={10}
+          letterSpacing="0.04em"
+          fill="var(--color-label)"
+        >
+          01 SHARED COMPONENT LAYER
         </text>
       </g>
 
       <g data-stage="inputs" data-built={stageBuilt(progress, 0, STAGE_COUNT) ? 'true' : 'false'}>
-        {geo.inputs.map((input) => (
+        {geo.inputs.map((input, i) => (
           <g key={input.y}>
             <path d={input.lead} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             <path d={input.curve} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             <rect x={input.marker.x} y={input.marker.y} width={input.marker.size} height={input.marker.size} fill={ramp} />
+            <text
+              x={input.marker.x}
+              y={input.marker.y - 5}
+              fontFamily="var(--font-mono)"
+              fontSize={9}
+              fill="var(--color-label)"
+            >
+              {`#${String(i + 1).padStart(2, '0')}`}
+            </text>
           </g>
         ))}
       </g>
@@ -77,11 +112,21 @@ export function ConvergeDiagram({ progress = 1, className }: { progress?: number
       </g>
 
       <g data-stage="outputs" data-built={stageBuilt(progress, 2, STAGE_COUNT) ? 'true' : 'false'}>
-        {geo.outputs.map((output) => (
+        {geo.outputs.map((output, i) => (
           <g key={output.y}>
             <path d={output.curve} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             <path d={output.lead} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
             <rect x={output.marker.x} y={output.marker.y} width={output.marker.size} height={output.marker.size} fill={ramp} />
+            <text
+              x={output.marker.x + output.marker.size}
+              y={output.marker.y - 5}
+              textAnchor="end"
+              fontFamily="var(--font-mono)"
+              fontSize={9}
+              fill="var(--color-label)"
+            >
+              {`#${String(i + 1).padStart(2, '0')}`}
+            </text>
           </g>
         ))}
       </g>

@@ -44,6 +44,27 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />
+        <text
+          x={boundsX1}
+          y={boundsTop - 10}
+          fontFamily="var(--font-mono)"
+          fontSize={11}
+          letterSpacing="0.04em"
+          fill="var(--color-label)"
+        >
+          01 COORDINATED RELEASE TRAIN
+        </text>
+        <text
+          x={boundsX2}
+          y={boundsTop - 10}
+          textAnchor="end"
+          fontFamily="var(--font-mono)"
+          fontSize={11}
+          letterSpacing="0.04em"
+          fill="var(--color-label)"
+        >
+          {String(geo.lanes.length).padStart(2, '0')} MODULE LANES
+        </text>
       </g>
 
       <g data-stage="bundle" data-built={stageBuilt(progress, 0, STAGE_COUNT) ? 'true' : 'false'}>
@@ -73,6 +94,19 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
         <text x={geo.capsule.x + geo.capsule.w / 2} y={geo.noteY} textAnchor="middle" fontFamily="var(--font-mono)" fontSize={13} fill="var(--color-label)">
           One release train
         </text>
+        {geo.releases.map((x, i) => (
+          <text
+            key={x}
+            x={x}
+            y={geo.capsule.y - 8}
+            textAnchor="middle"
+            fontFamily="var(--font-mono)"
+            fontSize={9}
+            fill="var(--color-label)"
+          >
+            {`cut ${i + 1}`}
+          </text>
+        ))}
         {geo.lanes.map((lane) => (
           <path key={lane.laneY} d={lane.bundle} fill="none" stroke={ramp} strokeWidth={2} vectorEffect="non-scaling-stroke" />
         ))}
@@ -118,7 +152,16 @@ export function SplitDiagram({ progress = 1, className }: { progress?: number; c
               fontSize={14}
               fill="var(--color-label)"
             >
-              {lane.label}
+              {`0${geo.lanes.indexOf(lane) + 1}`} {lane.label}
+            </text>
+            <text
+              x={geo.labelX + 8}
+              y={lane.laneY + 20}
+              fontFamily="var(--font-mono)"
+              fontSize={10}
+              fill="var(--color-label)"
+            >
+              {`${lane.deploys.length} deploys`}
             </text>
           </g>
         ))}
