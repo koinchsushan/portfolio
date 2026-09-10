@@ -108,6 +108,26 @@ export function stageBuilt(progress: number, index: number, count: number): bool
   return progress >= (index + 1) / count
 }
 
+/**
+ * A rectangle in a diagram's own user-space units, used to keep a decorative
+ * field (the hero lattice) clear of a piece of real text laid over it. The
+ * caller derives this from measured DOM rects; this module only ever
+ * consumes it, so it stays free of anything DOM-shaped.
+ */
+export interface AvoidBox {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+/** True when a circle at (cx, cy) with radius r overlaps `box`, both in the
+ *  same user-space units. Used to drop individual lattice points out of a
+ *  live text region rather than painting over it. */
+export function circleIntersectsBox(box: AvoidBox, cx: number, cy: number, r: number): boolean {
+  return !(cx + r < box.x || cx - r > box.x + box.w || cy + r < box.y || cy - r > box.y + box.h)
+}
+
 /** Where the unresolved -> signal ramp turns over, in the diagram's own user space. */
 export interface RampSpan {
   x1: number

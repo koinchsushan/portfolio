@@ -3,73 +3,59 @@ import { DraftNote } from '@/components/primitives/DraftNote'
 import { SectionHeader } from '@/components/primitives/SectionHeader'
 import { StackCanvas } from '@/components/sections/StackCanvas'
 
-// Plain-text mirror of the ten CV skill groupings. A later task turns this
-// into a 3D object; this list stays as its permanent accessible equivalent,
-// so the semantics here (one <ul>, one <li> per group, real chip <li>s)
-// cannot change shape even though the presentation below does. All entries
-// stay in the DOM unconditionally , nothing here is virtualised, truncated
-// or hidden behind interaction.
+// Plain-text mirror of the ten CV skill groupings. This stays a real <ul>
+// with a real <li> per entry for two reasons that do not change with the
+// presentation: it is the permanent accessible equivalent of the 3D object
+// beside it (every reader who cannot or does not use the WebGL layer still
+// gets the full list, in document order), and it is the SEO surface search
+// engines actually index. All 72 entries stay in the DOM unconditionally,
+// nothing here is virtualised, truncated or hidden behind interaction.
 //
-// Reference plate, not a chip cloud and not a three-column grid: the ten
-// groups are a real instrument spec sheet, so each renders as its own
-// indexed plate (count, hairline, chip field) and the plates flow through a
-// CSS multi-column reader , unequal column heights, a rule between columns ,
-// rather than a grid that pins every group to the same row height. Nothing
-// here encodes a skill "level": the index is a plate number, the count is
-// how many entries CV lists under that heading, and every chip renders
-// identically regardless of which group or column it lands in.
+// Task O: the object and this index now sit side by side in one
+// composition, so neither leaves the other a void the way "object, empty
+// space, table below" used to. The bordered reference-plate table (cells,
+// per-group counts, column rules) is gone; each group is instead a small
+// mono label followed by its entries running as continuous, reading-size
+// text, the way a book index or a colophon sets a list, not a data grid.
+// Nothing here encodes a skill "level", entries are unordered within their
+// CV grouping, and every one renders identically regardless of which group
+// or column it falls in.
 export function Stack() {
-  const totalSkills = skillGroups.reduce((sum, group) => sum + group.skills.length, 0)
-
   return (
     <section id="stack" aria-labelledby="stack-heading" className="border-b border-grid">
       <div className="mx-auto max-w-[1400px] px-6 py-14 sm:py-20">
-        <div className="grid gap-8 sm:grid-cols-[1fr_280px] sm:items-end sm:gap-10">
-          <SectionHeader
-            id="stack-heading"
-            heading="Technical Stack"
-            headingSize="text-40 sm:text-64"
-            lede="What I reach for, and what I have actually shipped with."
-          />
-          <StackCanvas className="sm:justify-self-end sm:w-[280px]" />
-        </div>
+        <SectionHeader
+          id="stack-heading"
+          heading="Technical Stack"
+          headingSize="text-40 sm:text-64"
+          lede="What I reach for, and what I have actually shipped with."
+        />
 
-        <div className="mt-10 border border-grid bg-panel">
-          <div className="flex items-baseline justify-between gap-4 border-b border-grid px-4 py-3 sm:px-6">
-            <span className="font-mono text-12 uppercase tracking-[0.14em] text-label">Reference plate</span>
-            <span className="font-mono text-12 text-label">
-              {totalSkills} entries / {skillGroups.length} groups
-            </span>
-          </div>
+        <div className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-[280px_1fr] sm:items-start">
+          <StackCanvas />
 
-          <ul
-            aria-label="Full technology stack"
-            className="columns-1 [column-rule:1px_solid_var(--color-grid)] lg:columns-2"
-          >
-            {skillGroups.map((group, index) => {
-              const chips = (
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {group.skills.map((skill) => (
-                    <li
-                      key={skill}
-                      className="rounded-[var(--radius)] border border-grid bg-ground px-2 py-1 font-mono text-12 leading-none text-label"
-                    >
+          <ul aria-label="Full technology stack" className="columns-1 gap-x-12 md:columns-2">
+            {skillGroups.map((group) => {
+              const entries = (
+                <ul className="mt-1.5 list-none text-16 leading-relaxed text-label">
+                  {group.skills.map((skill, i) => (
+                    <li key={skill} className="inline">
                       {skill}
+                      {i < group.skills.length - 1 && <span aria-hidden>, </span>}
                     </li>
                   ))}
                 </ul>
               )
               return (
-                <li
-                  key={group.label}
-                  className="break-inside-avoid-column border-b border-grid px-4 py-4 sm:px-6 sm:py-5"
-                >
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-12 text-label">{String(index + 1).padStart(2, '0')}</span>
-                    <h3 className="font-subhead text-16 text-bone">{group.label}</h3>
-                    <span className="ml-auto font-mono text-12 text-label">{group.skills.length}</span>
-                  </div>
-                  {group.draft ? <DraftNote>{chips}</DraftNote> : chips}
+                <li key={group.label} className="mb-7 break-inside-avoid-column">
+                  <h3 className="font-mono text-12 uppercase tracking-[0.14em] text-label/70">{group.label}</h3>
+                  {group.draft ? (
+                    <DraftNote bordered={false} className="mt-1.5">
+                      {entries}
+                    </DraftNote>
+                  ) : (
+                    entries
+                  )}
                 </li>
               )
             })}

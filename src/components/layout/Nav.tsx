@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { List, X } from '@phosphor-icons/react/dist/ssr'
 
 /**
- * The eight home-page sections in document order, each already carrying a
+ * The seven home-page sections in document order, each already carrying a
  * matching `id` (`src/components/sections/*`). `href` is set only where a
  * destination link below actually targets that section, so `aria-current`
  * can compare against a real href instead of guessing from a label string.
@@ -17,7 +17,6 @@ const SECTIONS: { id: string; label: string; href?: string }[] = [
   { id: 'work', label: 'Selected Work', href: '/#work' },
   { id: 'research', label: 'Research' },
   { id: 'stack', label: 'Stack' },
-  { id: 'trajectory', label: 'Trajectory', href: '/#trajectory' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact', href: '/#contact' },
 ]
@@ -26,7 +25,6 @@ const DESTINATIONS = [
   { href: '/', label: 'Home' },
   { href: '/#work', label: 'Work' },
   { href: '/research', label: 'Research' },
-  { href: '/#trajectory', label: 'Trajectory' },
   { href: '/#contact', label: 'Contact' },
   { href: '/resume', label: 'Résumé' },
 ]
@@ -44,10 +42,10 @@ function routeLabel(pathname: string): string {
 
 /**
  * Site-wide primary navigation, rebuilt as an instrument readout rather
- * than six evenly spaced links (task-L-brief.md §3): it states where the
- * reader currently is (section name and its index out of eight), how far
- * through the document that is (a live percentage, and a hairline fill
- * bar under the header), and only then offers the six destinations, now
+ * than a row of evenly spaced links (task-L-brief.md §3): it states where
+ * the reader currently is (section name and its index out of seven), how
+ * far through the document that is (a live percentage, and a hairline fill
+ * bar under the header), and only then offers the five destinations, now
  * marked with `aria-current` on whichever one matches the visible section.
  *
  * One line, 64px tall at desktop (well under the 80px cap) plus a 1px

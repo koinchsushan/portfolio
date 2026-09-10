@@ -6,10 +6,10 @@ import Work from '@/app/work/[slug]/page'
 import { caseStudies } from '@/content'
 
 describe('site renders', () => {
-  it('home has one h1 and eight labelled sections', () => {
+  it('home has one h1 and seven labelled sections', () => {
     const { container } = render(<Home />)
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
-    expect(container.querySelectorAll('section[aria-labelledby]')).toHaveLength(8)
+    expect(container.querySelectorAll('section[aria-labelledby]')).toHaveLength(7)
   })
 
   it('home shows the three verified metrics in the position block', () => {
