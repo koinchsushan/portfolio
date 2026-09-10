@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { identity } from '@/content'
 import { ExternalLink } from '@/components/primitives/ExternalLink'
+import { ContactForm } from '@/components/contact/ContactForm'
 import { useRevealText } from '@/lib/useRevealText'
 
 // Closing composition: one dominant amber CTA (the email link) against a
@@ -59,6 +60,26 @@ export function Contact() {
                 </Link>
               </li>
             </ul>
+          </div>
+        </div>
+
+        <div className="mt-20 grid grid-cols-1 gap-12 border-t border-grid pt-16 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-7">
+            <ContactForm />
+          </div>
+          <div className="flex flex-col gap-8 lg:col-span-4 lg:col-start-9 lg:border-l lg:border-grid lg:pl-10">
+            <div>
+              <p className="font-mono text-12 uppercase tracking-[0.14em] text-label">Reply</p>
+              <p className="mt-2 max-w-[32ch] text-14 leading-relaxed text-label">
+                I read every message myself and reply from {identity.email}.
+              </p>
+            </div>
+            <div>
+              <p className="font-mono text-12 uppercase tracking-[0.14em] text-label">Privacy</p>
+              <p className="mt-2 max-w-[32ch] text-14 leading-relaxed text-label">
+                Nothing here is stored beyond what it takes to send the email.
+              </p>
+            </div>
           </div>
         </div>
       </div>
