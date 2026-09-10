@@ -57,13 +57,24 @@ const AVOID_PADDING_PX = 16
 // the site's one text-motion idea: they resolve out of a soft blur on
 // mount, staggered slightly so the name settles a beat before the line
 // under it does, the same thesis the lattice draws at page scale.
+/**
+ * A conservative clear region used for the server render and any paint before
+ * the measurement below runs. `useLayoutEffect` fires before the browser
+ * paints, so with JavaScript this is only ever the SSR markup; without it,
+ * this is what stops the lattice sitting on top of the contact line forever.
+ * Deliberately larger than the real block: dropping a few extra points for one
+ * frame is invisible, dots on top of the words are not. In the field's own
+ * 1200x620 viewBox units.
+ */
+const SSR_AVOID_BOX: AvoidBox = { x: 520, y: 330, w: 680, h: 290 }
+
 export function Hero() {
   const name = useRevealText<HTMLHeadingElement>('immediate')
   const strapline = useRevealText<HTMLParagraphElement>('immediate')
 
   const fieldRef = useRef<SVGSVGElement>(null)
   const metaRef = useRef<HTMLDivElement>(null)
-  const [avoidBox, setAvoidBox] = useState<AvoidBox | null>(null)
+  const [avoidBox, setAvoidBox] = useState<AvoidBox | null>(SSR_AVOID_BOX)
 
   // Keeps the lattice's clear region locked to the meta/CTA block's real,
   // rendered position (task-O finding 4): the block moves from a full-width
