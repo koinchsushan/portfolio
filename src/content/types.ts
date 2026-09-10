@@ -91,3 +91,11 @@ export interface SkillGroup {
    * verbatim transcription of the CV's own groupings , see report. */
   draft?: boolean
 }
+
+export interface Bio {
+  /** The About narrative, in career order. Rendered as one paragraph each. */
+  paragraphs: string[]
+  /** The line the five paragraphs earn, set apart and larger. One sentence
+   *  pair, never a restatement of `identity.tagline`. */
+  pull: string
+}

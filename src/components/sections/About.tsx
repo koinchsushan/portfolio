@@ -1,64 +1,63 @@
-import { DraftNote } from '@/components/primitives/DraftNote'
 import { SectionHeader } from '@/components/primitives/SectionHeader'
 import { Portrait } from '@/components/about/Portrait'
+import { bio } from '@/content'
 
-// DRAFT bio. Every claim below traces to the CV , three years commercial, the
-// 450,000-member platform, the 10,000-emails-a-day quotation system, the
-// five-engineer team and two-week cycles, the four-into-one chat consolidation,
-// the release-train split, the research app, the MSc. Nothing is invented.
-// It is prose the owner has not approved, so it stays wrapped in DraftNote.
+// The bio itself lives in `@/content/bio`, like every other fact on the site.
+// This file is layout only.
 //
-// Rebuilt for Task M, tightened again for Task O. The heading sits alone,
-// full width, with a normal (not oversized) gap below it , the previous
-// heading+portrait row read as dead air whenever the portrait was shorter
-// than the heading's own line height. The portrait opens the body copy
-// itself: a fixed column running alongside the first paragraph, top-aligned
-// with it like a byline photo beside the start of a printed column, so it
-// reads as part of the text rather than a separate floating element. It is
-// never the widest column on the page (240px, matching `Portrait`'s own
-// intrinsic size, against a ~68ch measure) and never the first thing the eye
-// lands on. Below sm the two stack, portrait first.
+// Rebuilt after the owner said the section read as centred and apart from the
+// rest of the page. Measurement backed him up. Rendered at 1440 and measured
+// by text ink rather than by box, the old About left 401px of empty space on
+// its right edge, against 25px to 67px for Work, Research, Stack and
+// Trajectory. Two causes: the row was `sm:w-max sm:mx-auto`, which
+// shrink-wrapped the block and centred it inside a 1400px container every
+// other section starts hard against, and a 240px portrait beside a 68ch
+// column simply does not span a wide viewport.
 //
-// Task O: the two-column row used to be a fixed-width block sitting inside
-// the section's full 1400px container, block-level and therefore stretched
-// to that container's width , the columns themselves stopped at ~920px, so
-// everything past that read as a bare, unexplained void. `sm:w-max` sizes
-// the row to its own content (the fixed portrait column, the gap, and the
-// 68ch cap on the text column) instead of stretching to fill the section,
-// and `sm:mx-auto` centres that tight block, so the leftover space becomes
-// even margin either side rather than one lopsided gap on the right.
+// The fix copies what already works here. Trajectory fills its width by
+// keeping prose at a readable measure while letting a structural element run
+// the full column. So: the paragraphs stay capped at 66ch, and the pull line
+// runs the full width of the narrative column. The portrait takes a real
+// column at 380px (400px at xl, the most the 800px source covers at 2x)
+// instead of sitting inside the text column, and sticks while the narrative
+// scrolls past it. Sticky is CSS, no JS, so it costs nothing on any
+// capability tier and cannot fail on a hidden tab.
+//
+// Every grid child is placed explicitly, and that is load-bearing rather
+// than tidiness. The first build of this let the pull line span both
+// columns on an auto-placed grid, and a sticky item's travel turned out to
+// be bounded by the grid container rather than by its own row: the portrait
+// slid down over the pull line and hid its first 400px, permanently, from
+// the moment the band entered view. Measured at 1440, overlapX sat at 400px
+// (the portrait's full width) for every scroll step to the end of the
+// section. Keeping the pull line in column 2 puts it somewhere column 1 can
+// never reach, whatever sticky does.
+//
+// One `--signal` rule, on the pull line, the only accent in the section. The
+// five paragraphs are the evidence and that line is the claim, so it is the
+// one place the section raises its voice.
 export function About() {
   return (
     <section id="about" aria-labelledby="about-heading" className="border-b border-grid">
       <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
         <SectionHeader id="about-heading" heading="About" headingSize="text-40 sm:text-64" />
 
-        <DraftNote bordered={false} className="mt-8 sm:mt-10">
-          <div className="grid grid-cols-1 gap-6 sm:mx-auto sm:w-max sm:max-w-full sm:grid-cols-[240px_minmax(0,68ch)] sm:gap-10">
-            <Portrait className="sm:self-start" />
-            <div className="flex flex-col gap-6 text-18 leading-relaxed text-label">
-              <p>
-                I build interfaces and the systems underneath them. Three years so far:
-                a US healthcare platform serving 450,000 union members, an aerospace
-                quotation system reading 10,000 emails a day, and now a five-engineer
-                London startup where I scope, build and deploy features myself on
-                two-week cycles.
-              </p>
-              <p>
-                The thread through all of it is the same. Taking something fragmented
-                and making it legible. Four chat implementations into one component
-                layer. A coordinated release train into five independent deployments.
-                Three researchers&rsquo; local scripts into an app anyone can open in a
-                browser.
-              </p>
-              <p>
-                An MSc in Data Analytics sits behind that, which earns its keep on
-                data-heavy product surfaces where the interface and the data model
-                have to be designed together.
-              </p>
-            </div>
+        <div className="mt-10 grid grid-cols-1 gap-10 sm:mt-14 lg:grid-cols-[380px_minmax(0,1fr)] lg:gap-x-20 xl:grid-cols-[400px_minmax(0,1fr)] xl:gap-x-24">
+          <Portrait className="lg:sticky lg:top-24 lg:col-start-1 lg:row-start-1 lg:self-start" />
+
+          <div className="flex max-w-[66ch] flex-col gap-6 text-18 leading-relaxed text-label lg:col-start-2 lg:row-start-1">
+            {bio.paragraphs.map((paragraph) => (
+              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+            ))}
           </div>
-        </DraftNote>
+
+          <p
+            data-testid="about-pull"
+            className="border-l-2 border-signal pl-6 font-display text-28 leading-[1.15] tracking-[-0.02em] text-bone sm:pl-8 sm:text-40 lg:col-start-2 lg:row-start-2 lg:mt-2"
+          >
+            {bio.pull}
+          </p>
+        </div>
       </div>
     </section>
   )
