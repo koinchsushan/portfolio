@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { avoidScale, heroGeometry, type AvoidBox } from './geometry'
+import { heroGeometry } from './geometry'
 import { RampGradient } from './RampGradient'
 
 const GRADIENT_ID = 'hero-ramp'
@@ -12,23 +12,12 @@ const GRADIENT_ID = 'hero-ramp'
  * so it stays out of the accessibility tree. `id="hero-field"` gives a
  * later WebGL pass a stable node to sit behind or replace; this markup is
  * also the reduced-motion fallback, so it has to stand on its own.
- *
- * `avoidBox`, in this SVG's own viewBox units, is a live-measured rectangle
- * around the one piece of real copy small and thin enough for the lattice to
- * visually collide with (the location/availability line and the two CTA
- * links, task-O finding 4): any dot or the terminal marker whose own circle
- * would overlap it is dropped from the render entirely, a true gap in the
- * point field rather than a mask painted over the words. `Hero` measures
- * that rectangle from the live DOM and passes it down; this component stays
- * a pure function of its props either way (`null` renders every point, the
- * same output as before this fix).
  */
-export const HeroField = forwardRef<SVGSVGElement, { className?: string; avoidBox?: AvoidBox | null }>(
-  function HeroField({ className, avoidBox }, ref) {
+export const HeroField = forwardRef<SVGSVGElement, { className?: string }>(
+  function HeroField({ className }, ref) {
     const geo = heroGeometry()
     const ramp = `url(#${GRADIENT_ID})`
 
-    const terminalScale = avoidScale(avoidBox, geo.terminal.x, geo.terminal.y)
 
     return (
       <svg
@@ -72,28 +61,12 @@ export const HeroField = forwardRef<SVGSVGElement, { className?: string; avoidBo
         <path d={geo.trace} fill="none" stroke={ramp} strokeWidth={3.5} vectorEffect="non-scaling-stroke" />
 
         <g data-layer="lattice">
-          {geo.dots.map((dot, i) => {
-            const scale = avoidScale(avoidBox, dot.x, dot.y)
-            return (
-              <circle
-                key={i}
-                cx={dot.x}
-                cy={dot.y}
-                r={(dot.weight / 2) * scale}
-                fill={ramp}
-                fillOpacity={dot.opacity * (0.4 + 0.6 * scale)}
-              />
-            )
-          })}
+          {geo.dots.map((dot, i) => (
+            <circle key={i} cx={dot.x} cy={dot.y} r={dot.weight / 2} fill={ramp} fillOpacity={dot.opacity} />
+          ))}
         </g>
 
-        <circle
-          cx={geo.terminal.x}
-          cy={geo.terminal.y}
-          r={(geo.terminal.size / 2) * terminalScale}
-          fill={ramp}
-          fillOpacity={0.4 + 0.6 * terminalScale}
-        />
+        <circle cx={geo.terminal.x} cy={geo.terminal.y} r={geo.terminal.size / 2} fill={ramp} />
       </svg>
     )
   },

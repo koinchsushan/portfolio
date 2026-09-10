@@ -1,12 +1,10 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState } from 'react'
 import { identity } from '@/content'
 import { ActionLink } from '@/components/primitives/ActionLink'
 import { HeroField } from '@/components/graphics/HeroField'
 import { HeroCanvas } from '@/components/sections/HeroCanvas'
 import { useRevealText } from '@/lib/useRevealText'
-import type { AvoidBox } from '@/components/graphics/geometry'
 
 /**
  * Converts a screen-space rectangle (already padded) into `HeroField`'s own
@@ -17,30 +15,9 @@ import type { AvoidBox } from '@/components/graphics/geometry'
  * because the lattice needs to know, in its own coordinate space, exactly
  * where the live-measured text rectangle landed.
  */
-function toViewBoxRect(svg: SVGSVGElement, screenRect: { left: number; top: number; right: number; bottom: number }): AvoidBox | null {
-  const svgRect = svg.getBoundingClientRect()
-  const viewBox = svg.viewBox.baseVal
-  if (svgRect.width === 0 || svgRect.height === 0 || viewBox.width === 0 || viewBox.height === 0) return null
-
-  const scale = Math.max(svgRect.width / viewBox.width, svgRect.height / viewBox.height)
-  const renderedW = viewBox.width * scale
-  const renderedH = viewBox.height * scale
-  const offsetX = svgRect.left - (renderedW - svgRect.width) / 2
-  const offsetY = svgRect.top - (renderedH - svgRect.height) / 2
-
-  return {
-    x: (screenRect.left - offsetX) / scale,
-    y: (screenRect.top - offsetY) / scale,
-    w: (screenRect.right - screenRect.left) / scale,
-    h: (screenRect.bottom - screenRect.top) / scale,
-  }
-}
-
 /** Screen-space padding, in px, added around the measured meta/CTA block
  *  before it is converted into lattice units, so the clear region reads as
  *  a deliberate gap rather than a rectangle traced exactly onto the glyphs. */
-const AVOID_PADDING_PX = 16
-
 // Asymmetric split: headline left-weighted across 8 of 12 columns, meta and
 // CTAs anchored bottom-right in the remaining negative space. -mt-16 cancels
 // the fixed nav's clearance on <main> so this section still measures a true
@@ -57,59 +34,10 @@ const AVOID_PADDING_PX = 16
 // the site's one text-motion idea: they resolve out of a soft blur on
 // mount, staggered slightly so the name settles a beat before the line
 // under it does, the same thesis the lattice draws at page scale.
-/**
- * A conservative clear region used for the server render and any paint before
- * the measurement below runs. `useLayoutEffect` fires before the browser
- * paints, so with JavaScript this is only ever the SSR markup; without it,
- * this is what stops the lattice sitting on top of the contact line forever.
- * Deliberately larger than the real block: dropping a few extra points for one
- * frame is invisible, dots on top of the words are not. In the field's own
- * 1200x620 viewBox units.
- */
-const SSR_AVOID_BOX: AvoidBox = { x: 520, y: 330, w: 680, h: 290 }
-
 export function Hero() {
   const name = useRevealText<HTMLHeadingElement>('immediate')
   const strapline = useRevealText<HTMLParagraphElement>('immediate')
 
-  const fieldRef = useRef<SVGSVGElement>(null)
-  const metaRef = useRef<HTMLDivElement>(null)
-  const [avoidBox, setAvoidBox] = useState<AvoidBox | null>(SSR_AVOID_BOX)
-
-  // Keeps the lattice's clear region locked to the meta/CTA block's real,
-  // rendered position (task-O finding 4): the block moves from a full-width
-  // row to a bottom-right column between the md and lg breakpoints, so a
-  // fixed guess would drift out of alignment at exactly the widths where the
-  // collision used to happen. Re-measured on resize; safe to skip when the
-  // field or the block have not mounted (server render, reduced motion has
-  // no bearing here since this is layout, not animation).
-  useLayoutEffect(() => {
-    function measure() {
-      const svg = fieldRef.current
-      const block = metaRef.current
-      if (!svg || !block) {
-        setAvoidBox(null)
-        return
-      }
-      const r = block.getBoundingClientRect()
-      if (r.width === 0 && r.height === 0) {
-        setAvoidBox(null)
-        return
-      }
-      setAvoidBox(
-        toViewBoxRect(svg, {
-          left: r.left - AVOID_PADDING_PX,
-          top: r.top - AVOID_PADDING_PX,
-          right: r.right + AVOID_PADDING_PX,
-          bottom: r.bottom + AVOID_PADDING_PX,
-        }),
-      )
-    }
-
-    measure()
-    window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
-  }, [])
 
   return (
     <section
@@ -124,8 +52,6 @@ export function Hero() {
       <HeroCanvas className="pointer-events-none absolute inset-0 overflow-hidden opacity-50" />
 
       <HeroField
-        ref={fieldRef}
-        avoidBox={avoidBox}
         className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-90 md:block"
       />
 
@@ -147,7 +73,7 @@ export function Hero() {
           </p>
         </div>
 
-        <div ref={metaRef} className="over-field flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
+        <div className="over-field flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
           <p className="font-mono text-16 text-bone sm:text-18">
             {identity.location} · {identity.availability}
           </p>
