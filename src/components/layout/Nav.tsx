@@ -17,6 +17,7 @@ const SECTIONS: { id: string; label: string; href?: string }[] = [
   { id: 'work', label: 'Selected Work', href: '/#work' },
   { id: 'research', label: 'Research' },
   { id: 'stack', label: 'Stack' },
+  { id: 'trajectory', label: 'Trajectory', href: '/#trajectory' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact', href: '/#contact' },
 ]
@@ -25,6 +26,7 @@ const DESTINATIONS = [
   { href: '/', label: 'Home' },
   { href: '/#work', label: 'Work' },
   { href: '/research', label: 'Research' },
+  { href: '/#trajectory', label: 'Trajectory' },
   { href: '/#contact', label: 'Contact' },
   { href: '/resume', label: 'Résumé' },
 ]
