@@ -4,7 +4,9 @@ import { identity, caseStudies, research, roles, education, skillGroups, getCase
 describe('identity', () => {
   it('carries the CV identity verbatim', () => {
     expect(identity.name).toBe('Sushan Sunuwar')
-    expect(identity.title).toBe('Frontend Software Engineer')
+    expect(identity.title).toBe('Software Engineer')
+    expect(identity.firstName).toBe('Sushan')
+    expect(identity.tagline.length).toBeGreaterThan(10)
     expect(identity.location).toBe('London, United Kingdom')
     expect(identity.email).toBe('koinchsushan@gmail.com')
     expect(identity.availability).toBe('Open to conversations')

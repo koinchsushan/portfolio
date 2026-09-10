@@ -56,24 +56,29 @@ export function Hero() {
       />
 
       <div className="relative z-10 mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-6">
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-8">
           <h1
             id="hero-heading"
             ref={name.ref}
-            className={`over-field font-display text-64 ${name.className} leading-[0.92] tracking-[-0.035em] text-bone text-balance sm:text-104`}
+            className={`over-field font-display text-40 ${name.className} leading-[0.95] tracking-[-0.03em] text-bone sm:text-64`}
           >
-            {identity.name}
+            {/* The name leads in quietly and the claim carries the weight, so
+                the display type says something about the work rather than
+                just labelling the page. Both sit in the one h1 so the
+                accessible name stays whole. */}
+            <span className="block text-label">{identity.firstName}.</span>
+            <span className="block max-w-[15ch]">{identity.tagline}</span>
           </h1>
           <p
             ref={strapline.ref}
             style={{ transitionDelay: '120ms' }}
-            className={`over-field mt-6 max-w-[38ch] text-18 ${strapline.className} leading-relaxed text-label sm:text-22`}
+            className={`over-field mt-6 max-w-[46ch] font-mono text-16 ${strapline.className} leading-relaxed text-label sm:text-18`}
           >
-            {identity.title}. {identity.strapline}.
+            {identity.title} · {identity.strapline}
           </p>
         </div>
 
-        <div className="over-field flex flex-col justify-end gap-6 lg:col-span-5 lg:items-end lg:text-right">
+        <div className="over-field flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
           <p className="font-mono text-16 text-bone lg:whitespace-nowrap sm:text-18">
             {identity.location} · {identity.availability}
           </p>

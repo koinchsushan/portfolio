@@ -15,6 +15,11 @@ export type Link = { label: string; href: string }
 
 export interface Identity {
   name: string
+  /** Used alone as the hero's lead-in. The full name lives in the nav and the
+   *  document title, so the display type does not have to carry it. */
+  firstName: string
+  /** The hero's display line. A claim about the work, not a job description. */
+  tagline: string
   title: string
   strapline: string
   location: string
