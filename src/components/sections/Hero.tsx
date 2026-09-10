@@ -56,25 +56,25 @@ export function Hero() {
       />
 
       <div className="relative z-10 mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-6">
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-7">
           <h1
             id="hero-heading"
             ref={name.ref}
-            className={`font-display text-64 ${name.className} leading-[0.92] tracking-[-0.035em] text-bone text-balance sm:text-104`}
+            className={`over-field font-display text-64 ${name.className} leading-[0.92] tracking-[-0.035em] text-bone text-balance sm:text-104`}
           >
             {identity.name}
           </h1>
           <p
             ref={strapline.ref}
             style={{ transitionDelay: '120ms' }}
-            className={`mt-6 max-w-[38ch] text-18 ${strapline.className} leading-relaxed text-label sm:text-22`}
+            className={`over-field mt-6 max-w-[38ch] text-18 ${strapline.className} leading-relaxed text-label sm:text-22`}
           >
             {identity.title}. {identity.strapline}.
           </p>
         </div>
 
-        <div className="over-field flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
-          <p className="font-mono text-16 text-bone sm:text-18">
+        <div className="over-field flex flex-col justify-end gap-6 lg:col-span-5 lg:items-end lg:text-right">
+          <p className="font-mono text-16 text-bone lg:whitespace-nowrap sm:text-18">
             {identity.location} · {identity.availability}
           </p>
           <p className="flex gap-8 text-18 lg:justify-end sm:text-22">
