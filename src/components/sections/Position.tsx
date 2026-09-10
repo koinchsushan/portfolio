@@ -1,7 +1,10 @@
+'use client'
+
 import { getCaseStudy } from '@/content'
 import type { Metric as MetricType } from '@/content'
 import { Metric } from '@/components/primitives/Metric'
 import { Datum } from '@/components/graphics/Datum'
+import { useRevealText } from '@/lib/useRevealText'
 
 /**
  * The three verified headline metrics, pulled from the case studies that
@@ -43,13 +46,15 @@ const UNITS: Record<string, string> = {
 // instruments read once each, not three points on a shared scale.
 export function Position() {
   const metrics = positionMetrics()
+  const heading = useRevealText<HTMLHeadingElement>('onView')
 
   return (
-    <section aria-labelledby="position-heading" className="border-b border-grid bg-panel">
+    <section id="position" aria-labelledby="position-heading" className="border-b border-grid bg-panel">
       <div className="mx-auto max-w-[1400px] px-6 py-28 sm:py-40">
         <h2
           id="position-heading"
-          className="font-display max-w-[20ch] text-40 leading-[0.98] tracking-[-0.02em] text-bone text-balance sm:text-64"
+          ref={heading.ref}
+          className={`font-display max-w-[20ch] text-40 ${heading.className} leading-[0.98] tracking-[-0.03em] text-bone text-balance sm:text-64`}
         >
           What the work adds up to
         </h2>

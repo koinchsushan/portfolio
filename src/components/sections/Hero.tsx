@@ -1,7 +1,10 @@
+'use client'
+
 import { identity } from '@/content'
 import { ActionLink } from '@/components/primitives/ActionLink'
 import { HeroField } from '@/components/graphics/HeroField'
 import { HeroCanvas } from '@/components/sections/HeroCanvas'
+import { useRevealText } from '@/lib/useRevealText'
 
 // Asymmetric split: headline left-weighted across 8 of 12 columns, meta and
 // CTAs anchored bottom-right in the remaining negative space. -mt-16 cancels
@@ -14,9 +17,18 @@ import { HeroCanvas } from '@/components/sections/HeroCanvas'
 // decorative relative to the four text nodes above (aria-hidden, purely
 // additive), so it is dropped below md rather than resized, keeping the
 // mobile hero to name, role and the two links.
+//
+// The two hero lines (the name, then the role/strapline underneath it) carry
+// the site's one text-motion idea: they resolve out of a soft blur on
+// mount, staggered slightly so the name settles a beat before the line
+// under it does, the same thesis the lattice draws at page scale.
 export function Hero() {
+  const name = useRevealText<HTMLHeadingElement>('immediate')
+  const strapline = useRevealText<HTMLParagraphElement>('immediate')
+
   return (
     <section
+      id="hero"
       aria-labelledby="hero-heading"
       className="relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
@@ -32,11 +44,16 @@ export function Hero() {
         <div className="lg:col-span-8">
           <h1
             id="hero-heading"
-            className="font-display text-104 leading-[0.9] tracking-[-0.03em] text-bone text-balance sm:text-160"
+            ref={name.ref}
+            className={`font-display text-104 ${name.className} leading-[0.9] tracking-[-0.04em] text-bone text-balance sm:text-160`}
           >
             {identity.name}
           </h1>
-          <p className="mt-6 max-w-[38ch] text-18 leading-relaxed text-label sm:text-22">
+          <p
+            ref={strapline.ref}
+            style={{ transitionDelay: '120ms' }}
+            className={`mt-6 max-w-[38ch] text-18 ${strapline.className} leading-relaxed text-label sm:text-22`}
+          >
             {identity.title}. {identity.strapline}.
           </p>
         </div>

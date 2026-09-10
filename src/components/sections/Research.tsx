@@ -14,7 +14,7 @@ export function Research() {
   const [flagship, ...rest] = research
 
   return (
-    <section aria-labelledby="research-heading" className="border-b border-grid">
+    <section id="research" aria-labelledby="research-heading" className="border-b border-grid">
       <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
         <SectionHeader id="research-heading" heading="Research" headingSize="text-40 sm:text-64" />
 

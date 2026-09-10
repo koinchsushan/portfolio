@@ -10,9 +10,10 @@
  *   - tracks leave and arrive dead flat, so fans stay parallel at both ends
  *   - stroke weights: 1 construction, 2 track, 4 heavy (device pixels, via
  *     vector-effect="non-scaling-stroke", so weights hold from 320px to 900px)
- *   - the depth -> signal ramp runs left to right in user space, and its two
- *     hard stops sit exactly on the diagram's own transformation zone. The
- *     colour change and the geometric change are the same event.
+ *   - the unresolved -> signal ramp runs left to right in user space, tonal
+ *     rather than two-hue, and its two hard stops sit exactly on the
+ *     diagram's own transformation zone. The colour change and the
+ *     geometric change are the same event.
  */
 
 import type { DiagramId } from '@/content'
@@ -107,7 +108,7 @@ export function stageBuilt(progress: number, index: number, count: number): bool
   return progress >= (index + 1) / count
 }
 
-/** Where the depth -> signal ramp turns over, in the diagram's own user space. */
+/** Where the unresolved -> signal ramp turns over, in the diagram's own user space. */
 export interface RampSpan {
   x1: number
   x2: number

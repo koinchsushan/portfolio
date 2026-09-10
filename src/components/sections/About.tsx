@@ -18,7 +18,7 @@ import { Portrait } from '@/components/about/Portrait'
 // Below sm the row stacks (heading, then portrait), full body copy follows.
 export function About() {
   return (
-    <section aria-labelledby="about-heading" className="border-b border-grid">
+    <section id="about" aria-labelledby="about-heading" className="border-b border-grid">
       <div className="mx-auto max-w-[1400px] px-6 py-20 sm:py-28">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-[1fr_240px] sm:items-end sm:gap-10">
           <SectionHeader id="about-heading" heading="About" headingSize="text-40 sm:text-64" />

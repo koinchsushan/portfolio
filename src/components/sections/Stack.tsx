@@ -17,7 +17,7 @@ import { StackCanvas } from '@/components/sections/StackCanvas'
 // every chip renders identically regardless of which group it sits in.
 export function Stack() {
   return (
-    <section aria-labelledby="stack-heading" className="border-b border-grid">
+    <section id="stack" aria-labelledby="stack-heading" className="border-b border-grid">
       <div className="mx-auto max-w-[1400px] px-6 py-14 sm:py-20">
         <div className="grid gap-8 sm:grid-cols-[1fr_280px] sm:items-end sm:gap-10">
           <SectionHeader

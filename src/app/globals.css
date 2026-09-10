@@ -8,7 +8,6 @@
   --color-label: var(--label);
   --color-bone: var(--bone);
   --color-signal: var(--signal);
-  --color-depth: var(--depth);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -36,6 +35,7 @@ body {
   background: var(--color-ground);
   color: var(--color-bone);
   font-family: var(--font-sans);
+  font-variation-settings: 'wdth' 92;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -44,11 +44,22 @@ body {
   color: var(--color-ground);
 }
 
-/* The typographic idea: one variable family carrying the whole range.
-   Display type sits at the expanded end of Archivo's width axis at a heavy
-   weight; body copy stays at the font's default width and weight. The
-   contrast between the two IS the voice, so both are named utilities rather
-   than one-off inline styles scattered across every heading. */
+/* The typographic idea: one variable family carrying the whole range, the
+   width axis doing as much of the hierarchy's work as size and weight do.
+   Three named steps, each stated as a full family voice rather than a
+   one-off inline style:
+
+   - display  (h1 and the primary section h2s): heavy weight, expanded to
+     125, tracking pulled in tight , the loudest a page can get.
+   - subhead  (h3/h4 sub-headings, component labels): a stepped-down bold at
+     a moderate expansion, present but clearly quieter than display.
+   - body     (the default, set on <body> above): regular weight, nudged
+     narrower than the font's own default width , the quiet voice the other
+     two are heard against.
+
+   Archivo's width axis runs condensed-to-expanded, so display's 125 and
+   body's 92 sit on opposite sides of the font's own neutral 100, and the
+   distance between them is legible even before size or weight are read. */
 .font-display {
   font-weight: 800;
   font-variation-settings: 'wdth' 125;
@@ -56,6 +67,43 @@ body {
 
 .font-subhead {
   font-weight: 700;
+  font-variation-settings: 'wdth' 108;
+}
+
+/* Mono stays small and exact: labels, dates, metrics, stack chips. Tabular
+   figures so numbers in a column never jitter against each other. */
+.font-mono {
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+/* The site's one text-motion idea: type resolves out of a soft blur exactly
+   like the lattice and the shader resolve noise into signal everywhere
+   else on the page. Applied only to hero lines and section headings
+   (`useRevealText`, `src/lib/useRevealText.ts`), never blanket motion.
+
+   The base class alone (no `reveal-pending`) renders completely plain,
+   opacity 1, no filter , this is the permanent server-rendered and
+   no-JS state. `reveal-pending` is only ever added by that hook, and only
+   once it has confirmed motion is welcome, so the transition below is
+   never what makes this text visible or readable, only ever what makes it
+   arrive. */
+.reveal-text {
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-text.reveal-pending {
+  opacity: 0;
+  filter: blur(10px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-text {
+    transition: none;
+  }
+  .reveal-text.reveal-pending {
+    opacity: 1;
+    filter: none;
+  }
 }
 
 /* Visible focus ring everywhere, never removed. */
@@ -73,11 +121,13 @@ body {
 
 /* The `lite` capability tier's stand-in for the WebGL hero field: two soft,
    slow-drifting colour fields (no shader, just background-position) mixed
-   from the same ground/depth/signal tokens, held well below the SVG
-   lattice's own contrast so it reads as atmosphere, not a competing shape. */
+   from the same ground/label/signal tokens, held well below the SVG
+   lattice's own contrast so it reads as atmosphere, not a competing shape.
+   Tonal, like every other ramp on the site: the dim field is --label, not a
+   second hue, and only the smaller field carries the one accent. */
 .hero-gradient-mesh {
   background-image:
-    radial-gradient(circle, color-mix(in srgb, var(--color-depth) 55%, transparent) 0%, transparent 62%),
+    radial-gradient(circle, color-mix(in srgb, var(--color-label) 40%, transparent) 0%, transparent 62%),
     radial-gradient(circle, color-mix(in srgb, var(--color-signal) 32%, transparent) 0%, transparent 58%);
   background-repeat: no-repeat;
   background-size: 85% 85%, 65% 65%;

@@ -34,7 +34,7 @@ const FRAGMENT_SHADER = /* glsl */ `
   uniform vec2 uPointer;
   uniform vec2 uVelocity;
   uniform vec3 uGround;
-  uniform vec3 uDepth;
+  uniform vec3 uMuted;
   uniform vec3 uSignal;
 
   // A bit-mixing hash, not copied from any known noise library: it only
@@ -105,10 +105,12 @@ const FRAGMENT_SHADER = /* glsl */ `
     vec2 sampled = st * 2.0 + flow * 0.45 + vec2(-uTime * 0.02, uTime * 0.009);
     float field = potential(sampled);
 
-    // The site's own ground -> depth ramp, driven by field magnitude
-    // rather than screen position, so it reads as an instrument reading.
-    float depthMix = smoothstep(0.28, 0.72, field);
-    vec3 color = mix(uGround, uDepth, depthMix);
+    // The site's own tonal ramp, ground rising to a dim, unresolved neutral
+    // (never a second hue) as field magnitude increases, driven by field
+    // magnitude rather than screen position, so it reads as an instrument
+    // reading.
+    float mutedMix = smoothstep(0.28, 0.72, field);
+    vec3 color = mix(uGround, uMuted, mutedMix);
 
     // Sparse signal filaments along one iso-line of the curl magnitude,
     // held to a low density with a hard threshold and a steep falloff, the
@@ -121,7 +123,7 @@ const FRAGMENT_SHADER = /* glsl */ `
     // Fades to fully transparent toward the frame edges so the layer reads
     // as atmosphere behind the SVG lattice, never a hard-edged panel.
     float vignette = 1.0 - smoothstep(0.55, 1.05, length(vUv - 0.5) * 1.35);
-    float alpha = (0.4 + 0.3 * depthMix + filament * 0.6) * vignette;
+    float alpha = (0.4 + 0.3 * mutedMix + filament * 0.6) * vignette;
 
     gl_FragColor = vec4(color, alpha);
   }
@@ -139,7 +141,8 @@ const POINTER_IMPULSE_SCALE = 0.55
  */
 export interface HeroPalette {
   ground: string
-  depth: string
+  /** The tonal ramp's dim, unresolved end , `--label`, never a second hue. */
+  muted: string
   signal: string
 }
 
@@ -167,7 +170,7 @@ function FlowField({ paused, palette }: { paused: boolean; palette: HeroPalette 
       // Read straight from the CSS custom properties: the shader never
       // hardcodes the palette, it inherits it.
       uGround: { value: new THREE.Color(palette.ground) },
-      uDepth: { value: new THREE.Color(palette.depth) },
+      uMuted: { value: new THREE.Color(palette.muted) },
       uSignal: { value: new THREE.Color(palette.signal) },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

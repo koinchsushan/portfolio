@@ -1,18 +1,27 @@
+'use client'
+
 import Link from 'next/link'
 import { identity } from '@/content'
 import { ExternalLink } from '@/components/primitives/ExternalLink'
+import { useRevealText } from '@/lib/useRevealText'
 
 // Closing composition: one dominant amber CTA (the email link) against a
 // quiet right-hand column of real, already-stated facts (location, the
 // outbound links) rather than empty space, now that the background grid
 // is gone (Task K). Below lg the two columns stack, hairline-divided.
 export function Contact() {
+  const heading = useRevealText<HTMLHeadingElement>('onView')
+
   return (
     <section id="contact" aria-labelledby="contact-heading">
       <div className="mx-auto max-w-[1400px] px-6 py-32 sm:py-40">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-8">
-            <h2 id="contact-heading" className="font-display text-40 leading-[0.95] tracking-[-0.02em] text-bone sm:text-104">
+            <h2
+              id="contact-heading"
+              ref={heading.ref}
+              className={`font-display text-40 ${heading.className} leading-[0.95] tracking-[-0.03em] text-bone sm:text-104`}
+            >
               Contact
             </h2>
             <p className="mt-6 max-w-[40ch] text-18 leading-relaxed text-label">{identity.availability}</p>

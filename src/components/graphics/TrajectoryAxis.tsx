@@ -36,7 +36,7 @@ const LANE_CLASS =
 // colour is the one real piece of data this component adds on top of
 // position: `current` (already parsed from the CV date string, never
 // invented) reads as resolved --signal, and every closed period reads as
-// --depth, the ramp's own "earlier" end.
+// dim --label, the tonal ramp's own "unresolved" end.
 const BAR_CLASS =
   'absolute left-0 top-[var(--pos)] h-[var(--span)] w-2 md:left-[var(--pos)] md:top-1/2 md:h-2 md:w-[var(--span)] md:-translate-y-1/2'
 
@@ -49,16 +49,17 @@ const TICK_LINE_CLASS =
 const TICK_LABEL_CLASS =
   'absolute left-1.5 top-[var(--pos)] font-mono text-12 text-label md:left-[var(--pos)] md:top-auto md:bottom-0 md:ml-1'
 
-// The Nepal-to-London marker: a dashed rule in --depth (never --signal, that
-// budget is spent elsewhere on the page) crossing every track at once. Depth
-// is the ramp's "earlier" colour, and this line marks exactly the point the
-// record moves from an earlier country to the current one, so the colour
-// carries the same meaning here as it does inside the diagrams.
+// The Nepal-to-London marker: a dashed rule in dim --label (never --signal,
+// that budget is spent elsewhere on the page) crossing every track at once.
+// --label is the tonal ramp's "unresolved" colour, and this line marks
+// exactly the point the record moves from an earlier country to the current
+// one, so the colour carries the same meaning here as it does inside the
+// diagrams.
 const MARKER_LINE_CLASS =
-  'absolute left-0 right-0 top-[var(--pos)] border-t border-dashed border-depth md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:border-t-0 md:border-l md:h-full'
+  'absolute left-0 right-0 top-[var(--pos)] border-t border-dashed border-label md:top-0 md:bottom-0 md:right-auto md:left-[var(--pos)] md:border-t-0 md:border-l md:h-full'
 
 const MARKER_LABEL_CLASS =
-  'absolute left-1.5 top-[var(--pos)] -mt-4 font-mono text-12 text-depth md:left-[var(--pos)] md:top-0 md:mt-0 md:ml-1.5'
+  'absolute left-1.5 top-[var(--pos)] -mt-4 font-mono text-12 text-label md:left-[var(--pos)] md:top-0 md:mt-0 md:ml-1.5'
 
 type AxisVars = CSSProperties & { '--pos'?: string; '--span'?: string }
 
@@ -77,9 +78,9 @@ function computeSlots(weights: number[]): { pos: number; span: number }[] {
   })
 }
 
-/** Resolved (still running) reads --signal; every closed period reads --depth. */
+/** Resolved (still running) reads --signal; every closed period reads dim --label. */
 function barToneClass(current: boolean): string {
-  return current ? 'bg-signal' : 'bg-depth'
+  return current ? 'bg-signal' : 'bg-label'
 }
 
 function laneCount(entries: PositionedEntry[]): number {
@@ -210,10 +211,10 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
         )}
 
         {/* Domain bounds echo the diagrams' own input/output markers: the
-            axis starts on unresolved --depth and ends on resolved --signal,
+            axis starts on unresolved --label and ends on resolved --signal,
             the same two positions the record actually starts and reaches
             "now" at, not new data. */}
-        <span aria-hidden className="absolute left-0 top-0 size-2 -translate-x-1 -translate-y-1 bg-depth" />
+        <span aria-hidden className="absolute left-0 top-0 size-2 -translate-x-1 -translate-y-1 bg-label" />
         <span aria-hidden className="absolute top-0 right-0 size-2 translate-x-1 -translate-y-1 bg-signal" />
       </div>
 

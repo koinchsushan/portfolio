@@ -1,19 +1,25 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { identity } from '@/content'
 
 const BOOT_DURATION_MS = 1400
 const BOOT_TICK_MS = 40
 const SESSION_KEY = 'boot-seen'
 
 /**
- * A short, skippable instrument-on sequence: a mono percentage counter plus
- * a hairline that fills as it counts, in the same instrumentation language
- * as the rest of the site. Purely a decorative overlay mounted above
- * already-painted content, never a gate on it , the rest of the page
- * server-renders and hydrates completely unaffected, and this component
- * itself renders nothing (`null`) until its own mount effect decides to
- * show it, so it can never delay LCP or the hero's first paint.
+ * The site's thesis in miniature, three seconds before the hero states it
+ * again at page scale: the name resolves out of noise instead of a
+ * percentage counter ticking up. A blurred, splayed-out wordmark sharpens
+ * and tightens as `progress` advances from 0 to 1, the same procedural
+ * grain used for route-transition texture drains away behind it, and only
+ * the hairline underneath still states progress as a literal number, for
+ * the instrument reading `aria-valuenow` already carries for assistive
+ * tech. Purely a decorative overlay mounted above already-painted content,
+ * never a gate on it , the rest of the page server-renders and hydrates
+ * completely unaffected, and this component itself renders nothing
+ * (`null`) until its own mount effect decides to show it, so it can never
+ * delay LCP or the hero's first paint.
  *
  * - Capped hard at 1.4s regardless of load state (a plain `setTimeout`, not
  *   tied to any load/ready event).

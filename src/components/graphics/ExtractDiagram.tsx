@@ -7,9 +7,9 @@ const GRADIENT_ID = 'extract-ramp'
 /**
  * A ragged field of unstructured marks funnels down to a single throat and
  * fans back out into six aligned, gridded fields. The marks sit entirely
- * before the ramp's transformation zone (flat depth); the resolved key/value
- * boxes sit entirely after it (flat signal). Only the funnel and its
- * collector lines cross the zone and actually shift colour.
+ * before the ramp's transformation zone (flat, dim, unresolved); the
+ * resolved key/value boxes sit entirely after it (flat signal). Only the
+ * funnel and its collector lines cross the zone and actually shift colour.
  */
 export function ExtractDiagram({ progress = 1, className }: { progress?: number; className?: string }) {
   const geo = extractGeometry()

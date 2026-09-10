@@ -2,20 +2,25 @@
  * Design tokens, dark instrumentation language: a plot ground and a
  * graticule, not "developer dark mode". See task-B-brief.md.
  *
- * --signal and --depth form a ramp that encodes magnitude (sequence,
- * progress, position in a series). Never used as a decorative highlight.
- * --signal appears at most once per viewport as a flat accent.
+ * One accent. --signal is the only saturated colour on the page and reads
+ * at most once per viewport as a flat accent (the diagram ramp is exempt,
+ * there the ramp IS the content). Every ramp on the site is tonal: unresolved
+ * geometry reads as dim, desaturated --label, resolved geometry reads as
+ * --signal. Signal emerging from noise in one hue, not two , see
+ * task-L-brief.md.
  */
 
 :root {
-  /* Palette, exact spec values. */
-  --ground: #0b1015;
-  --panel: #131b22;
-  --grid: #22303a;
-  --label: #8a9ba8;
-  --bone: #e9e7e2;
+  /* Palette, exact spec values. A warm near-black ground (hue ~32, the same
+     warm family as --signal) rather than a cold blue-black, so the six
+     tokens read as one authored, tonal scale with a single accent breaking
+     out of it, not "dark mode plus a swatch of teal". */
+  --ground: #100e0c;
+  --panel: #1e1a15;
+  --grid: #3a332c;
+  --label: #a79f96;
+  --bone: #edeae9;
   --signal: #e3b23c;
-  --depth: #2a7b8c;
 
   /* One corner-radius system: sharp, small and consistent. */
   --radius: 2px;

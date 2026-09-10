@@ -8,7 +8,7 @@ const GRADIENT_ID = 'converge-ramp'
  * Four in, one through, five out. Every flow-carrying line (input leads,
  * the converging curves, the spine, the diverging curves, output leads) is
  * stroked with the same ramp gradient, so each element's own x position is
- * what decides whether it reads teal, amber, or mid-transition.
+ * what decides whether it reads dim and unresolved, amber, or mid-transition.
  */
 export function ConvergeDiagram({ progress = 1, className }: { progress?: number; className?: string }) {
   const geo = convergeGeometry()

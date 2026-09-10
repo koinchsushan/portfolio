@@ -48,10 +48,10 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
       <div className="mx-auto max-w-[1400px] px-6">
         <section aria-labelledby="situation-heading" className="grid grid-cols-1 gap-8 border-b border-grid py-16 lg:grid-cols-12 lg:gap-6">
           <h2 id="situation-heading" className="font-subhead text-22 tracking-[-0.01em] text-bone lg:col-span-3">
-            <span aria-hidden className="mr-2 inline-block size-2 bg-depth align-middle" />
+            <span aria-hidden className="mr-2 inline-block size-2 bg-label align-middle" />
             Situation
           </h2>
-          <div className="flex flex-col gap-5 border-l-2 border-depth/40 pl-6 lg:col-span-8 lg:col-start-5">
+          <div className="flex flex-col gap-5 border-l-2 border-label/40 pl-6 lg:col-span-8 lg:col-start-5">
             {caseStudy.situation.map((paragraph) => (
               <p key={paragraph} className="max-w-[68ch] text-18 leading-relaxed text-label">
                 {paragraph}
@@ -61,7 +61,7 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
         </section>
 
         <section aria-labelledby="constraint-heading" className="border-b border-grid py-16">
-          <div className="border-l-2 border-depth bg-panel py-6 pl-6 pr-6 sm:pl-10 sm:pr-10">
+          <div className="border-l-2 border-label bg-panel py-6 pl-6 pr-6 sm:pl-10 sm:pr-10">
             <h2 id="constraint-heading" className="font-mono text-14 text-label">
               Constraint
             </h2>
@@ -76,7 +76,7 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
             <span
               aria-hidden
               className="mr-2 inline-block size-2 align-middle"
-              style={{ background: 'linear-gradient(90deg, var(--color-depth), var(--color-signal))' }}
+              style={{ background: 'linear-gradient(90deg, var(--color-label), var(--color-signal))' }}
             />
             Decision
           </h2>
