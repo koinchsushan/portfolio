@@ -2,11 +2,11 @@
 @import "../styles/tokens.css";
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-surface: var(--surface);
-  --color-rule: var(--rule);
-  --color-muted: var(--muted);
-  --color-ink: var(--ink);
+  --color-ground: var(--ground);
+  --color-panel: var(--panel);
+  --color-grid: var(--grid);
+  --color-label: var(--label);
+  --color-bone: var(--bone);
   --color-signal: var(--signal);
 
   --font-sans: var(--font-sans);
@@ -27,45 +27,47 @@
 }
 
 html {
-  color-scheme: light;
+  color-scheme: dark;
   scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-ground);
+  color: var(--color-bone);
   font-family: var(--font-sans);
+  font-variation-settings: 'wdth' 92;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
   background: var(--color-signal);
-  color: var(--color-paper);
+  color: var(--color-ground);
 }
 
-/* The typographic idea, rebuilt for Geist (Task N): Geist and Geist Mono
-   carry no width axis, so the Archivo-era "expand the display step, narrow
-   the body step" trick is gone. Hierarchy now comes from size, negative
-   tracking (set per heading, not here) and weight alone, and the owner was
-   explicit that weight has to stay light: no 800-weight display type. Two
-   named steps, both at regular-to-medium weight:
+/* The typographic idea: one variable family carrying the whole range, the
+   width axis doing as much of the hierarchy's work as size and weight do.
+   Three named steps, each stated as a full family voice rather than a
+   one-off inline style:
 
-   - display  (h1 and the primary section h2s): regular weight. Large and
-     light reads more current than large and heavy, and at the sizes this
-     class runs (40px to the type scale's new ~128px ceiling) regular Geist
-     carries plenty of presence on its own.
-   - subhead  (h3/h4 sub-headings, component labels): medium weight, one
-     step up from display and from the body default, so it still reads as
-     a heading at its smaller size without reaching for bold.
+   - display  (h1 and the primary section h2s): heavy weight, expanded to
+     125, tracking pulled in tight , the loudest a page can get.
+   - subhead  (h3/h4 sub-headings, component labels): a stepped-down bold at
+     a moderate expansion, present but clearly quieter than display.
+   - body     (the default, set on <body> above): regular weight, nudged
+     narrower than the font's own default width , the quiet voice the other
+     two are heard against.
 
-   body (the default, set on <body> above) is the browser's own regular
-   weight, unset here. */
+   Archivo's width axis runs condensed-to-expanded, so display's 125 and
+   body's 92 sit on opposite sides of the font's own neutral 100, and the
+   distance between them is legible even before size or weight are read. */
 .font-display {
-  font-weight: 400;
+  font-weight: 800;
+  font-variation-settings: 'wdth' 125;
 }
 
 .font-subhead {
-  font-weight: 500;
+  font-weight: 700;
+  font-variation-settings: 'wdth' 108;
 }
 
 /* Mono stays small and exact: labels, dates, metrics, stack chips. Tabular
@@ -107,8 +109,7 @@ body {
   }
 }
 
-/* Visible focus ring everywhere, never removed. --signal on --paper measures
-   6.14:1, well clear of the light-ground focus-ring norm. */
+/* Visible focus ring everywhere, never removed. */
 :focus-visible {
   outline: 2px solid var(--color-signal);
   outline-offset: 2px;
@@ -122,20 +123,15 @@ body {
 }
 
 /* The `lite` capability tier's stand-in for the WebGL hero field: two soft,
-   slow-drifting colour fields (no shader, just background-position). Task N
-   inversion: the dark-ground version mixed up to 40% --muted plus 32%
-   --signal, glows that read fine against near-black but turn into a grey
-   smudge and an oversized blue wash on paper. Rebuilt restrained instead of
-   remapped , the neutral field now leans on --rule (already close to
-   --paper in value, a hairline colour, not a body-text colour) at a higher
-   mix percentage, and the signal field is cut to a faint wash rather than a
-   third of the way to full saturation. Tonal, like every other ramp on the
-   site: the dim field is never a second hue, and only the smaller field
-   carries the one accent. */
+   slow-drifting colour fields (no shader, just background-position) mixed
+   from the same ground/label/signal tokens, held well below the SVG
+   lattice's own contrast so it reads as atmosphere, not a competing shape.
+   Tonal, like every other ramp on the site: the dim field is --label, not a
+   second hue, and only the smaller field carries the one accent. */
 .hero-gradient-mesh {
   background-image:
-    radial-gradient(circle, color-mix(in srgb, var(--color-rule) 65%, transparent) 0%, transparent 62%),
-    radial-gradient(circle, color-mix(in srgb, var(--color-signal) 14%, transparent) 0%, transparent 58%);
+    radial-gradient(circle, color-mix(in srgb, var(--color-label) 40%, transparent) 0%, transparent 62%),
+    radial-gradient(circle, color-mix(in srgb, var(--color-signal) 32%, transparent) 0%, transparent 58%);
   background-repeat: no-repeat;
   background-size: 85% 85%, 65% 65%;
   background-position: 20% 30%, 80% 75%;
@@ -158,12 +154,9 @@ body {
    plain, guaranteed-safe clip-path wipe; the grain layered on top of it is
    a procedural feTurbulence mask, the same "measured field, not a photo"
    idea as the hero shader's curl noise, done here in CSS instead of GLSL
-   so a route change stays cheap on every capability tier. The mask's own
-   colour is irrelevant on either ground: `mask-image` reads its alpha
-   channel, never its RGB, so this needed no change for the light palette.
-   If the mask fails to parse in some engine, `mask-image` simply has no
-   effect and the wipe still plays correctly without it, texture is never
-   load-bearing.
+   so a route change stays cheap on every capability tier. If the mask
+   fails to parse in some engine, `mask-image` simply has no effect and the
+   wipe still plays correctly without it, texture is never load-bearing.
 */
 :root {
   --route-wipe-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0.35'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");

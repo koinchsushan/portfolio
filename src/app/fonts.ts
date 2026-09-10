@@ -1,20 +1,21 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Archivo, Spline_Sans_Mono } from 'next/font/google'
 
-// Geist replaces Archivo (Task N: the owner called Archivo Expanded 800 too
-// bold, and moved the whole site to a light palette). Both Geist and Geist
-// Mono are variable fonts on a weight axis only (100 to 900, no width axis
-// the way Archivo carried one), so hierarchy on this site now comes from
-// size, negative tracking and weight rather than expansion , see the
-// `.font-display` / `.font-subhead` classes in globals.css, both capped at
-// regular-to-medium weight per the owner's "less bold" note. Geist Mono
-// replaces Spline Sans Mono for labels, dates, metrics and stack chips.
-export const sans = Geist({
+// Archivo is a variable grotesque with a real width axis (62.5 to 125,
+// condensed to expanded) alongside its weight axis (100 to 900). The `axes`
+// option pulls that width axis into the self-hosted file so display type can
+// sit at the expanded end while body copy stays at the default width, one
+// family carrying the whole typographic range instead of a second face.
+// Spline Sans Mono replaces JetBrains Mono for labels, dates, metrics and
+// stack chips: distinctive without being the same genre marker every dark
+// developer portfolio reaches for.
+export const sans = Archivo({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans',
+  axes: ['wdth'],
 })
 
-export const mono = Geist_Mono({
+export const mono = Spline_Sans_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-mono',

@@ -118,11 +118,11 @@ export function Nav() {
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur-sm">
+    <header className="fixed inset-x-0 top-0 z-40 border-b border-grid bg-ground/90 backdrop-blur-sm">
       <nav aria-label="Primary" className="mx-auto flex h-16 max-w-[1400px] items-center gap-6 px-6">
         <Link
           href="/"
-          className="shrink-0 font-mono text-14 text-ink transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+          className="shrink-0 font-mono text-14 text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
         >
           Sushan Sunuwar
         </Link>
@@ -132,11 +132,11 @@ export function Nav() {
             carries a shorter form of the same reading. */}
         <p
           aria-live="polite"
-          className="hidden min-w-0 flex-1 items-baseline gap-2 font-mono text-12 text-muted md:flex"
+          className="hidden min-w-0 flex-1 items-baseline gap-2 font-mono text-12 text-label md:flex"
         >
           {positionLabel && <span className="shrink-0 tabular-nums text-signal">{positionLabel}</span>}
           <span className="truncate uppercase tracking-[0.08em]">{currentLabel}</span>
-          <span className="shrink-0 tabular-nums text-muted/70">{percent}%</span>
+          <span className="shrink-0 tabular-nums text-label/70">{percent}%</span>
         </p>
 
         <ul className="hidden items-center gap-6 md:flex">
@@ -145,7 +145,7 @@ export function Nav() {
               <Link
                 href={link.href}
                 aria-current={isActive(link.href) ? 'true' : undefined}
-                className="text-14 text-muted transition-colors hover:text-ink aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+                className="text-14 text-label transition-colors hover:text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
               >
                 {link.label}
               </Link>
@@ -155,7 +155,7 @@ export function Nav() {
 
         <div className="flex items-center gap-3 md:hidden">
           {positionLabel && (
-            <span className="font-mono text-12 tabular-nums text-muted" aria-hidden>
+            <span className="font-mono text-12 tabular-nums text-label" aria-hidden>
               {positionLabel}
             </span>
           )}
@@ -164,7 +164,7 @@ export function Nav() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex items-center justify-center rounded-[var(--radius)] p-2 text-ink focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+            className="inline-flex items-center justify-center rounded-[var(--radius)] p-2 text-bone focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
           >
             {open ? <X size={20} aria-hidden /> : <List size={20} aria-hidden />}
             <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -174,19 +174,19 @@ export function Nav() {
 
       {/* Position bar: a constant, literal reading of how far through the
           document the reader is, on every route. */}
-      <div aria-hidden className="h-px w-full bg-rule">
+      <div aria-hidden className="h-px w-full bg-grid">
         <div className="h-full bg-signal" style={{ width: `${percent}%` }} />
       </div>
 
       {open && (
-        <ul id="mobile-nav" className="border-t border-rule px-6 py-2 md:hidden">
+        <ul id="mobile-nav" className="border-t border-grid px-6 py-2 md:hidden">
           {DESTINATIONS.map((link) => (
-            <li key={link.href} className="border-b border-rule last:border-b-0">
+            <li key={link.href} className="border-b border-grid last:border-b-0">
               <Link
                 href={link.href}
                 onClick={() => setOpen(false)}
                 aria-current={isActive(link.href) ? 'true' : undefined}
-                className="block py-3 text-16 text-ink aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+                className="block py-3 text-16 text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
               >
                 {link.label}
               </Link>

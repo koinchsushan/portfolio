@@ -36,7 +36,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
           width={geo.ramp.x2 - geo.ramp.x1}
           height={320}
           fill="none"
-          stroke="var(--color-rule)"
+          stroke="var(--color-grid)"
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />
@@ -46,7 +46,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
           fontFamily="var(--font-mono)"
           fontSize={11}
           letterSpacing="0.04em"
-          fill="var(--color-muted)"
+          fill="var(--color-label)"
         >
           UNSTRUCTURED EMAIL STREAM
         </text>
@@ -57,7 +57,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
           fontFamily="var(--font-mono)"
           fontSize={11}
           letterSpacing="0.04em"
-          fill="var(--color-muted)"
+          fill="var(--color-label)"
         >
           {String(geo.fields.length).padStart(2, '0')} STRUCTURED QUOTE FIELDS
         </text>
@@ -68,7 +68,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
           fontFamily="var(--font-mono)"
           fontSize={9}
           letterSpacing="0.06em"
-          fill="var(--color-muted)"
+          fill="var(--color-label)"
         >
           KEY
         </text>
@@ -79,7 +79,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
           fontFamily="var(--font-mono)"
           fontSize={9}
           letterSpacing="0.06em"
-          fill="var(--color-muted)"
+          fill="var(--color-label)"
         >
           VALUE
         </text>
@@ -120,7 +120,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
             x2={guide.x}
             y1={guide.y1}
             y2={guide.y2}
-            stroke="var(--color-rule)"
+            stroke="var(--color-grid)"
             strokeWidth={1}
             strokeDasharray="2 4"
             vectorEffect="non-scaling-stroke"
@@ -134,7 +134,7 @@ export function ExtractDiagram({ progress = 1, className }: { progress?: number;
               textAnchor="end"
               fontFamily="var(--font-mono)"
               fontSize={9}
-              fill="var(--color-muted)"
+              fill="var(--color-label)"
             >
               {`#${String(i + 1).padStart(2, '0')}`}
             </text>

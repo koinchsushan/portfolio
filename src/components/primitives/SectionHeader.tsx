@@ -44,11 +44,11 @@ export function SectionHeader({
       <Tag
         id={id}
         ref={reveal.ref}
-        className={`font-display ${headingSize} ${reveal.className} leading-[0.95] tracking-[-0.03em] text-ink text-balance`}
+        className={`font-display ${headingSize} ${reveal.className} leading-[0.95] tracking-[-0.03em] text-bone text-balance`}
       >
         {heading}
       </Tag>
-      {lede && <p className="mt-4 max-w-[42ch] text-16 leading-relaxed text-muted">{lede}</p>}
+      {lede && <p className="mt-4 max-w-[42ch] text-16 leading-relaxed text-label">{lede}</p>}
     </div>
   )
 }

@@ -14,18 +14,6 @@ import * as THREE from 'three'
  * scalar potential), which is the standard way to turn any smooth scalar
  * field into a divergence-free, fluid-looking one without a dedicated
  * simplex implementation.
- *
- * Task N, light inversion: the dark build mixed --ground up to --muted (a
- * light grey rising out of near-black) at a 0.4 to 0.7 alpha floor, which
- * reads as an instrument glow against a dark ground and as a dirty smudge
- * against paper , the same field magnitude, drawn the same way, painted a
- * visible grey wherever it was strong. Restraint, not remapping: the base
- * field now mixes --paper toward --rule, a token already this close to
- * --paper in value, and the whole layer's alpha ceiling drops by roughly an
- * order of magnitude, so the noise is felt as barely-there structure rather
- * than seen as a shape. The one thing still meant to read clearly is the
- * sparse --signal filament, the field's own "resolved" moment, exactly like
- * every other ramp on the site.
  */
 const VERTEX_SHADER = /* glsl */ `
   varying vec2 vUv;
@@ -45,8 +33,8 @@ const FRAGMENT_SHADER = /* glsl */ `
   uniform vec2 uResolution;
   uniform vec2 uPointer;
   uniform vec2 uVelocity;
-  uniform vec3 uPaper;
-  uniform vec3 uRule;
+  uniform vec3 uGround;
+  uniform vec3 uMuted;
   uniform vec3 uSignal;
 
   // A bit-mixing hash, not copied from any known noise library: it only
@@ -117,13 +105,12 @@ const FRAGMENT_SHADER = /* glsl */ `
     vec2 sampled = st * 2.0 + flow * 0.45 + vec2(-uTime * 0.02, uTime * 0.009);
     float field = potential(sampled);
 
-    // The site's own tonal ramp, paper rising to --rule (never --muted here:
-    // that reads as legible grey text colour, far too present for a field
-    // this restrained) as field magnitude increases, driven by field
+    // The site's own tonal ramp, ground rising to a dim, unresolved neutral
+    // (never a second hue) as field magnitude increases, driven by field
     // magnitude rather than screen position, so it reads as an instrument
-    // reading, not a texture.
-    float ruleMix = smoothstep(0.28, 0.72, field);
-    vec3 color = mix(uPaper, uRule, ruleMix);
+    // reading.
+    float mutedMix = smoothstep(0.28, 0.72, field);
+    vec3 color = mix(uGround, uMuted, mutedMix);
 
     // Sparse signal filaments along one iso-line of the curl magnitude,
     // held to a low density with a hard threshold and a steep falloff, the
@@ -134,15 +121,9 @@ const FRAGMENT_SHADER = /* glsl */ `
     color = mix(color, uSignal, filament);
 
     // Fades to fully transparent toward the frame edges so the layer reads
-    // as atmosphere behind the SVG lattice, never a hard-edged panel. The
-    // alpha ceiling itself is the light-ground rewrite: the dark build held
-    // a 0.4 floor plus up to 0.3 more as the field resolved (a glow that
-    // stayed visible everywhere); on paper that same floor paints a grey
-    // wash across the whole hero, so both terms are cut by roughly an order
-    // of magnitude and only the resolved filament is allowed to read at any
-    // real strength.
+    // as atmosphere behind the SVG lattice, never a hard-edged panel.
     float vignette = 1.0 - smoothstep(0.55, 1.05, length(vUv - 0.5) * 1.35);
-    float alpha = (0.035 + 0.05 * ruleMix + filament * 0.4) * vignette;
+    float alpha = (0.4 + 0.3 * mutedMix + filament * 0.6) * vignette;
 
     gl_FragColor = vec4(color, alpha);
   }
@@ -159,9 +140,9 @@ const POINTER_IMPULSE_SCALE = 0.55
  * mounted client-only (`ssr: false`) so it could never run anyway.
  */
 export interface HeroPalette {
-  paper: string
-  /** The tonal ramp's dim, unresolved end , `--rule`, never a second hue. */
-  rule: string
+  ground: string
+  /** The tonal ramp's dim, unresolved end , `--label`, never a second hue. */
+  muted: string
   signal: string
 }
 
@@ -188,8 +169,8 @@ function FlowField({ paused, palette }: { paused: boolean; palette: HeroPalette 
       uVelocity: { value: new THREE.Vector2(0, 0) },
       // Read straight from the CSS custom properties: the shader never
       // hardcodes the palette, it inherits it.
-      uPaper: { value: new THREE.Color(palette.paper) },
-      uRule: { value: new THREE.Color(palette.rule) },
+      uGround: { value: new THREE.Color(palette.ground) },
+      uMuted: { value: new THREE.Color(palette.muted) },
       uSignal: { value: new THREE.Color(palette.signal) },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

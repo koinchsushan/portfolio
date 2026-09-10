@@ -16,7 +16,7 @@ export function ExternalLink({
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className={`group inline-flex items-center gap-1.5 underline decoration-rule decoration-1 underline-offset-4 transition-colors duration-150 hover:text-signal hover:decoration-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4 ${className}`}
+      className={`group inline-flex items-center gap-1.5 underline decoration-grid decoration-1 underline-offset-4 transition-colors duration-150 hover:text-signal hover:decoration-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4 ${className}`}
     >
       {children}
       <span className="sr-only"> (opens in a new tab)</span>

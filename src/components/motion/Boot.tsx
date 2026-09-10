@@ -100,11 +100,11 @@ export function Boot() {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label="Site loading"
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-paper"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-ground"
     >
-      <p className="font-mono text-12 uppercase tracking-[0.14em] text-muted">Instrument warming up</p>
-      <p className="font-mono text-64 tabular-nums text-ink">{percent}%</p>
-      <div className="h-px w-40 overflow-hidden bg-rule">
+      <p className="font-mono text-12 uppercase tracking-[0.14em] text-label">Instrument warming up</p>
+      <p className="font-mono text-64 tabular-nums text-bone">{percent}%</p>
+      <div className="h-px w-40 overflow-hidden bg-grid">
         <div className="h-full bg-signal" style={{ width: `${percent}%` }} />
       </div>
       <p className="sr-only">Press any key, click, or tap to skip.</p>

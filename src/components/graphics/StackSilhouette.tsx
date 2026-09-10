@@ -14,17 +14,6 @@ import { TI_FACES, TI_VERTICES } from '@/components/three/truncatedIcosahedron.d
  * in the always-rendered accessible controls next to it, and in the
  * permanent `<ul aria-label="Full technology stack">` , this view's job is
  * only to represent the object, never to duplicate that text.
- *
- * Task N, light inversion: the dark build shaded each face from --panel
- * (facing away) up to a 42% --bone mix (facing the camera) , a dark object
- * getting lighter where it catches light, the ordinary way to shade a solid.
- * On paper that relationship inverts with nothing to see: a light object's
- * faces would all read as some shade of near-white, with no fill contrast
- * left to carry the facing cue and no silhouette against a ground the same
- * value as the faces. So the fill here now shades between --surface (facing
- * camera) and --rule (facing away) , staying inside the light family, never
- * reaching for --ink , and a visible --ink stroke around every facet carries
- * the edge definition the fill alone can no longer supply.
  */
 
 const VIEW_YAW = 0.58
@@ -102,9 +91,9 @@ export function StackSilhouette({ className }: { className?: string }) {
         <polygon
           key={i}
           points={face.points}
-          fill={`color-mix(in srgb, var(--color-surface) ${Math.round(30 + face.shade * 70)}%, var(--color-rule))`}
-          stroke="var(--color-ink)"
-          strokeOpacity={0.35}
+          fill={`color-mix(in srgb, var(--color-bone) ${Math.round(face.shade * 42)}%, var(--color-panel))`}
+          stroke="var(--color-grid)"
+          strokeOpacity={0.8}
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
         />

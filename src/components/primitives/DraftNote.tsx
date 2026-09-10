@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
  * renders a visible marker alongside its children; never hides the marker
  * (some content here may be materially wrong until the owner confirms it).
  *
- * `bordered` defaults to the cobalt left rule (still right for a dense chip
+ * `bordered` defaults to the amber left rule (still right for a dense chip
  * plate like Stack or Research, where the rule doubles as a visual divider).
  * About turns it off (Task K): a single long-form column reads better with
  * no accent bar competing with the body copy, the DRAFT marker alone is

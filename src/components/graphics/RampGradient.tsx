@@ -3,7 +3,7 @@ import type { RampSpan } from './geometry'
 /**
  * The unresolved -> signal ramp, shared by every diagram and the hero. A
  * tonal ramp, not a two-hue one: unresolved geometry reads flat, dim
- * `--muted`, resolved geometry reads flat `--signal`, one accent breaking
+ * `--label`, resolved geometry reads flat `--signal`, one accent breaking
  * out of a neutral rather than two accents meeting in the middle. Placed in
  * `userSpaceOnUse` coordinates so a stroke painted with it renders the right
  * colour purely from its own x position, and only the transition zone
@@ -29,8 +29,8 @@ export function RampGradient({ id, ramp, tightness = 1 }: { id: string; ramp: Ra
 
   return (
     <linearGradient id={id} gradientUnits="userSpaceOnUse" x1={ramp.x1} y1={0} x2={ramp.x2} y2={0}>
-      <stop offset={0} stopColor="var(--color-muted)" />
-      <stop offset={offsetStart} stopColor="var(--color-muted)" />
+      <stop offset={0} stopColor="var(--color-label)" />
+      <stop offset={offsetStart} stopColor="var(--color-label)" />
       <stop offset={offsetEnd} stopColor="var(--color-signal)" />
       <stop offset={1} stopColor="var(--color-signal)" />
     </linearGradient>

@@ -6,7 +6,7 @@
  * shared so the three read as one family of instrument plates:
  *
  *   - one plot box per diagram, 40 units of gutter on each side
- *   - phase boundaries drawn as full-height construction rules in `--rule`
+ *   - phase boundaries drawn as full-height construction rules in `--grid`
  *   - tracks leave and arrive dead flat, so fans stay parallel at both ends
  *   - stroke weights: 1 construction, 2 track, 4 heavy (device pixels, via
  *     vector-effect="non-scaling-stroke", so weights hold from 320px to 900px)

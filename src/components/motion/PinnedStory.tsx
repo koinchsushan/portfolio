@@ -34,15 +34,15 @@ function beatBodyFull(key: BeatKey, study: CaseStudy) {
   switch (key) {
     case 'situation':
       return study.situation.map((paragraph) => (
-        <p key={paragraph} className="text-16 leading-relaxed text-muted">
+        <p key={paragraph} className="text-16 leading-relaxed text-label">
           {paragraph}
         </p>
       ))
     case 'constraint':
-      return <p className="text-16 leading-relaxed text-ink">{study.constraint}</p>
+      return <p className="text-16 leading-relaxed text-bone">{study.constraint}</p>
     case 'decision':
       return study.decision.map((paragraph) => (
-        <p key={paragraph} className="text-16 leading-relaxed text-muted">
+        <p key={paragraph} className="text-16 leading-relaxed text-label">
           {paragraph}
         </p>
       ))
@@ -50,8 +50,8 @@ function beatBodyFull(key: BeatKey, study: CaseStudy) {
       return (
         <ul className="flex flex-col gap-2">
           {study.outcomes.map((metric) => (
-            <li key={metric.value} className="text-16 leading-relaxed text-muted">
-              <span className="font-mono text-ink">{metric.value}</span> {metric.label}
+            <li key={metric.value} className="text-16 leading-relaxed text-label">
+              <span className="font-mono text-bone">{metric.value}</span> {metric.label}
             </li>
           ))}
         </ul>
@@ -66,17 +66,17 @@ function beatBodyFull(key: BeatKey, study: CaseStudy) {
 function beatBodyLead(key: BeatKey, study: CaseStudy) {
   switch (key) {
     case 'situation':
-      return <p className="text-16 leading-relaxed text-muted">{firstSentence(study.situation[0])}</p>
+      return <p className="text-16 leading-relaxed text-label">{firstSentence(study.situation[0])}</p>
     case 'constraint':
-      return <p className="text-16 leading-relaxed text-ink">{study.constraint}</p>
+      return <p className="text-16 leading-relaxed text-bone">{study.constraint}</p>
     case 'decision':
-      return <p className="text-16 leading-relaxed text-muted">{firstSentence(study.decision[0])}</p>
+      return <p className="text-16 leading-relaxed text-label">{firstSentence(study.decision[0])}</p>
     case 'outcome':
       return (
         <ul className="flex flex-col gap-2">
           {study.outcomes.map((metric) => (
-            <li key={metric.value} className="text-16 leading-relaxed text-muted">
-              <span className="font-mono text-ink">{metric.value}</span> {metric.label}
+            <li key={metric.value} className="text-16 leading-relaxed text-label">
+              <span className="font-mono text-bone">{metric.value}</span> {metric.label}
             </li>
           ))}
         </ul>
@@ -156,18 +156,18 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
       ref={triggerRef}
       data-pinned={pinned ? 'true' : 'false'}
       data-progress={pinned ? progress.toFixed(3) : 1}
-      className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-rule py-14 lg:grid-cols-12 lg:gap-x-10 lg:py-20"
+      className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-grid py-14 lg:grid-cols-12 lg:gap-x-10 lg:py-20"
     >
       <div className="lg:col-span-3">
         <h3>
           <Link
             href={`/work/${study.slug}`}
-            className="font-subhead text-28 tracking-[-0.01em] text-ink transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+            className="font-subhead text-28 tracking-[-0.01em] text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
           >
             {study.client}
           </Link>
         </h3>
-        <p className="mt-3 font-mono text-12 leading-relaxed text-muted">
+        <p className="mt-3 font-mono text-12 leading-relaxed text-label">
           {study.employer}
           <br />
           {study.role}
@@ -184,7 +184,7 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
                 <span
                   key={beat.key}
                   className={`border-b-2 pb-1 font-mono text-12 uppercase tracking-[0.14em] transition-colors duration-300 ${
-                    index === activeBeat ? 'border-signal text-ink' : 'border-transparent text-muted'
+                    index === activeBeat ? 'border-signal text-bone' : 'border-transparent text-label'
                   }`}
                 >
                   {beat.label}
@@ -213,7 +213,7 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
           <div className="flex flex-col gap-6">
             {BEATS.map((beat, index) => (
               <div key={beat.key} data-beat={beat.key} data-built={index <= activeBeat ? 'true' : 'false'}>
-                <h4 className="font-mono text-12 uppercase tracking-[0.14em] text-muted">{beat.label}</h4>
+                <h4 className="font-mono text-12 uppercase tracking-[0.14em] text-label">{beat.label}</h4>
                 <div className="mt-2 flex flex-col gap-3">{beatBodyFull(beat.key, study)}</div>
               </div>
             ))}
@@ -221,7 +221,7 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
         )}
       </div>
 
-      <div className="border border-rule bg-surface p-6 lg:col-span-5">
+      <div className="border border-grid bg-panel p-6 lg:col-span-5">
         <Diagram id={study.diagram} progress={diagramProgress} className="h-auto w-full" />
       </div>
     </li>

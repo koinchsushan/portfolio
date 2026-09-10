@@ -30,7 +30,7 @@ export function Hero() {
     <section
       id="hero"
       aria-labelledby="hero-heading"
-      className="relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-rule pt-20 pb-16 sm:pt-24"
+      className="relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
       {/* The field is a substrate, not the subject. At full strength the flow
           reads as a generic mesh-gradient background and competes with the
@@ -45,21 +45,21 @@ export function Hero() {
           <h1
             id="hero-heading"
             ref={name.ref}
-            className={`font-display text-104 ${name.className} leading-[0.9] tracking-[-0.04em] text-ink text-balance sm:text-160`}
+            className={`font-display text-104 ${name.className} leading-[0.9] tracking-[-0.04em] text-bone text-balance sm:text-160`}
           >
             {identity.name}
           </h1>
           <p
             ref={strapline.ref}
             style={{ transitionDelay: '120ms' }}
-            className={`mt-6 max-w-[38ch] text-18 ${strapline.className} leading-relaxed text-muted sm:text-22`}
+            className={`mt-6 max-w-[38ch] text-18 ${strapline.className} leading-relaxed text-label sm:text-22`}
           >
             {identity.title}. {identity.strapline}.
           </p>
         </div>
 
         <div className="flex flex-col justify-end gap-6 lg:col-span-4 lg:items-end lg:text-right">
-          <p className="font-mono text-14 text-muted">
+          <p className="font-mono text-14 text-label">
             {identity.location} · {identity.availability}
           </p>
           <p className="flex gap-8 lg:justify-end">

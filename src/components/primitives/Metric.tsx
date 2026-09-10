@@ -6,16 +6,16 @@
 export function Metric({
   value,
   size = 'lg',
-  tone = 'ink',
+  tone = 'bone',
   className = '',
 }: {
   value: string
   size?: 'sm' | 'md' | 'lg'
-  tone?: 'ink' | 'signal'
+  tone?: 'bone' | 'signal'
   className?: string
 }) {
   const valueSize = size === 'lg' ? 'text-40' : size === 'md' ? 'text-28' : 'text-18'
-  const valueColor = tone === 'signal' ? 'text-signal' : 'text-ink'
+  const valueColor = tone === 'signal' ? 'text-signal' : 'text-bone'
 
   return (
     <span className={`font-mono ${valueSize} ${valueColor} leading-none tabular-nums ${className}`}>

@@ -26,30 +26,32 @@ function portraitFileExists(): boolean {
  * missing or renamed file degrades to a sized placeholder rather than
  * shipping a broken image on a live page.
  *
- * Task N: the duotone treatment (grayscale plus a multiply/screen colour
- * pair) was tuned for a dark ground and the owner asked for it removed
- * entirely, not remapped , the photograph renders plain.
+ * The photograph renders plain. A duotone treatment was tried and the owner
+ * asked for it removed: it is his face, and mapping it into the palette read
+ * as a filter rather than as a portrait.
  */
 export function Portrait({ className = '' }: { className?: string }) {
   const hasPhoto = portraitFileExists()
 
   return (
     <div
-      className={`relative isolate w-full max-w-[240px] overflow-hidden border border-rule bg-surface ${className}`.trim()}
+      className={`relative isolate w-full max-w-[240px] overflow-hidden border border-grid bg-panel ${className}`.trim()}
       style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
     >
       {hasPhoto ? (
-        <Image
-          src={PORTRAIT_PATH}
-          alt="Sushan Sunuwar, head and shoulders, in a dark blazer against a bright office interior"
-          width={WIDTH}
-          height={HEIGHT}
-          sizes="240px"
-          className="h-full w-full object-cover"
-        />
+        <>
+          <Image
+            src={PORTRAIT_PATH}
+            alt="Sushan Sunuwar, head and shoulders, in a dark blazer against a bright office interior"
+            width={WIDTH}
+            height={HEIGHT}
+            sizes="240px"
+            className="h-full w-full object-cover"
+          />
+        </>
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
-          <span className="font-mono text-12 uppercase tracking-[0.14em] text-muted">Portrait pending</span>
+          <span className="font-mono text-12 uppercase tracking-[0.14em] text-label">Portrait pending</span>
         </div>
       )}
     </div>
