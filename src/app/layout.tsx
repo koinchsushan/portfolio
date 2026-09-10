@@ -7,17 +7,37 @@ import { Footer } from '@/components/layout/Footer'
 import { SmoothScroll } from '@/components/motion/SmoothScroll'
 import { RouteTransition } from '@/components/motion/RouteTransition'
 import { Boot } from '@/components/motion/Boot'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { identity } from '@/content'
+import { SITE_URL } from '@/lib/site'
+import { personJsonLd } from '@/lib/jsonLd'
+
+const title = `${identity.name}, ${identity.title}`
 
 export const metadata: Metadata = {
-  title: `${identity.name}, ${identity.title}`,
+  metadataBase: new URL(SITE_URL),
+  title: { default: title, template: `%s - ${identity.name}` },
   description: identity.strapline,
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: identity.name,
+    title,
+    description: identity.strapline,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description: identity.strapline,
+  },
 }
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
+        <JsonLd data={personJsonLd()} />
         <SmoothScroll />
         <RouteTransition />
         <SkipLink />

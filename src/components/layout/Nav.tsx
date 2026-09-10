@@ -136,7 +136,7 @@ export function Nav() {
         >
           {positionLabel && <span className="shrink-0 tabular-nums text-signal">{positionLabel}</span>}
           <span className="truncate uppercase tracking-[0.08em]">{currentLabel}</span>
-          <span className="shrink-0 tabular-nums text-label/70">{percent}%</span>
+          <span className="shrink-0 tabular-nums text-label">{percent}%</span>
         </p>
 
         <ul className="hidden items-center gap-6 md:flex">

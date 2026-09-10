@@ -48,7 +48,7 @@ export function Stack() {
               )
               return (
                 <li key={group.label} className="mb-7 break-inside-avoid-column">
-                  <h3 className="font-mono text-12 uppercase tracking-[0.14em] text-label/70">{group.label}</h3>
+                  <h3 className="font-mono text-12 uppercase tracking-[0.14em] text-label">{group.label}</h3>
                   {group.draft ? (
                     <DraftNote bordered={false} className="mt-1.5">
                       {entries}

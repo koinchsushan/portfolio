@@ -66,13 +66,18 @@ export function Position() {
         <dl className="mt-20 grid grid-cols-1 gap-y-16 sm:grid-cols-3 sm:gap-x-14">
           {metrics.map((metric, i) => (
             <div key={metric.value} className={i > 0 ? 'sm:border-l sm:border-grid sm:pl-10' : ''}>
-              <Datum className="mb-3 h-3 w-24" />
+              {/* A `<dl>` wrapper `<div>` may only directly contain `<dt>`s
+                  followed by `<dd>`s (axe's `definition-list`/`only-dlitems`
+                  rules, WCAG 1.3.1): the datum tick and the unit tag are
+                  both part of the term being defined, not the description,
+                  so both move inside `<dt>` alongside the figure itself. */}
               <dt>
+                <Datum className="mb-3 h-3 w-24" />
                 <Metric value={metric.value} tone={i === 0 ? 'signal' : 'bone'} className="sm:text-64" />
+                {UNITS[metric.value] && (
+                  <p className="mt-2 font-mono text-12 tracking-[0.08em] text-label">{UNITS[metric.value]}</p>
+                )}
               </dt>
-              {UNITS[metric.value] && (
-                <p className="mt-2 font-mono text-12 tracking-[0.08em] text-label">{UNITS[metric.value]}</p>
-              )}
               <dd className="mt-3 max-w-[24ch] text-14 leading-snug text-label">{metric.label}</dd>
             </div>
           ))}

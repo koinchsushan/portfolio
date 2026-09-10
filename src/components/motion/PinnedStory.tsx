@@ -1,10 +1,19 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { CaseStudy } from '@/content'
 import { useCapability } from '@/lib/useCapability'
 import { Diagram } from '@/components/graphics/Diagram'
+
+// `ssr: false` is what keeps `gsap` and `gsap/ScrollTrigger` out of the
+// server bundle and out of this route's initial `<script>` list: see the
+// docstring on `ScrollPinDriver` itself for why a bare `import('gsap')`
+// inside a `useEffect` was not enough on its own.
+const ScrollPinDriver = dynamic(() => import('./ScrollPinDriver').then((mod) => mod.ScrollPinDriver), {
+  ssr: false,
+})
 
 type BeatKey = 'situation' | 'constraint' | 'decision' | 'outcome'
 
@@ -111,53 +120,51 @@ function beatBodyLead(key: BeatKey, study: CaseStudy) {
  */
 export function PinnedStory({ study }: { study: CaseStudy }) {
   const { tier } = useCapability()
-  const triggerRef = useRef<HTMLLIElement>(null)
+  const [node, setNode] = useState<HTMLLIElement | null>(null)
+  const [hasIntersected, setHasIntersected] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  useEffect(() => {
-    if (tier !== 'full') return
-    const node = triggerRef.current
-    if (!node) return
-
-    let cancelled = false
-    let ctx: { revert: () => void } | undefined
-
-    void (async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')])
-      if (cancelled) return
-
-      gsap.registerPlugin(ScrollTrigger)
-
-      ctx = gsap.context(() => {
-        ScrollTrigger.create({
-          trigger: node,
-          start: 'top top',
-          end: () => `+=${Math.max(window.innerHeight * 1.2, MIN_PIN_DISTANCE_PX)}`,
-          pin: true,
-          scrub: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => setProgress(self.progress),
-        })
-      }, node)
-    })()
-
-    return () => {
-      cancelled = true
-      ctx?.revert()
-    }
-  }, [tier])
+  // A callback ref, not `useRef`: the dynamically-loaded `ScrollPinDriver`
+  // needs the real DOM node as a prop, and a plain ref's `.current` mutation
+  // does not itself trigger a re-render once it changes from null to the
+  // mounted element.
+  const setTriggerNode = useCallback((el: HTMLLIElement | null) => setNode(el), [])
 
   const pinned = tier === 'full'
+
+  // The exact gate `HeroCanvas` uses before mounting its own WebGL layer:
+  // without it, every one of the three case studies would import `gsap` and
+  // `gsap/ScrollTrigger` the instant the capability check resolves to
+  // `full`, regardless of whether the reader has scrolled anywhere near
+  // `#work` yet. `threshold: 0` with no `rootMargin` fires only once the
+  // trigger element actually starts crossing into the viewport.
+  useEffect(() => {
+    if (!pinned || !node) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasIntersected(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0 },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [pinned, node])
+
   const diagramProgress = pinned ? progress : 1
   const activeBeat = pinned ? Math.min(BEATS.length - 1, Math.floor(progress * BEATS.length)) : BEATS.length - 1
 
   return (
     <li
-      ref={triggerRef}
+      ref={setTriggerNode}
       data-pinned={pinned ? 'true' : 'false'}
       data-progress={pinned ? progress.toFixed(3) : 1}
       className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-grid py-14 lg:grid-cols-12 lg:gap-x-10 lg:py-20"
     >
+      {pinned && node && hasIntersected && <ScrollPinDriver node={node} onProgress={setProgress} />}
+
       <div className="lg:col-span-3">
         <h3>
           <Link

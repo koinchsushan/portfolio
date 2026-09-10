@@ -3,8 +3,23 @@ import { research } from '@/content'
 import { DraftNote } from '@/components/primitives/DraftNote'
 import { ExternalLink } from '@/components/primitives/ExternalLink'
 
+const description = `Three research projects: ${research.map((item) => item.title).join(', ')}.`
+
 export const metadata: Metadata = {
   title: 'Research',
+  description,
+  alternates: { canonical: '/research' },
+  openGraph: {
+    type: 'website',
+    url: '/research',
+    title: 'Research',
+    description,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Research',
+    description,
+  },
 }
 
 export default function ResearchPage() {

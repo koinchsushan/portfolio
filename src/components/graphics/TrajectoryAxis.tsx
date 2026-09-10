@@ -86,7 +86,7 @@ const TICK_LABEL_CLASS =
 // vertically there so a narrow column still contains it; at md+ it reads
 // normally along the top of a horizontal row.
 const TRACK_LABEL_CLASS =
-  'pointer-events-none absolute inset-0 flex items-center overflow-hidden px-1 [writing-mode:vertical-lr] font-mono text-12 uppercase tracking-[0.08em] text-label/70 md:items-start md:px-1.5 md:pt-1 md:[writing-mode:horizontal-tb]'
+  'pointer-events-none absolute inset-0 flex items-center overflow-hidden px-1 [writing-mode:vertical-lr] font-mono text-12 uppercase tracking-[0.08em] text-label md:items-start md:px-1.5 md:pt-1 md:[writing-mode:horizontal-tb]'
 
 // The Nepal-to-London marker: a dashed rule in dim --label (never --signal,
 // that budget is spent elsewhere on the page) crossing every track at once.
@@ -357,7 +357,7 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
       <ul className="mt-6 space-y-4 md:hidden">
         {tracks.map((track) => (
           <li key={`${track.name}-list`}>
-            <p className="font-mono text-12 uppercase tracking-[0.08em] text-label/70">{track.name}</p>
+            <p className="font-mono text-12 uppercase tracking-[0.08em] text-label">{track.name}</p>
             <ul className="mt-1 space-y-1">
               {track.positioned.map((entry) => (
                 <li key={`${entry.key}-list`} className="flex flex-wrap items-baseline gap-x-2">
