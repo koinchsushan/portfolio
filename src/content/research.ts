@@ -32,7 +32,7 @@ export const research: ResearchItem[] = [
     // full environment freeze listing packages the code never imports.
     stack: ['Python', 'Pandas', 'statsmodels', 'scikit-learn', 'SHAP', 'Matplotlib'],
     summary:
-      'No region of England and Wales has returned below five times earnings since 2004. This system forecasts every region to 2030 and turns the result into auditable policy recommendations. The transparent model was also the more accurate: fixed-effects OLS beat a Random Forest on cross-validated R-squared, 0.9805 to 0.9676.',
+      'No region has returned below five times earnings since 2004, and none is forecast to reach a lower risk tier by 2030.',
     blurb:
       'Median house prices in England and Wales went from 3.5 times earnings in 1997 to 7.7 times in 2024, and no region has returned below the ONS benchmark of five since 2004. This decision-support system joins five government datasets into a 29-year regional panel, forecasts every region to 2030, and turns the result into auditable policy recommendations from a command-line tool. The interpretable model won: fixed-effects OLS reached a cross-validated R-squared of 0.9805 against 0.9676 for a Random Forest that overfitted. SHAP shows the same drivers lifting London and pulling the North East down, and no region is forecast to reach a lower risk tier by 2030.',
   },
@@ -49,7 +49,7 @@ export const research: ResearchItem[] = [
     // which cut the 82-million-row source file down; PyTorch is the LSTM.
     stack: ['Python', 'Polars', 'Pandas', 'statsmodels', 'XGBoost', 'PyTorch', 'scikit-learn'],
     summary:
-      "Can you tell a flight's price is about to jump? Across 1.94 million Expedia fare records, spikes proved predictable better than chance, though at a useful catch rate three warnings in four were false alarms. The LSTM lost every statistical comparison, yet is the right model once a missed rise costs 28 times a false alarm.",
+      'The LSTM lost every statistical comparison, yet is the right model once a missed rise costs 28 times a false alarm.',
     blurb:
       'Comparison sites tell you what a fare is. This study asks whether you can tell it is about to jump, a classification framing no published study had applied to flight prices. SARIMA, XGBoost and an LSTM were tested on 1,943,082 Expedia fare records across 63,301 US domestic flights, under five rounds of rolling-origin validation. Spikes are predictable better than chance (ROC AUC around 0.86), but at a useful catch rate three warnings in four are false alarms. The sharpest finding: the LSTM lost every statistical comparison, yet it is the right model once a missed rise costs 28 times a false alarm.',
   },
