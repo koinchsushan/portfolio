@@ -22,14 +22,22 @@ const SECTIONS: { id: string; label: string; href?: string }[] = [
   { id: 'contact', label: 'Contact', href: '/#contact' },
 ]
 
-const DESTINATIONS = [
+// `newTab` marks the one destination that is a document rather than a place
+// on the site: /resume is a Route Handler streaming the PDF inline, so it
+// opens in its own tab and the reader keeps their place here. It renders as
+// a plain <a>, since there is no client route for next/link to prefetch, and
+// RouteTransition already ignores any anchor with a target, so the wipe never
+// fires for it.
+const DESTINATIONS: { href: string; label: string; newTab?: boolean }[] = [
   { href: '/', label: 'Home' },
   { href: '/#work', label: 'Work' },
   { href: '/research', label: 'Research' },
   { href: '/#trajectory', label: 'Trajectory' },
   { href: '/#contact', label: 'Contact' },
-  { href: '/resume', label: 'Résumé' },
+  { href: '/resume', label: 'Résumé', newTab: true },
 ]
+
+const NEW_TAB_NOTE = <span className="sr-only"> (opens in a new tab)</span>
 
 /** A short, static label for routes that carry no home-section scrollspy. */
 const ROUTE_LABELS: Record<string, string> = {
@@ -113,7 +121,6 @@ export function Nav() {
 
   function isActive(href: string): boolean {
     if (href === '/research') return pathname === '/research'
-    if (href === '/resume') return false
     return isHome && currentSection?.href === href
   }
 
@@ -140,20 +147,29 @@ export function Nav() {
         </p>
 
         <ul className="hidden items-center gap-6 md:flex">
-          {DESTINATIONS.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                aria-current={isActive(link.href) ? 'true' : undefined}
-                className="text-14 text-label transition-colors hover:text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {DESTINATIONS.map((link) => {
+            const className =
+              'text-14 text-label transition-colors hover:text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4'
+            return (
+              <li key={link.href}>
+                {link.newTab ? (
+                  <a href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+                    {link.label}
+                    {NEW_TAB_NOTE}
+                  </a>
+                ) : (
+                  <Link href={link.href} aria-current={isActive(link.href) ? 'true' : undefined} className={className}>
+                    {link.label}
+                  </Link>
+                )}
+              </li>
+            )
+          })}
         </ul>
 
-        <div className="flex items-center gap-3 md:hidden">
+        {/* ml-auto, because on narrow viewports the flex-1 readout above is
+            hidden and nothing else pushes this group to the right edge. */}
+        <div className="ml-auto flex items-center gap-3 md:hidden">
           {positionLabel && (
             <span className="font-mono text-12 tabular-nums text-label" aria-hidden>
               {positionLabel}
@@ -180,18 +196,35 @@ export function Nav() {
 
       {open && (
         <ul id="mobile-nav" className="border-t border-grid px-6 py-2 md:hidden">
-          {DESTINATIONS.map((link) => (
-            <li key={link.href} className="border-b border-grid last:border-b-0">
-              <Link
-                href={link.href}
-                onClick={() => setOpen(false)}
-                aria-current={isActive(link.href) ? 'true' : undefined}
-                className="block py-3 text-16 text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {DESTINATIONS.map((link) => {
+            const className =
+              'block py-3 text-16 text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4'
+            return (
+              <li key={link.href} className="border-b border-grid last:border-b-0">
+                {link.newTab ? (
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    className={className}
+                  >
+                    {link.label}
+                    {NEW_TAB_NOTE}
+                  </a>
+                ) : (
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={isActive(link.href) ? 'true' : undefined}
+                    className={className}
+                  >
+                    {link.label}
+                  </Link>
+                )}
+              </li>
+            )
+          })}
         </ul>
       )}
     </header>

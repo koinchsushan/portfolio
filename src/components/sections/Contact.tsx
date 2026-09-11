@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { identity } from '@/content'
 import { ExternalLink } from '@/components/primitives/ExternalLink'
 import dynamic from 'next/dynamic'
@@ -61,12 +60,10 @@ export function Contact() {
                 </ExternalLink>
               </li>
               <li>
-                <Link
-                  href="/resume"
-                  className="text-label transition-colors hover:text-bone focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
-                >
+                {/* Opens the PDF in its own tab, like the two outbound links above it. */}
+                <ExternalLink href="/resume" className="text-label">
                   Résumé (PDF)
-                </Link>
+                </ExternalLink>
               </li>
             </ul>
           </div>
