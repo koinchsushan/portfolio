@@ -89,26 +89,41 @@ function pct(date: Date, domain: TimelineDomain): number {
 }
 
 /**
- * A broken axis: the stretch before `date` is compressed into `screenPct`
- * percent of the drawn width instead of its true linear share (`rawPct`).
- * Everything after the break gets the rest. `rawPct` and `screenPct` are
- * both cached here because every date on the axis has to pass through the
- * same two numbers to stay consistent with the break.
+ * A piecewise-linear axis. Each stop pins one date to a chosen share of the
+ * drawn width instead of its true linear share, and between stops the scale
+ * is linear again, so the map stays continuous and strictly increasing:
+ * dates that are ordered, or that overlap, stay ordered, or overlapping,
+ * after the transform. Only proportional duration changes.
+ *
+ * Two kinds of stop. `break` ends the early years that carry a single entry
+ * (drawn with a cut mark on the axis). `focus` is the Nepal-to-London move:
+ * everything after it is the dense, overlapping recent work, and it gets the
+ * far half of the axis. The dashed Nepal-to-London rule already marks that
+ * point, so it carries no cut mark of its own.
  */
-export interface AxisBreak {
+export interface AxisStop {
   date: Date
   rawPct: number
   screenPct: number
+  kind: 'break' | 'focus'
 }
 
-/** Percent of the drawn width given to everything before the break, per the
- *  brief's "roughly 15 to 20 percent" call: enough to acknowledge the early
- *  years exist without spending real width on a single entry. */
-const PRE_BREAK_SHARE = 18
+export interface AxisScale {
+  stops: AxisStop[]
+}
+
+/** Share of the drawn width given to everything before the early break: the
+ *  years that carry a single entry. Enough to acknowledge they exist. */
+const EARLY_SHARE = 12
+
+/** Where the focus date lands. Everything after it (the move to London, and
+ *  every overlapping role since) gets the remaining half of the width. It
+ *  was about a quarter when only the pre-2022 years were compressed. */
+const FOCUS_SHARE = 50
 
 /**
- * Finds where a broken axis should pivot, from the data itself rather than
- * a fixed date: the start of the second entry to begin, chronologically,
+ * Finds where the early break should pivot, from the data itself rather
+ * than a fixed date: the start of the second entry to begin, chronologically,
  * floored to 1 Jan of that year. One entry alone before that point cannot
  * make a lopsided axis, so a break only ever appears once a second entry's
  * start actually creates one, and it always lands on a real change in the
@@ -117,8 +132,8 @@ const PRE_BREAK_SHARE = 18
 export function findAxisBreak(
   entries: TimelineEntry[],
   domain: TimelineDomain,
-  preBreakShare: number = PRE_BREAK_SHARE,
-): AxisBreak | null {
+  preBreakShare: number = EARLY_SHARE,
+): AxisStop | null {
   const starts = [...new Set(entries.map((e) => e.range.start.getTime()))].sort((a, b) => a - b)
   if (starts.length < 2) return null
 
@@ -129,22 +144,49 @@ export function findAxisBreak(
   // break that does nothing.
   if (rawPct <= 0 || rawPct >= 100) return null
 
-  return { date: breakDate, rawPct, screenPct: preBreakShare }
+  return { date: breakDate, rawPct, screenPct: preBreakShare, kind: 'break' }
 }
 
 /**
- * Maps a linear (raw) percent position onto the broken axis: everything
- * before the break is rescaled into `screenPct`'s share of the width,
- * everything after into the remainder. Both halves are separately linear,
- * so the map is continuous and strictly increasing wherever the input is,
- * meaning two dates that are ordered, or that overlap, stay ordered, or
- * overlapping, after the transform , only proportional duration changes.
+ * The axis scale: the early break, plus a focus stop at `focus` when one is
+ * given. The focus stop is only added when it genuinely compresses, meaning
+ * it lies inside the domain, after the early break, and its true position is
+ * further right than the share it is pinned to. Anything else would stretch
+ * the early years instead of the recent ones.
  */
-function toScreenPct(rawPct: number, axisBreak: AxisBreak | null): number {
-  if (!axisBreak) return rawPct
-  const { rawPct: breakRaw, screenPct: breakScreen } = axisBreak
-  if (rawPct <= breakRaw) return (rawPct / breakRaw) * breakScreen
-  return breakScreen + ((rawPct - breakRaw) / (100 - breakRaw)) * (100 - breakScreen)
+export function buildAxisScale(
+  entries: TimelineEntry[],
+  domain: TimelineDomain,
+  focus: Date | null = null,
+): AxisScale | null {
+  const stops: AxisStop[] = []
+  const early = findAxisBreak(entries, domain)
+  if (early) stops.push(early)
+
+  if (focus) {
+    const rawPct = pct(focus, domain)
+    const prev = stops[stops.length - 1]
+    const inside = rawPct > 0 && rawPct < 100
+    const compresses = rawPct > FOCUS_SHARE
+    const afterPrev = !prev || (rawPct > prev.rawPct && FOCUS_SHARE > prev.screenPct)
+    if (inside && compresses && afterPrev) stops.push({ date: focus, rawPct, screenPct: FOCUS_SHARE, kind: 'focus' })
+  }
+
+  return stops.length > 0 ? { stops } : null
+}
+
+/** Maps a linear (raw) percent position onto the piecewise axis. */
+function toScreenPct(rawPct: number, scale: AxisScale | null): number {
+  if (!scale) return rawPct
+  const points = [{ rawPct: 0, screenPct: 0 }, ...scale.stops, { rawPct: 100, screenPct: 100 }]
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1]
+    const b = points[i]
+    if (rawPct <= b.rawPct || i === points.length - 1) {
+      return a.screenPct + ((rawPct - a.rawPct) / (b.rawPct - a.rawPct)) * (b.screenPct - a.screenPct)
+    }
+  }
+  return rawPct
 }
 
 /**
@@ -180,12 +222,12 @@ export function assignLanes(entries: TimelineEntry[]): number[] {
 export function positionEntries(
   entries: TimelineEntry[],
   domain: TimelineDomain,
-  axisBreak: AxisBreak | null = null,
+  scale: AxisScale | null = null,
 ): PositionedEntry[] {
   const lanes = assignLanes(entries)
   return entries.map((entry, i) => {
-    const startPct = toScreenPct(pct(entry.range.start, domain), axisBreak)
-    const endPct = toScreenPct(pct(entry.range.end, domain), axisBreak)
+    const startPct = toScreenPct(pct(entry.range.start, domain), scale)
+    const endPct = toScreenPct(pct(entry.range.end, domain), scale)
     return { ...entry, lane: lanes[i], startPct, spanPct: Math.max(endPct - startPct, 0.5) }
   })
 }
@@ -196,12 +238,12 @@ export interface YearTick {
 }
 
 /** One tick per calendar year whose Jan 1 falls inside the domain. */
-export function yearTicks(domain: TimelineDomain, axisBreak: AxisBreak | null = null): YearTick[] {
+export function yearTicks(domain: TimelineDomain, scale: AxisScale | null = null): YearTick[] {
   const ticks: YearTick[] = []
   for (let year = domain.start.getFullYear(); year <= domain.end.getFullYear(); year++) {
     const jan1 = new Date(year, 0, 1).getTime()
     if (jan1 < domain.start.getTime() || jan1 > domain.end.getTime()) continue
-    ticks.push({ year, pct: toScreenPct(pct(new Date(year, 0, 1), domain), axisBreak) })
+    ticks.push({ year, pct: toScreenPct(pct(new Date(year, 0, 1), domain), scale) })
   }
   return ticks
 }
