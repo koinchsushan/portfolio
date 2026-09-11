@@ -52,6 +52,10 @@ export interface ResearchItem {
   title: string
   repo: string
   blurb: string
+  /** A shorter version of `blurb` for the home page's research tiles, which
+   *  sit beside the flagship study in a fixed grid. The full `blurb` still
+   *  reads on /research. Falls back to `blurb` when absent. */
+  summary?: string
   year?: string
   stack?: string[]
   licence?: string
