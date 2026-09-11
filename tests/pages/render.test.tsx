@@ -32,9 +32,24 @@ describe('site renders', () => {
     }
   })
 
-  it('draft copy is visibly marked', () => {
-    render(<Home />)
-    expect(screen.getAllByText(/DRAFT: owner to rewrite/).length).toBeGreaterThan(0)
+  // Tests the mechanism, not the content. This used to assert that some real
+  // copy on the home page was still a draft, which fails the moment the owner
+  // approves the last one. What has to hold is that any item flagged `draft`
+  // renders the marker, so one is flagged here through a mocked content module.
+  it('draft copy is visibly marked', async () => {
+    vi.resetModules()
+    vi.doMock('@/content', async (importOriginal) => {
+      const actual = await importOriginal<typeof import('@/content')>()
+      return { ...actual, research: actual.research.map((item, i) => (i === 2 ? { ...item, draft: true } : item)) }
+    })
+    try {
+      const { Research } = await import('@/components/sections/Research')
+      render(<Research />)
+      expect(screen.getAllByText(/DRAFT: owner to rewrite/).length).toBeGreaterThan(0)
+    } finally {
+      vi.doUnmock('@/content')
+      vi.resetModules()
+    }
   })
 
   it.each(caseStudies.map((c) => c.slug))('%s renders the full template', async (slug) => {
