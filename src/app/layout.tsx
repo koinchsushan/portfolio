@@ -6,6 +6,7 @@ import { Nav } from '@/components/layout/Nav'
 import { Footer } from '@/components/layout/Footer'
 import { SmoothScroll } from '@/components/motion/SmoothScroll'
 import { RouteTransition } from '@/components/motion/RouteTransition'
+import { InPageNavigation } from '@/components/motion/InPageNavigation'
 import { Boot } from '@/components/motion/Boot'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { identity } from '@/content'
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <JsonLd data={personJsonLd()} />
         <SmoothScroll />
         <RouteTransition />
+        <InPageNavigation />
         <SkipLink />
         <Nav />
         <main id="main" className="pt-16">

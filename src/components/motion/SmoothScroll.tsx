@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useReducedMotion } from '@/lib/useReducedMotion'
+import { registerLenis } from '@/lib/smoothScroll'
 
 /**
  * Site-wide smooth scroll. Renders nothing; it only attaches Lenis to the
@@ -29,6 +30,9 @@ export function SmoothScroll() {
     void import('lenis').then(({ default: Lenis }) => {
       if (cancelled) return
       lenis = new Lenis()
+      // In-page navigation scrolls through this same instance (see
+      // `scrollToTarget`), so a nav jump never races Lenis's own loop.
+      registerLenis(lenis)
 
       const raf = (time: number) => {
         lenis?.raf(time)
@@ -40,6 +44,7 @@ export function SmoothScroll() {
     return () => {
       cancelled = true
       cancelAnimationFrame(frame)
+      registerLenis(null)
       lenis?.destroy()
     }
   }, [reducedMotion])

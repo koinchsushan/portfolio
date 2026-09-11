@@ -28,6 +28,20 @@ const BEATS: { key: BeatKey; label: string }[] = [
  *  not a long drag, per owner review (Task K). */
 const MIN_PIN_DISTANCE_PX = 1200
 
+/**
+ * The pin's scroll distance, reserved in the layout from first paint on the
+ * `full` tier rather than inserted by ScrollTrigger when GSAP arrives. The
+ * driver is deliberately lazy (it mounts only once a study scrolls into
+ * view, to keep GSAP out of the initial bundle), and a lazily inserted pin
+ * spacer made the page grow by this much, three times over, while a reader
+ * was already scrolling through it. A nav jump from the top to Contact was
+ * aimed at the pre-pin layout and landed about 8,400px short, inside Work.
+ * Reserving the space up front keeps every section below Work at the same
+ * position before and after the pins exist. The driver reads this back from
+ * the computed padding, so the two can never disagree.
+ */
+const PIN_RESERVE = `max(120vh, ${MIN_PIN_DISTANCE_PX}px)`
+
 /** Cuts prose to its first sentence. Never invents text: only ever returns a
  * prefix of what `src/content/` already states. Used solely for the pinned
  * teaser frame , the full paragraph still reads on `/work/<slug>` and in the
@@ -120,7 +134,7 @@ function beatBodyLead(key: BeatKey, study: CaseStudy) {
  */
 export function PinnedStory({ study }: { study: CaseStudy }) {
   const { tier } = useCapability()
-  const [node, setNode] = useState<HTMLLIElement | null>(null)
+  const [node, setNode] = useState<HTMLDivElement | null>(null)
   const [hasIntersected, setHasIntersected] = useState(false)
   const [progress, setProgress] = useState(0)
 
@@ -128,7 +142,7 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
   // needs the real DOM node as a prop, and a plain ref's `.current` mutation
   // does not itself trigger a re-render once it changes from null to the
   // mounted element.
-  const setTriggerNode = useCallback((el: HTMLLIElement | null) => setNode(el), [])
+  const setTriggerNode = useCallback((el: HTMLDivElement | null) => setNode(el), [])
 
   const pinned = tier === 'full'
 
@@ -157,12 +171,17 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
   const activeBeat = pinned ? Math.min(BEATS.length - 1, Math.floor(progress * BEATS.length)) : BEATS.length - 1
 
   return (
+    // The <li> holds the reserved pin distance as bottom padding; the inner
+    // block is what pins, so the reservation stays in flow behind it.
     <li
-      ref={setTriggerNode}
       data-pinned={pinned ? 'true' : 'false'}
       data-progress={pinned ? progress.toFixed(3) : 1}
-      className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-grid py-14 lg:grid-cols-12 lg:gap-x-10 lg:py-20"
+      style={pinned ? { paddingBottom: PIN_RESERVE } : undefined}
     >
+      <div
+        ref={setTriggerNode}
+        className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-grid py-14 lg:grid-cols-12 lg:gap-x-10 lg:py-20"
+      >
       {pinned && node && hasIntersected && <ScrollPinDriver node={node} onProgress={setProgress} />}
 
       <div className="lg:col-span-3">
@@ -230,6 +249,7 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
 
       <div className="border border-grid bg-panel p-6 lg:col-span-5">
         <Diagram id={study.diagram} progress={diagramProgress} className="h-auto w-full" />
+      </div>
       </div>
     </li>
   )

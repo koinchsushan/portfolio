@@ -2,10 +2,6 @@
 
 import { useEffect } from 'react'
 
-/** Minimum scroll distance a study pins for. Four short, deliberate steps ,
- *  not a long drag, per owner review (Task K). */
-const MIN_PIN_DISTANCE_PX = 1200
-
 /**
  * The only module in the project that touches GSAP or ScrollTrigger. Split
  * out of `PinnedStory.tsx` on purpose: `PinnedStory` mounts this through
@@ -30,6 +26,11 @@ export function ScrollPinDriver({
   useEffect(() => {
     let cancelled = false
     let ctx: { revert: () => void } | undefined
+    // Captured now, before anything pins: once ScrollTrigger pins `node` it
+    // wraps it in a pin-spacer, so on any later refresh (a resize, say)
+    // `node.parentElement` would be that spacer, with no padding, and the
+    // pin distance would silently collapse to zero.
+    const reserve = node.parentElement ?? node
 
     void (async () => {
       const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')])
@@ -41,8 +42,13 @@ export function ScrollPinDriver({
         ScrollTrigger.create({
           trigger: node,
           start: 'top top',
-          end: () => `+=${Math.max(window.innerHeight * 1.2, MIN_PIN_DISTANCE_PX)}`,
+          // The distance is already reserved in the layout, as bottom padding
+          // on the pinned block's parent (see `PIN_RESERVE` in PinnedStory).
+          // Read it back rather than recomputing it, and let ScrollTrigger add
+          // no spacing of its own, so mounting this changes no positions.
+          end: () => `+=${Number.parseFloat(getComputedStyle(reserve).paddingBottom) || 0}`,
           pin: true,
+          pinSpacing: false,
           scrub: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => onProgress(self.progress),

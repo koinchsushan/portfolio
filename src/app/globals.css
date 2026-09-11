@@ -28,7 +28,12 @@
 
 html {
   color-scheme: dark;
-  scroll-padding-top: 5rem;
+  /* The one header offset for every in-page jump: native anchors, the
+     router's scrollIntoView on cross-page arrivals, and Lenis's scrollTo all
+     read it. Exactly the fixed header (h-16 plus its 1px position bar), so a
+     section's top lands flush under it. It was 5rem, which left a 15px strip
+     of the previous section showing above the one you asked for. */
+  scroll-padding-top: calc(4rem + 1px);
 }
 
 body {
@@ -116,11 +121,15 @@ body {
   border-radius: var(--radius);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
+/* No CSS `scroll-behavior: smooth`, deliberately. Smooth motion belongs to
+   Lenis alone, and in-page jumps to InPageNavigation, which routes through
+   Lenis. A CSS smooth scroll is a second, uncontrolled scroller: on a fresh
+   load of /#contact the browser ran its hash jump as a native smooth scroll
+   before Lenis had loaded, that scroll passed through Work, the first case
+   study's pin mounted mid-flight, and ScrollTrigger's setup cancelled the jump
+   at y~3,200, nowhere near Contact. Without the rule, the browser's load-time
+   jump is instant and never crosses Work at all. Next 16 no longer overrides
+   this during navigation either, so it cannot sneak back in there. */
 
 /* The `lite` capability tier's stand-in for the WebGL hero field: two soft,
    slow-drifting colour fields (no shader, just background-position) mixed

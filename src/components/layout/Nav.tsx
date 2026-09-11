@@ -6,20 +6,24 @@ import Link from 'next/link'
 import { List, X } from '@phosphor-icons/react/dist/ssr'
 
 /**
- * The seven home-page sections in document order, each already carrying a
- * matching `id` (`src/components/sections/*`). `href` is set only where a
- * destination link below actually targets that section, so `aria-current`
- * can compare against a real href instead of guessing from a label string.
+ * The eight home-page sections in document order, each already carrying a
+ * matching `id` (`src/components/sections/*`), and the nav destination each
+ * one belongs to. The nav is a table of contents, so a section with no item
+ * of its own highlights the nearest item before it: Position is still Home,
+ * Stack sits under Research, About under Trajectory. Before this, only three
+ * of the eight sections lit anything, so half the page scrolled past with the
+ * nav blank. `nav` is a real destination href, so `aria-current` compares
+ * against it rather than guessing from a label.
  */
-const SECTIONS: { id: string; label: string; href?: string }[] = [
-  { id: 'hero', label: 'Hero', href: '/' },
-  { id: 'position', label: 'Position' },
-  { id: 'work', label: 'Selected Work', href: '/#work' },
-  { id: 'research', label: 'Research' },
-  { id: 'stack', label: 'Stack' },
-  { id: 'trajectory', label: 'Trajectory', href: '/#trajectory' },
-  { id: 'about', label: 'About' },
-  { id: 'contact', label: 'Contact', href: '/#contact' },
+const SECTIONS: { id: string; label: string; nav: string }[] = [
+  { id: 'hero', label: 'Hero', nav: '/' },
+  { id: 'position', label: 'Position', nav: '/' },
+  { id: 'work', label: 'Selected Work', nav: '/#work' },
+  { id: 'research', label: 'Research', nav: '/research' },
+  { id: 'stack', label: 'Stack', nav: '/research' },
+  { id: 'trajectory', label: 'Trajectory', nav: '/#trajectory' },
+  { id: 'about', label: 'About', nav: '/#trajectory' },
+  { id: 'contact', label: 'Contact', nav: '/#contact' },
 ]
 
 // `newTab` marks the one destination that is a document rather than a place
@@ -71,13 +75,31 @@ export function Nav() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [scrollFraction, setScrollFraction] = useState(0)
 
-  // Position through the page: meaningful on every route, not just the
-  // scrollspied home page, so it is computed unconditionally.
+  // Position through the page, and on home the current section, from one
+  // scroll handler. The percentage is meaningful on every route.
+  //
+  // The current section is the last one whose top has crossed a line 30% of
+  // the way down the viewport, or the last section once the page can scroll
+  // no further. That has exactly one answer for any scroll position and is
+  // recomputed on every scroll, so it cannot go stale. The IntersectionObserver
+  // it replaces reacted only to sections entering a thin band and let the last
+  // entry in a batch win: after a nav jump two sections could straddle the band
+  // at once, and the nav lit Home while the reader sat at Work.
   useEffect(() => {
     function update() {
       const doc = document.documentElement
       const scrollable = doc.scrollHeight - doc.clientHeight
       setScrollFraction(scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0)
+      if (!isHome) return
+
+      const line = window.innerHeight * 0.3
+      let index = 0
+      SECTIONS.forEach((section, i) => {
+        const el = document.getElementById(section.id)
+        if (el && el.getBoundingClientRect().top <= line) index = i
+      })
+      if (scrollable > 0 && window.scrollY >= scrollable - 2) index = SECTIONS.length - 1
+      setActiveIndex(index)
     }
     update()
     window.addEventListener('scroll', update, { passive: true })
@@ -86,31 +108,7 @@ export function Nav() {
       window.removeEventListener('scroll', update)
       window.removeEventListener('resize', update)
     }
-  }, [pathname])
-
-  // Current section: home page only, via IntersectionObserver against each
-  // section's own id. A section counts as "current" once it has crossed
-  // roughly the top third of the viewport, the standard scrollspy line.
-  useEffect(() => {
-    if (!isHome || typeof IntersectionObserver === 'undefined') return
-    const elements = SECTIONS.map((s) => document.getElementById(s.id)).filter(
-      (el): el is HTMLElement => el !== null,
-    )
-    if (elements.length === 0) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          const idx = elements.indexOf(entry.target as HTMLElement)
-          if (idx !== -1) setActiveIndex(idx)
-        }
-      },
-      { rootMargin: '-15% 0px -70% 0px', threshold: 0 },
-    )
-    elements.forEach((el) => observer.observe(el))
-    return () => observer.disconnect()
-  }, [isHome])
+  }, [pathname, isHome])
 
   const currentSection = isHome ? SECTIONS[activeIndex] : undefined
   const currentLabel = currentSection?.label ?? routeLabel(pathname)
@@ -119,9 +117,14 @@ export function Nav() {
     : null
   const percent = Math.round(scrollFraction * 100)
 
+  // One rule per kind of page: on home, whichever item owns the section in
+  // view; on /research, Research; on a case study, Work, since that is where
+  // the case studies live on the home page.
   function isActive(href: string): boolean {
-    if (href === '/research') return pathname === '/research'
-    return isHome && currentSection?.href === href
+    if (isHome) return currentSection?.nav === href
+    if (pathname === '/research') return href === '/research'
+    if (pathname.startsWith('/work/')) return href === '/#work'
+    return false
   }
 
   return (
