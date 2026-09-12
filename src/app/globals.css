@@ -208,6 +208,25 @@ a[aria-current='true'] > .link-datum::after {
   clip-path: inset(-6px 100% -6px -6px);
 }
 
+/* COUNT. While a figure is counting, the real value stays in the DOM as text
+   and is hidden exactly the way `sr-only` hides anything, and the running
+   count is painted as generated content instead. Nothing a screen reader or
+   a test reads is ever a frame of the animation, and the moment the class
+   comes off, what is on screen is the source string itself. The class is
+   only ever added by `CountUpMetric`, and only when motion is welcome. */
+.count-up.is-counting > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.count-up.is-counting::after {
+  content: var(--count, '');
+}
+
 /* The nav's position readout is an instrument, so it ticks when it changes
    rather than swapping silently. Keyed remount replays it; eight changes
    over a whole page, not a loop. */
@@ -257,6 +276,17 @@ a[aria-current='true'] > .link-datum::after {
   .readout-tick,
   .disclose-item {
     animation: none;
+  }
+  /* Belt to `CountUpMetric`'s own reduced-motion check: even if the class
+     were ever added, the figure itself stays visible and no count paints. */
+  .count-up.is-counting > span {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+  .count-up.is-counting::after {
+    content: none;
   }
 }
 

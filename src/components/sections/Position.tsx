@@ -2,7 +2,7 @@
 
 import { getCaseStudy } from '@/content'
 import type { Metric as MetricType } from '@/content'
-import { Metric } from '@/components/primitives/Metric'
+import { CountUpMetric } from '@/components/primitives/CountUpMetric'
 import { Datum } from '@/components/graphics/Datum'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 import { useRevealText } from '@/lib/useRevealText'
@@ -83,7 +83,15 @@ export function Position() {
                 <RevealOnView delay={i * 90}>
                   <Datum className="mb-3 h-3 w-24" />
                 </RevealOnView>
-                <Metric value={metric.value} tone={i === 0 ? 'signal' : 'bone'} className="sm:text-64" />
+                {/* Scale and needle move together, and the only wait is the
+                    60ms stagger that keeps the three reading as separate
+                    instruments rather than one block of numbers. */}
+                <CountUpMetric
+                  value={metric.value}
+                  tone={i === 0 ? 'signal' : 'bone'}
+                  delay={i * 60}
+                  className="sm:text-64"
+                />
                 {UNITS[metric.value] && (
                   <p className="mt-2 font-mono text-12 tracking-[0.08em] text-label">{UNITS[metric.value]}</p>
                 )}
