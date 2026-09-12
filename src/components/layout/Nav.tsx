@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { List, X } from '@phosphor-icons/react/dist/ssr'
@@ -132,7 +132,7 @@ export function Nav() {
       <nav aria-label="Primary" className="mx-auto flex h-16 max-w-[1400px] items-center gap-6 px-6">
         <Link
           href="/"
-          className="shrink-0 font-mono text-14 text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+          className="press shrink-0 font-mono text-14 text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
         >
           Sushan Sunuwar
         </Link>
@@ -144,15 +144,28 @@ export function Nav() {
           aria-live="polite"
           className="hidden min-w-0 flex-1 items-baseline gap-2 font-mono text-12 text-label md:flex"
         >
-          {positionLabel && <span className="shrink-0 tabular-nums text-signal">{positionLabel}</span>}
-          <span className="truncate uppercase tracking-[0.08em]">{currentLabel}</span>
+          {/* Keyed on the value, so React remounts the span and the tick
+              animation replays: the readout steps to its new reading the way
+              an instrument does rather than swapping silently. */}
+          {positionLabel && (
+            <span key={positionLabel} className="readout-tick shrink-0 tabular-nums text-signal">
+              {positionLabel}
+            </span>
+          )}
+          <span key={currentLabel} className="readout-tick truncate uppercase tracking-[0.08em]">
+            {currentLabel}
+          </span>
           <span className="shrink-0 tabular-nums text-label">{percent}%</span>
         </p>
 
         <ul className="hidden items-center gap-6 md:flex">
           {DESTINATIONS.map((link) => {
+            // `link-datum` draws the accent hairline under the item the
+            // pointer is on, and leaves it drawn under the section the
+            // reader is actually in. Colour still states the same thing on
+            // its own, so the line is a second channel, never the only one.
             const className =
-              'text-14 text-label transition-colors hover:text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4'
+              'link-datum press inline-block text-14 text-label transition-colors hover:text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4'
             return (
               <li key={link.href}>
                 {link.newTab ? (
@@ -174,7 +187,7 @@ export function Nav() {
             hidden and nothing else pushes this group to the right edge. */}
         <div className="ml-auto flex items-center gap-3 md:hidden">
           {positionLabel && (
-            <span className="font-mono text-12 tabular-nums text-label" aria-hidden>
+            <span key={positionLabel} className="readout-tick font-mono text-12 tabular-nums text-label" aria-hidden>
               {positionLabel}
             </span>
           )}
@@ -185,7 +198,14 @@ export function Nav() {
             onClick={() => setOpen((v) => !v)}
             className="inline-flex items-center justify-center rounded-[var(--radius)] p-2 text-bone focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
           >
-            {open ? <X size={20} aria-hidden /> : <List size={20} aria-hidden />}
+            {/* The glyph turns as it swaps, so the button reads as one
+                control changing state rather than two icons trading places.
+                Fixed box, so nothing around it moves. */}
+            <span
+              className={`inline-flex transition-transform duration-200 ease-[var(--ease-resolve)] ${open ? 'rotate-90' : ''}`}
+            >
+              {open ? <X size={20} aria-hidden /> : <List size={20} aria-hidden />}
+            </span>
             <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
           </button>
         </div>
@@ -199,11 +219,15 @@ export function Nav() {
 
       {open && (
         <ul id="mobile-nav" className="border-t border-grid px-6 py-2 md:hidden">
-          {DESTINATIONS.map((link) => {
+          {DESTINATIONS.map((link, index) => {
             const className =
-              'block py-3 text-16 text-bone aria-[current=true]:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4'
+              'block py-3 text-16 text-bone transition-colors aria-[current=true]:text-signal active:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4'
             return (
-              <li key={link.href} className="border-b border-grid last:border-b-0">
+              <li
+                key={link.href}
+                style={{ '--index': index } as CSSProperties}
+                className="disclose-item border-b border-grid last:border-b-0"
+              >
                 {link.newTab ? (
                   <a
                     href={link.href}

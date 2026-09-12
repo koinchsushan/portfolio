@@ -5,16 +5,23 @@ import type { ReactNode } from 'react'
 /**
  * A CTA-weight link: internal (Next `Link`, e.g. "#work") or a mailto/tel
  * style href. Not for links that open a new tab, use `ExternalLink` there.
+ *
+ * `datum` opts the link into the site's hover vocabulary: an accent hairline
+ * drawing under the label, and a 1px press on tap. It is a prop rather than
+ * the default because the hero's two CTAs are deliberately left exactly as
+ * they are, and they are the only call sites that omit it.
  */
 export function ActionLink({
   href,
   children,
   variant = 'primary',
+  datum = false,
   className = '',
 }: {
   href: string
   children: ReactNode
   variant?: 'primary' | 'quiet'
+  datum?: boolean
   className?: string
 }) {
   const base =
@@ -25,12 +32,12 @@ export function ActionLink({
       : 'text-label hover:text-bone'
 
   return (
-    <Link href={href} className={`${base} ${styles} ${className}`}>
-      {children}
+    <Link href={href} className={`${base} ${styles} ${datum ? 'press' : ''} ${className}`}>
+      <span className={datum ? 'link-datum' : undefined}>{children}</span>
       <ArrowRight
         weight="bold"
         aria-hidden
-        className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5"
+        className="size-3.5 transition-transform duration-[var(--dur-hover)] ease-[var(--ease-resolve)] group-hover:translate-x-1"
       />
     </Link>
   )

@@ -107,7 +107,7 @@ export function Research() {
         </ul>
 
         <p className="mt-10">
-          <ActionLink href="/research" variant="quiet">
+          <ActionLink href="/research" variant="quiet" datum>
             Read the full research page
           </ActionLink>
         </p>

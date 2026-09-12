@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { Education, Role } from '@/content'
+import { RevealOnView } from '@/components/motion/RevealOnView'
 import {
   buildAxisScale,
   parseDateRange,
@@ -301,77 +302,85 @@ export function TrajectoryAxis({ roles, education }: { roles: Role[]; education:
         </span>
       </div>
 
-      <div
-        role="img"
-        aria-label={`Timeline of commercial roles, research and education, ${domainLabel}: ${axisDescription}.`}
-        className="relative mt-3 h-[30rem] w-full border border-grid bg-panel md:h-[15rem]"
-      >
-        {/* Year ticks, plus the axis-break notch if the axis has one */}
-        <div className={LANE_CLASS} style={posVar(tickSlot.pos, tickSlot.span)} aria-hidden>
-          <div className="relative h-full w-full">
-            {ticks.map((tick) => (
-              <div key={tick.year}>
-                <div className={TICK_LINE_CLASS} style={posVar(tick.pct)} />
-                <span className={TICK_LABEL_CLASS} style={posVar(tick.pct)}>
-                  &apos;{String(tick.year).slice(-2)}
-                </span>
-              </div>
-            ))}
-            {earlyBreak && (
-              <div className={AXIS_BREAK_CLASS} style={posVar(earlyBreak.screenPct)}>
-                <span className={AXIS_BREAK_TICK_CLASS} />
-                <span className={AXIS_BREAK_TICK_CLASS} />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {tracks.map((track) => (
-          <div key={`${track.name}-group`}>
-            <div className={LANE_CLASS} style={posVar(track.headerSlot.pos, track.headerSlot.span)} aria-hidden>
-              <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
-                <span className={TRACK_LABEL_CLASS}>{track.name}</span>
-              </div>
+      {/* The plot draws itself in the direction it already reads in: left to
+          right, the way time runs through it. Only the plot. The legend
+          above it, the small-screen list of entries and the caption below
+          are text, and text on this site never arrives by being uncovered.
+          `RevealOnView` carries the whole no-JavaScript and reduced-motion
+          contract: this is complete and static unless motion is welcome. */}
+      <RevealOnView>
+        <div
+          role="img"
+          aria-label={`Timeline of commercial roles, research and education, ${domainLabel}: ${axisDescription}.`}
+          className="relative mt-3 h-[30rem] w-full border border-grid bg-panel md:h-[15rem]"
+        >
+          {/* Year ticks, plus the axis-break notch if the axis has one */}
+          <div className={LANE_CLASS} style={posVar(tickSlot.pos, tickSlot.span)} aria-hidden>
+            <div className="relative h-full w-full">
+              {ticks.map((tick) => (
+                <div key={tick.year}>
+                  <div className={TICK_LINE_CLASS} style={posVar(tick.pct)} />
+                  <span className={TICK_LABEL_CLASS} style={posVar(tick.pct)}>
+                    &apos;{String(tick.year).slice(-2)}
+                  </span>
+                </div>
+              ))}
+              {earlyBreak && (
+                <div className={AXIS_BREAK_CLASS} style={posVar(earlyBreak.screenPct)}>
+                  <span className={AXIS_BREAK_TICK_CLASS} />
+                  <span className={AXIS_BREAK_TICK_CLASS} />
+                </div>
+              )}
             </div>
+          </div>
 
-            {track.laneSlots.map((slot, lane) => (
-              <div key={`${track.name}-lane-${lane}`} className={LANE_CLASS} style={posVar(slot.pos, slot.span)} aria-hidden>
+          {tracks.map((track) => (
+            <div key={`${track.name}-group`}>
+              <div className={LANE_CLASS} style={posVar(track.headerSlot.pos, track.headerSlot.span)} aria-hidden>
                 <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
-                  {track.positioned
-                    .filter((e) => e.lane === lane)
-                    .map((entry) => (
-                      <div key={entry.key} title={`${entry.heading}, ${entry.sub}, ${entry.range.current ? 'current' : ''}`}>
-                        <div className={`${BAR_CLASS} ${track.bar(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
-                        <span
-                          className={labelAnchor(entry).className}
-                          style={posVar(labelAnchor(entry).pos)}
-                        >
-                          {entry.sub}
-                        </span>
-                      </div>
-                    ))}
+                  <span className={TRACK_LABEL_CLASS}>{track.name}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        ))}
 
-        {londonEntry && (
-          <>
-            <div className={MARKER_LINE_CLASS} style={posVar(londonEntry.startPct)} aria-hidden />
-            <span className={MARKER_LABEL_CLASS} style={posVar(londonEntry.startPct)} aria-hidden>
-              Nepal &rarr; London
-            </span>
-          </>
-        )}
+              {track.laneSlots.map((slot, lane) => (
+                <div key={`${track.name}-lane-${lane}`} className={LANE_CLASS} style={posVar(slot.pos, slot.span)} aria-hidden>
+                  <div className="relative h-full w-full border-t border-grid md:border-t-0 md:border-l">
+                    {track.positioned
+                      .filter((e) => e.lane === lane)
+                      .map((entry) => (
+                        <div key={entry.key} title={`${entry.heading}, ${entry.sub}, ${entry.range.current ? 'current' : ''}`}>
+                          <div className={`${BAR_CLASS} ${track.bar(entry.range.current)}`} style={posVar(entry.startPct, entry.spanPct)} />
+                          <span
+                            className={labelAnchor(entry).className}
+                            style={posVar(labelAnchor(entry).pos)}
+                          >
+                            {entry.sub}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
 
-        {/* Domain bounds echo the diagrams' own input/output markers: the
-            axis starts on unresolved --label and ends on resolved --signal,
-            the same two positions the record actually starts and reaches
-            "now" at, not new data. */}
-        <span aria-hidden className="absolute left-0 top-0 size-2 -translate-x-1 -translate-y-1 bg-label" />
-        <span aria-hidden className="absolute top-0 right-0 size-2 translate-x-1 -translate-y-1 bg-signal" />
-      </div>
+          {londonEntry && (
+            <>
+              <div className={MARKER_LINE_CLASS} style={posVar(londonEntry.startPct)} aria-hidden />
+              <span className={MARKER_LABEL_CLASS} style={posVar(londonEntry.startPct)} aria-hidden>
+                Nepal &rarr; London
+              </span>
+            </>
+          )}
+
+          {/* Domain bounds echo the diagrams' own input/output markers: the
+              axis starts on unresolved --label and ends on resolved --signal,
+              the same two positions the record actually starts and reaches
+              "now" at, not new data. */}
+          <span aria-hidden className="absolute left-0 top-0 size-2 -translate-x-1 -translate-y-1 bg-label" />
+          <span aria-hidden className="absolute top-0 right-0 size-2 translate-x-1 -translate-y-1 bg-signal" />
+        </div>
+      </RevealOnView>
 
       {/* Below md each track column is only about 60px wide, far too narrow to
           carry a 30-character name without spilling past the viewport. On small

@@ -188,7 +188,7 @@ export function PinnedStory({ study }: { study: CaseStudy }) {
         <h3>
           <Link
             href={`/work/${study.slug}`}
-            className="font-subhead text-28 tracking-[-0.01em] text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+            className="link-datum press inline-block font-subhead text-28 tracking-[-0.01em] text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
           >
             {study.client}
           </Link>

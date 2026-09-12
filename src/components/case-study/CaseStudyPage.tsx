@@ -135,14 +135,14 @@ export function CaseStudyPage({ caseStudy, previous, next }: CaseStudyPageProps)
           <ul className="contents">
             {previous && (
               <li>
-                <ActionLink href={`/work/${previous.slug}`} variant="quiet">
+                <ActionLink href={`/work/${previous.slug}`} variant="quiet" datum>
                   Previous: {previous.client}
                 </ActionLink>
               </li>
             )}
             {next && (
               <li>
-                <ActionLink href={`/work/${next.slug}`}>Next: {next.client}</ActionLink>
+                <ActionLink href={`/work/${next.slug}`} datum>Next: {next.client}</ActionLink>
               </li>
             )}
           </ul>

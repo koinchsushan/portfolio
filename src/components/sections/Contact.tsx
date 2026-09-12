@@ -35,9 +35,13 @@ export function Contact() {
             </h2>
             <p className="mt-6 max-w-[40ch] text-18 leading-relaxed text-label">{identity.availability}</p>
 
+            {/* Hover used to fade this to 80% opacity, which made the one
+                thing the section is asking you to do quieter as you reached
+                for it. The rule under it thickens and steps away instead:
+                more present, and the same hairline vocabulary as the rest. */}
             <a
               href={`mailto:${identity.email}`}
-              className="mt-10 inline-block font-mono text-28 text-signal underline decoration-1 underline-offset-8 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-8 sm:text-40"
+              className="press mt-10 inline-block font-mono text-28 text-signal underline decoration-1 underline-offset-8 transition-[text-decoration-thickness,text-underline-offset] duration-[var(--dur-hover)] ease-[var(--ease-resolve)] hover:decoration-2 hover:underline-offset-[10px] focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-8 sm:text-40"
             >
               {identity.email}
             </a>

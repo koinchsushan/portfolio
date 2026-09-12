@@ -37,4 +37,26 @@
   --fs-64: clamp(2.25rem, 1.65rem + 3vw, 4rem);
   --fs-104: clamp(2.75rem, 1.5rem + 6.25vw, 6.5rem);
   --fs-160: clamp(3rem, 0.8rem + 11vw, 10rem);
+
+  /* Motion tokens. One easing and three durations for the whole site, so a
+     hover, a press and a reveal read as the same hand rather than as three
+     unrelated effects. The curve is the one the text reveal already used
+     (fast departure, long settle): things arrive the way a needle settles,
+     never with a linear slide.
+
+     tap    , acknowledgement of a press. Shorter than a hover, because it
+              answers something the reader just did.
+     hover  , a datum line drawing under whatever the pointer is on.
+     resolve, a figure or a scale arriving as it scrolls into view. Matches
+              the text reveal's own 700ms exactly. */
+  --ease-resolve: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The one exception, and it earns its place: --ease-resolve puts three
+     quarters of the distance into the first fifth of the time, which is
+     right for something settling into place and wrong for a line being
+     drawn, where the travel IS the point. This one leads in and eases out,
+     so a wipe reads as a stroke rather than a flash. */
+  --ease-draw: cubic-bezier(0.33, 0, 0.2, 1);
+  --dur-tap: 120ms;
+  --dur-hover: 220ms;
+  --dur-resolve: 700ms;
 }

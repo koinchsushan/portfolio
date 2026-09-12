@@ -114,6 +114,152 @@ body {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Micro-interaction vocabulary. Three verbs, one easing (tokens.css), and
+   nothing that moves without saying something:
+
+     draw        a 1px datum extends under whatever can be acted on, and
+                 stays drawn under the section the reader is currently in.
+     resolve     a scale or a figure wipes in, left to right, the direction
+                 every axis on this site already runs.
+     acknowledge a 1px press, because on a phone there is no hover and this
+                 is the only feedback channel a tap has.
+
+   Every one of them degrades to its finished state, never to "animation
+   off": the datum is still drawn on the current item under reduced motion,
+   the wipe is simply already complete.
+--------------------------------------------------------------------------- */
+
+/* DRAW. A hairline in the one accent, extending from the left under the
+   text, retracting to the right when the pointer leaves, so the line reads
+   as travelling with the reader rather than blinking on and off. It is an
+   addition, never the only affordance: colour, and on the nav aria-current
+   too, still carry the same state on their own. Put it on the element that
+   holds the words: `ActionLink` wraps its label in a span for exactly this
+   reason, so the datum sits under the label and not under the arrow that
+   travels beside it. */
+.link-datum {
+  position: relative;
+}
+
+.link-datum::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -0.25em;
+  height: 1px;
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-hover) var(--ease-resolve);
+}
+
+/* Hover is gated to real pointers. On a touch screen :hover latches after a
+   tap and leaves the line drawn under a link the reader has already left. */
+@media (hover: hover) and (pointer: fine) {
+  .link-datum:hover::after,
+  a:hover > .link-datum::after,
+  button:hover > .link-datum::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+.link-datum:focus-visible::after,
+a:focus-visible > .link-datum::after,
+.link-datum[aria-current='true']::after,
+a[aria-current='true'] > .link-datum::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* ACKNOWLEDGE. Deliberately sets no display of its own: these rules are
+   unlayered and would therefore beat any Tailwind display utility on the
+   same element, quietly turning an inline-flex button back into a block.
+   A transform does nothing on a non-replaced inline element, so a call site
+   that is plain inline adds `inline-block` itself. Standalone links and
+   buttons only: blockifying a link inside running prose would stop it
+   wrapping across lines. */
+.press {
+  transition: transform var(--dur-tap) var(--ease-resolve);
+}
+
+.press:active {
+  transform: translateY(1px);
+}
+
+/* RESOLVE. A left to right wipe, driven by `RevealOnView` adding
+   `reveal-pending` exactly as the text reveal does, and carrying the same
+   guarantee: the element renders complete with no class at all, so it is
+   whole on the server, without JavaScript, and under reduced motion. */
+.reveal-wipe {
+  /* The resting state is an inset, not `none`: `none` and an inset shape do
+     not interpolate, so the transition ran as a discrete jump and the wipe
+     was never actually drawn (measured: clip-path went straight from
+     inset(0 100%) to none on the first frame). The 6px of negative slack
+     keeps the resting clip outside the box entirely, so nothing that
+     overflows it by a pixel (a marker sitting on the axis's last tick, a
+     focus ring) is trimmed for the rest of the page's life. */
+  clip-path: inset(-6px);
+  transition: clip-path var(--dur-resolve) var(--ease-draw);
+}
+
+.reveal-wipe.reveal-pending {
+  clip-path: inset(-6px 100% -6px -6px);
+}
+
+/* The nav's position readout is an instrument, so it ticks when it changes
+   rather than swapping silently. Keyed remount replays it; eight changes
+   over a whole page, not a loop. */
+.readout-tick {
+  animation: readout-tick 260ms var(--ease-resolve) both;
+}
+
+@keyframes readout-tick {
+  from {
+    opacity: 0.4;
+    transform: translateY(-1px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The mobile menu's items arrive in reading order once the panel is open.
+   Opacity and transform only: the panel itself is laid out instantly, so
+   nothing below it moves while this plays. */
+.disclose-item {
+  animation: disclose-item 260ms var(--ease-resolve) both;
+  animation-delay: calc(var(--index, 0) * 40ms);
+}
+
+@keyframes disclose-item {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-datum::after,
+  .press,
+  .reveal-wipe {
+    transition: none;
+  }
+  .reveal-wipe.reveal-pending {
+    clip-path: inset(-6px);
+  }
+  .readout-tick,
+  .disclose-item {
+    animation: none;
+  }
+}
+
 /* Visible focus ring everywhere, never removed. */
 :focus-visible {
   outline: 2px solid var(--color-signal);

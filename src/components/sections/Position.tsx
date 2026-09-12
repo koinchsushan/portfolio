@@ -4,6 +4,7 @@ import { getCaseStudy } from '@/content'
 import type { Metric as MetricType } from '@/content'
 import { Metric } from '@/components/primitives/Metric'
 import { Datum } from '@/components/graphics/Datum'
+import { RevealOnView } from '@/components/motion/RevealOnView'
 import { useRevealText } from '@/lib/useRevealText'
 
 /**
@@ -72,7 +73,16 @@ export function Position() {
                   both part of the term being defined, not the description,
                   so both move inside `<dt>` alongside the figure itself. */}
               <dt>
-                <Datum className="mb-3 h-3 w-24" />
+                {/* The scale is drawn before the reading is taken: each
+                    mark wipes in left to right as the row arrives, 90ms
+                    apart, so the three read as three separate instruments
+                    rather than one graphic sliding in. Wipe only, never a
+                    counting figure: these are exact numbers from the CV and
+                    animating them through values they never had would be a
+                    small lie. */}
+                <RevealOnView delay={i * 90}>
+                  <Datum className="mb-3 h-3 w-24" />
+                </RevealOnView>
                 <Metric value={metric.value} tone={i === 0 ? 'signal' : 'bone'} className="sm:text-64" />
                 {UNITS[metric.value] && (
                   <p className="mt-2 font-mono text-12 tracking-[0.08em] text-label">{UNITS[metric.value]}</p>

@@ -68,7 +68,7 @@ export function Trajectory() {
                     </p>
                     {caseStudy ? (
                       <div className="mt-4">
-                        <ActionLink href={`/work/${caseStudy.slug}`} variant="quiet">
+                        <ActionLink href={`/work/${caseStudy.slug}`} variant="quiet" datum>
                           Read the full case study
                         </ActionLink>
                       </div>

@@ -34,9 +34,16 @@ function Field({
   error?: string
   children: ReactNode
 }) {
+  // `group-has-[:focus]` rather than `peer-focus`: the label precedes its
+  // control, and a peer variant can only look forwards. The label brightening
+  // is the one bit of feedback that survives a phone keyboard covering the
+  // rest of the form.
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="font-mono text-12 uppercase tracking-[0.14em] text-label">
+    <div className="group flex flex-col gap-2">
+      <label
+        htmlFor={id}
+        className="font-mono text-12 uppercase tracking-[0.14em] text-label transition-colors duration-[var(--dur-hover)] group-has-[:focus]:text-bone"
+      >
         {label}
       </label>
       {children}
@@ -57,7 +64,7 @@ function Field({
 
 function SuccessPanel({ name, onReset }: { name: string; onReset: () => void }) {
   return (
-    <div className="flex flex-col gap-4 border-l-2 border-signal py-1 pl-5">
+    <div className="disclose-item flex flex-col gap-4 border-l-2 border-signal py-1 pl-5">
       <p className="font-mono text-12 uppercase tracking-[0.14em] text-signal">Message sent</p>
       <p className="max-w-[42ch] text-16 leading-relaxed text-bone">
         Thanks{name ? `, ${name}` : ''}. I read every message myself and will reply from this address.
@@ -65,7 +72,7 @@ function SuccessPanel({ name, onReset }: { name: string; onReset: () => void }) 
       <button
         type="button"
         onClick={onReset}
-        className="self-start font-mono text-14 text-label underline decoration-grid decoration-1 underline-offset-4 transition-colors duration-150 hover:text-bone hover:decoration-bone"
+        className="press self-start font-mono text-14 text-label underline decoration-grid decoration-1 underline-offset-4 transition-colors duration-[var(--dur-hover)] hover:text-bone hover:decoration-bone"
       >
         Send another message
       </button>
@@ -317,7 +324,7 @@ export function ContactForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="whitespace-nowrap rounded-[var(--radius)] bg-signal px-6 py-3 font-mono text-14 text-ground transition-[transform,filter] duration-150 hover:brightness-110 active:scale-[0.97] active:brightness-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
+              className="whitespace-nowrap rounded-[var(--radius)] bg-signal px-6 py-3 font-mono text-14 text-ground transition-[translate,scale,filter] duration-[var(--dur-tap)] ease-[var(--ease-resolve)] hover:-translate-y-px hover:brightness-110 active:translate-y-px active:scale-[0.98] active:brightness-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:active:translate-y-0 disabled:active:scale-100"
             >
               {isSubmitting ? 'Sending' : 'Send message'}
             </button>

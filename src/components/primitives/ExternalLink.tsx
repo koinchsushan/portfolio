@@ -16,14 +16,14 @@ export function ExternalLink({
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className={`group inline-flex items-center gap-1.5 underline decoration-grid decoration-1 underline-offset-4 transition-colors duration-150 hover:text-signal hover:decoration-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4 ${className}`}
+      className={`press group inline-flex items-center gap-1.5 underline decoration-grid decoration-1 underline-offset-4 transition-colors duration-[var(--dur-hover)] hover:text-signal hover:decoration-signal focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4 ${className}`}
     >
       {children}
       <span className="sr-only"> (opens in a new tab)</span>
       <ArrowUpRight
         weight="bold"
         aria-hidden
-        className="size-3 shrink-0 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+        className="size-3 shrink-0 transition-transform duration-[var(--dur-hover)] ease-[var(--ease-resolve)] group-hover:-translate-y-1 group-hover:translate-x-1"
       />
     </a>
   )

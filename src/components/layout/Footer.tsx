@@ -14,7 +14,7 @@ export function Footer() {
           <li>
             <a
               href={`mailto:${identity.email}`}
-              className="transition-colors hover:text-bone focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
+              className="link-datum press inline-block transition-colors hover:text-bone focus-visible:outline-2 focus-visible:outline-signal focus-visible:outline-offset-4"
             >
               {identity.email}
             </a>
