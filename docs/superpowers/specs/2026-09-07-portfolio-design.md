@@ -411,9 +411,9 @@ requiring the owner's knowledge is marked `DRAFT` for review.
 |---|---|
 | WebGL bundle (~150kb gz, R3F + three) blocking first paint | Both canvases dynamically imported, mounted on intersection only, never in the initial bundle |
 | Shader not ready at paint | Pre-baked static gradient poster renders first, same dimensions, zero layout shift |
-| Weak GPU / battery | Capability probe on mount: renderer string, `deviceMemory`, `hardwareConcurrency`. Fail → static poster permanently. DPR capped at 1.5 |
+| Weak GPU / battery | Capability probe on mount: renderer string, `deviceMemory`, `hardwareConcurrency`. Fail → static poster permanently. DPR capped at 1.5 on `full`, 1 on `lite` (superseded 2026-09-12: phones run the shader at half the pixels rather than not at all) |
 | Off-screen render cost | rAF paused via IntersectionObserver and on `visibilitychange` |
-| Mobile | Hero shader → animated CSS gradient mesh, no WebGL. 3D object **stays** but low-poly, no post-processing, drift-only with tap-to-focus. Pinned sequences unpin → stacked reveals |
+| Mobile | Hero shader **stays**, at 1x device pixels instead of 1.5x (superseded 2026-09-12: the shader was originally swapped for an animated CSS gradient mesh here, but with the drawn lattice also dropped below md the hero was left with no object and no visible motion). Gradient mesh remains the fallback before first intersection and when the palette cannot be read. 3D object **stays** but low-poly, no post-processing, drift-only with tap-to-focus. Pinned sequences unpin → stacked reveals |
 | Two animation libraries | GSAP + ScrollTrigger for scroll only. CSS + View Transitions for the rest. Motion/Framer is **not installed** |
 | Smooth scroll | Lenis, disabled under `prefers-reduced-motion` |
 | Loader hurting repeat visits | 1.4s hard cap, skippable, session-gated |
