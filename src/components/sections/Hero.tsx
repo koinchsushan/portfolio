@@ -45,11 +45,12 @@ export function Hero() {
       aria-labelledby="hero-heading"
       className="relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
-      {/* The field is a substrate, not the subject. At full strength the flow
-          reads as a generic mesh-gradient background and competes with the
-          lattice, the trace and the strapline; held back it behaves like the
-          measurement noise the drawn layer resolves out of. */}
-      <HeroCanvas className="pointer-events-none absolute inset-0 overflow-hidden opacity-50" />
+      {/* Above md the field is a substrate, not the subject: at full strength
+          the flow competes with the lattice, the trace and the strapline;
+          held back it behaves like the measurement noise the drawn layer
+          resolves out of. Below md there is no lattice in front of it, so
+          half strength left the hero looking empty and it runs at 90%. */}
+      <HeroCanvas className="pointer-events-none absolute inset-0 overflow-hidden opacity-90 md:opacity-50" />
 
       <HeroField
         className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-90 md:block"

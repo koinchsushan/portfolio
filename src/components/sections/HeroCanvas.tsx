@@ -36,12 +36,23 @@ const WebGLHeroField = dynamic(() => import('@/components/three/HeroField').then
  * absolutely-positioned overlay behind it, so mounting or swapping it never
  * shifts layout.
  *
- *   full   , the WebGL curl-noise field, mounted only once the hero has
- *            actually intersected the viewport, then paused (not
- *            unmounted) via `frameloop` whenever it scrolls off-screen or
- *            the tab is hidden.
- *   lite   , an animated CSS gradient mesh, no WebGL at all.
+ *   full   , the WebGL curl-noise field at up to 1.5x device pixels.
+ *   lite   , the same field, capped at 1x device pixels.
  *   static , nothing. No canvas element, no extra DOM.
+ *
+ * `lite` used to get a CSS gradient mesh instead, on a no-WebGL-on-phones
+ * rule. On a phone the drawn lattice is dropped too (a 24x9 field
+ * cover-fitted into a portrait viewport crops away its own trace), so that
+ * left the mobile hero with a soft gradient and nothing else: no object, no
+ * visible motion. The owner asked for the real thing there, so the field
+ * mounts on `lite` as well, at half the pixels. Everything protective stays:
+ * it mounts only once the hero has intersected, pauses via `frameloop` when
+ * it scrolls away or the tab hides, and `static` (which is where
+ * `prefers-reduced-motion` lands) still gets no canvas at all.
+ *
+ * The gradient mesh survives as the fallback for the moments and devices
+ * with no field: before the first intersection, and when the palette cannot
+ * be read from the stylesheet.
  */
 export function HeroCanvas({ className }: { className?: string }) {
   const { tier } = useCapability()
@@ -50,13 +61,15 @@ export function HeroCanvas({ className }: { className?: string }) {
   const [isVisible, setIsVisible] = useState(true)
   const [palette, setPalette] = useState<HeroPalette | null>(null)
 
-  useEffect(() => {
-    if (tier !== 'full') return
-    setPalette(readPalette())
-  }, [tier])
+  const wantsField = tier === 'full' || tier === 'lite'
 
   useEffect(() => {
-    if (tier !== 'full') return
+    if (!wantsField) return
+    setPalette(readPalette())
+  }, [wantsField])
+
+  useEffect(() => {
+    if (!wantsField) return
     const node = containerRef.current
     if (!node) return
 
@@ -69,10 +82,10 @@ export function HeroCanvas({ className }: { className?: string }) {
     )
     observer.observe(node)
     return () => observer.disconnect()
-  }, [tier])
+  }, [wantsField])
 
   useEffect(() => {
-    if (tier !== 'full') return
+    if (!wantsField) return
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -87,17 +100,15 @@ export function HeroCanvas({ className }: { className?: string }) {
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [tier])
+  }, [wantsField])
 
   if (tier === 'static') return null
 
   return (
     <div ref={containerRef} className={className} aria-hidden="true">
-      {(tier === 'lite' || (tier === 'full' && !palette)) && (
-        <div className="hero-gradient-mesh absolute inset-0" />
-      )}
-      {tier === 'full' && hasIntersected && palette && (
-        <WebGLHeroField paused={!isVisible} palette={palette} />
+      {(!palette || !hasIntersected) && <div className="hero-gradient-mesh absolute inset-0" />}
+      {wantsField && hasIntersected && palette && (
+        <WebGLHeroField paused={!isVisible} palette={palette} dprMax={tier === 'lite' ? 1 : 1.5} />
       )}
     </div>
   )

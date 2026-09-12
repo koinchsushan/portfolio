@@ -263,10 +263,24 @@ function Teardown() {
   return null
 }
 
-export function HeroField({ paused, palette }: { paused: boolean; palette: HeroPalette }) {
+/**
+ * `dprMax` is the phone lever. This is a full-screen fragment shader, so its
+ * cost scales with the pixel count, not the scene: capping the device pixel
+ * ratio at 1 on a phone quarters the work of a 2x screen and leaves the
+ * flow itself untouched. Desktop keeps 1.5.
+ */
+export function HeroField({
+  paused,
+  palette,
+  dprMax = 1.5,
+}: {
+  paused: boolean
+  palette: HeroPalette
+  dprMax?: number
+}) {
   return (
     <Canvas
-      dpr={[1, 1.5]}
+      dpr={[1, dprMax]}
       gl={{ antialias: false, alpha: true, powerPreference: 'low-power' }}
       frameloop={paused ? 'never' : 'always'}
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}

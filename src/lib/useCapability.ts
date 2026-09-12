@@ -49,8 +49,9 @@ function detectTier(): CapabilityTier {
 /**
  * The site's three-tier motion budget.
  *
- *   full   , curl-noise WebGL field behind the hero
- *   lite   , an animated CSS gradient mesh instead of WebGL
+ *   full   , curl-noise WebGL field behind the hero, up to 1.5x pixels
+ *   lite   , the same field at 1x pixels (phones: the drawn lattice is
+ *            dropped below md, so this layer is the hero's only object)
  *   static , the drawn SVG composition alone, no extra motion
  *
  * Always returns `static` during server render and on the very first client
