@@ -105,7 +105,7 @@ export function HeroCanvas({ className }: { className?: string }) {
   if (tier === 'static') return null
 
   return (
-    <div ref={containerRef} className={className} aria-hidden="true">
+    <div ref={containerRef} className={`hero-field-layer ${className ?? ''}`} aria-hidden="true">
       {(!palette || !hasIntersected) && <div className="hero-gradient-mesh absolute inset-0" />}
       {wantsField && hasIntersected && palette && (
         <WebGLHeroField paused={!isVisible} palette={palette} dprMax={tier === 'lite' ? 1 : 1.5} />

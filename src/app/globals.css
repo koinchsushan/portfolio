@@ -131,6 +131,19 @@ body {
    jump is instant and never crosses Work at all. Next 16 no longer overrides
    this during navigation either, so it cannot sneak back in there. */
 
+/* three writes the size it last measured onto the canvas element as an inline
+   width and height in pixels. If that measurement is ever behind the box it
+   sits in, the canvas stops short and the page ground shows through beneath
+   it as a band. Inline styles can only be beaten with !important, and the
+   trade is worth it: the worst case becomes a flow field stretched by a few
+   percent for one frame instead of a black strip across the hero's bottom
+   edge. Belt to the svh braces in `sections/Hero.tsx`, which is what stops
+   the box from changing size in the first place. */
+.hero-field-layer canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* The `lite` capability tier's stand-in for the WebGL hero field: two soft,
    slow-drifting colour fields (no shader, just background-position) mixed
    from the same ground/label/signal tokens, held well below the SVG

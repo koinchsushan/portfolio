@@ -21,9 +21,16 @@ import { useRevealText } from '@/lib/useRevealText'
 // Asymmetric split: headline left-weighted across 8 of 12 columns, meta and
 // CTAs anchored bottom-right in the remaining negative space. -mt-16 cancels
 // the fixed nav's clearance on <main> so this section still measures a true
-// min-h-[100dvh] from the real top of the viewport. Exactly four text
+// min-h-[100svh] from the real top of the viewport. Exactly four text
 // elements below the h1: the combined role/strapline line, the combined
 // location/availability line, and the CTA row.
+//
+// The height unit is svh, not dvh. dvh follows the mobile browser's address
+// bar, so the first touch-scroll grew this section by the bar's height while
+// the field canvas kept the height it was last measured at, leaving a band of
+// bare ground between the hero and the section under it. svh is the height
+// with the bar showing, which is what the page loads at, so the box never
+// changes size mid-scroll and there is nothing for the canvas to chase.
 //
 // HeroField is the page's largest visual element and its thesis: it is
 // decorative relative to the four text nodes above (aria-hidden, purely
@@ -43,7 +50,7 @@ export function Hero() {
     <section
       id="hero"
       aria-labelledby="hero-heading"
-      className="relative -mt-16 flex min-h-[100dvh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
+      className="relative -mt-16 flex min-h-[100svh] items-center overflow-hidden border-b border-grid pt-20 pb-16 sm:pt-24"
     >
       {/* Above md the field is a substrate, not the subject: at full strength
           the flow competes with the lattice, the trace and the strapline;

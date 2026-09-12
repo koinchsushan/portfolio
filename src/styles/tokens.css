@@ -26,7 +26,7 @@
   --radius: 2px;
 
   /* Fluid type scale, clamp(min, preferred, max) tuned so the largest
-     steps still fit inside a min-h-[100dvh] hero without forcing scroll. */
+     steps still fit inside a min-h-[100svh] hero without forcing scroll. */
   --fs-12: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
   --fs-14: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
   --fs-16: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
