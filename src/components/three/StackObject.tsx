@@ -1,8 +1,7 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Text } from '@react-three/drei'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import * as THREE from 'three'
 import { TI_FACES, TI_VERTICES } from './truncatedIcosahedron.data'
@@ -175,6 +174,74 @@ function iconPathToGeometry(pathData: string): THREE.BufferGeometry {
   return geometry
 }
 
+/** Texture pixels for a wordmark face. 2:1, the same proportion as the plane
+ *  it is mapped onto, so nothing is stretched. */
+const LABEL_TEXTURE_WIDTH = 512
+const LABEL_TEXTURE_HEIGHT = 256
+/** The label's footprint and type size, relative to the face, carried over
+ *  unchanged from the drei `Text` it replaces (maxWidth 1.7r, fontSize 0.34r). */
+const LABEL_WIDTH_RATIO = 1.7
+const LABEL_FONT_RATIO = 0.34
+
+/** The site's mono family, read from the live `--font-mono` token the way the
+ *  palette is read, so the object never names a typeface of its own. */
+function readMonoFamily(): string {
+  return getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim() || 'monospace'
+}
+
+/**
+ * The two faces with no brand mark (Single-SPA, Matplotlib) used to be drawn by
+ * drei's `Text`, which is troika underneath. For two words that meant: about
+ * 56 KB gz of troika in this chunk, web workers booted on first view, four
+ * font files fetched from cdn.jsdelivr.net (a third-party request the reader
+ * never agreed to), glyph SDFs generated in those workers, and a second long
+ * task of about 240ms landing after the object was already on screen.
+ *
+ * A 2D canvas does the same job synchronously, in the site's own Spline Sans
+ * Mono (already loaded by the page, verified by pixel comparison against the
+ * generic monospace fallback), with no worker and no network. The text is
+ * painted in white as a mask and tinted by the material's colour, so the face
+ * still renders in exactly `--label`, or `--signal` when lifted, and no white
+ * ever reaches the screen.
+ */
+function createLabelTexture(text: string, family: string): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas')
+  canvas.width = LABEL_TEXTURE_WIDTH
+  canvas.height = LABEL_TEXTURE_HEIGHT
+  const texture = new THREE.CanvasTexture(canvas)
+
+  const draw = () => {
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    // Type size as a share of the plane's height, then shrunk to fit on one
+    // line: a wordmark wrapping at its hyphen reads as two words on a face.
+    const planeHeightInFontUnits = LABEL_WIDTH_RATIO / 2 / LABEL_FONT_RATIO
+    let size = canvas.height / planeHeightInFontUnits
+    ctx.font = `400 ${size}px ${family}`
+    const available = canvas.width * 0.94
+    const measured = ctx.measureText(text).width
+    if (measured > available) {
+      size *= available / measured
+      ctx.font = `400 ${size}px ${family}`
+    }
+    ctx.fillStyle = 'white'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2)
+    texture.needsUpdate = true
+  }
+
+  draw()
+  // If the face is built before the webfont has finished loading (a deep link
+  // straight to this section), draw again the moment it has, rather than
+  // leaving the label in a fallback face for the rest of the visit.
+  const spec = `400 64px ${family}`
+  if (!document.fonts.check(spec)) void document.fonts.load(spec).then(draw)
+
+  return texture
+}
+
 function StackScene({ paused, palette, mode, activeIndex, hoveredIndex, rotationOffset, onHoverFace, onSelectFace }: StackObjectProps) {
   const { gl } = useThree()
   const groupRef = useRef<THREE.Group>(null)
@@ -245,12 +312,25 @@ function StackScene({ paused, palette, mode, activeIndex, hoveredIndex, rotation
     [faceData],
   )
 
+  const labelPlane = useMemo(() => new THREE.PlaneGeometry(1, 1), [])
+  const labelTextures = useMemo(() => {
+    const family = readMonoFamily()
+    const map = new Map<number, THREE.CanvasTexture>()
+    for (const { layout, content, icon } of faceData) {
+      if (content && !icon) map.set(layout.index, createLabelTexture(content.label ?? content.skill, family))
+    }
+    return map
+  }, [faceData])
+
   useEffect(() => {
     return () => {
       for (const geometry of iconGeometries.values()) geometry.dispose()
       for (const geometry of hitGeometries) geometry.dispose()
+      // Material disposal (Teardown) does not release a material's map.
+      for (const texture of labelTextures.values()) texture.dispose()
+      labelPlane.dispose()
     }
-  }, [iconGeometries, hitGeometries])
+  }, [iconGeometries, hitGeometries, labelTextures, labelPlane])
 
   const labelColor = palette.label
   const liftedColor = palette.signal
@@ -306,19 +386,19 @@ function StackScene({ paused, palette, mode, activeIndex, hoveredIndex, rotation
                 <meshBasicMaterial color={color} side={THREE.DoubleSide} transparent />
               </mesh>
             ) : (
-              <Suspense fallback={null}>
-                <Text
-                  fontSize={layout.radius * 0.34}
+              <mesh
+                geometry={labelPlane}
+                scale={[layout.radius * LABEL_WIDTH_RATIO, (layout.radius * LABEL_WIDTH_RATIO) / 2, 1]}
+                position={[0, 0, 0.001]}
+              >
+                <meshBasicMaterial
+                  map={labelTextures.get(layout.index)}
                   color={color}
-                  anchorX="center"
-                  anchorY="middle"
-                  maxWidth={layout.radius * 1.7}
-                  textAlign="center"
-                  position={[0, 0, 0.001]}
-                >
-                  {content.label ?? content.skill}
-                </Text>
-              </Suspense>
+                  side={THREE.DoubleSide}
+                  transparent
+                  depthWrite={false}
+                />
+              </mesh>
             )}
           </group>
         )
@@ -353,16 +433,97 @@ function Teardown() {
   return null
 }
 
+/**
+ * Turns off R3F's scroll tracking for this canvas, and with it the scroll
+ * debounce that was the main reason the object appeared late.
+ *
+ * R3F sizes a canvas with react-use-measure, debounced 50ms on scroll by
+ * default, and react-use-measure routes its ResizeObserver through that same
+ * debounced function, so every scroll event pushes the measurement back again.
+ * No measured size means no renderer: R3F does not create one until it knows
+ * the canvas has a size. During a steady scroll the measurement never settled,
+ * so an object mounted a screenful early still had no renderer until the reader
+ * stopped. Measured on a production build by logging WebGL calls: three's
+ * renderer allocated its first textures 287ms (real GPU) to 423ms (SwiftShader)
+ * after the object reached the viewport, about 50ms after the scroll ended, and
+ * every compile and draw followed it.
+ *
+ * Nothing here needs scroll tracking. R3F maps the pointer from
+ * `offsetX`/`offsetY`, which are relative to the canvas and unaffected by page
+ * scroll, and `StackScene`'s tilt reads a live `getBoundingClientRect()`.
+ */
+const CANVAS_RESIZE = { scroll: false, debounce: 0 }
+
+/** If warm-up has not finished by now (a lost context, a driver that never
+ *  reports a program ready), give up on it and render normally. The silhouette
+ *  underneath means the worst case is today's behaviour, never a blank box. */
+const WARM_UP_TIMEOUT_MS = 2500
+
+/**
+ * Compiles every shader and draws the first frame while the section is still
+ * below the fold, then hands control of the loop back to `paused`.
+ *
+ * `StackCanvas` mounts this object a screenful early, and `CANVAS_RESIZE` below
+ * lets the renderer actually exist by then. That is still not enough on its
+ * own: a paused canvas (`frameloop="never"`) renders nothing, so without this
+ * the shaders would compile, and the first frame would draw, only once the
+ * object reached the viewport.
+ *
+ * The loop stays at `never` until this finishes, deliberately: an `always` loop
+ * would render straight away, and the first render compiles every program
+ * synchronously on the main thread, which is the long task this exists to move.
+ * `compileAsync` uses KHR_parallel_shader_compile where the browser has it, so
+ * the compile happens off the main thread too; then one frame is drawn by hand,
+ * uploading geometry and label textures, and the object is ready before anyone
+ * looks at it.
+ */
+function WarmUp({ onWarm }: { onWarm: () => void }) {
+  const gl = useThree((state) => state.gl)
+  const scene = useThree((state) => state.scene)
+  const camera = useThree((state) => state.camera)
+  const advance = useThree((state) => state.advance)
+
+  useEffect(() => {
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      onWarm()
+    }
+    const timeout = window.setTimeout(finish, WARM_UP_TIMEOUT_MS)
+
+    gl.compileAsync(scene, camera)
+      .then(() => {
+        if (done) return
+        advance(performance.now())
+        finish()
+      })
+      .catch(finish)
+
+    return () => {
+      done = true
+      window.clearTimeout(timeout)
+    }
+  }, [gl, scene, camera, advance, onWarm])
+
+  return null
+}
+
 export function StackObject(props: StackObjectProps) {
+  const [warmed, setWarmed] = useState(false)
+  const handleWarm = useMemo(() => () => setWarmed(true), [])
+
   return (
     <Canvas
       dpr={[1, 1.5]}
       gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
-      frameloop={props.paused ? 'never' : 'always'}
+      frameloop={warmed && !props.paused ? 'always' : 'never'}
+      resize={CANVAS_RESIZE}
       camera={{ position: [0, 0, 3.1], fov: 34 }}
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
     >
       <StackScene {...props} />
+      {!warmed && <WarmUp onWarm={handleWarm} />}
       <Teardown />
     </Canvas>
   )

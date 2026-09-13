@@ -24,15 +24,21 @@ function readStackPalette(): StackPalette | null {
   return { label, bone, signal, panel, grid }
 }
 
-// `ssr: false` keeps `three`, `@react-three/drei` and `simple-icons` out of
-// the server bundle and the initial client chunk: the import only resolves
-// once this component actually renders it, which only happens once the
-// section has intersected on `full`- or `lite`-tier hardware.
+// `ssr: false` keeps `three` and `simple-icons` out of the server bundle and
+// the initial client chunk: the import only resolves once this component
+// actually renders it, which only happens once the section is within a
+// screenful of the viewport on `full`- or `lite`-tier hardware.
 const StackObjectView = dynamic(() => import('@/components/three/StackObject').then((mod) => mod.StackObject), {
   ssr: false,
 })
 
 const ARROW_STEP_RADIANS = 0.16
+
+/** How far ahead of the viewport the WebGL object starts building itself.
+ *  Roughly a screenful: long enough to cover the fetch, the evaluate and the
+ *  mount at normal scrolling speed, short enough that a reader who never
+ *  reaches this section never pays for it. */
+const MOUNT_MARGIN = '1200px 0px'
 
 /**
  * The cursor-reactive stack object (Task G). Layered exactly like
@@ -69,15 +75,42 @@ export function StackCanvas({ className }: { className?: string }) {
     const node = containerRef.current
     if (!node) return
 
-    const observer = new IntersectionObserver(
+    // Two observers, because building the object and running it want
+    // different moments.
+    //
+    // Building was happening exactly when the reader arrived: measured on
+    // production, 308ms to get the canvas into the DOM (the chunk has to be
+    // fetched and evaluated first) and 743ms to the first draw. For that three
+    // quarters of a second the section showed the bare silhouette, so the
+    // first thing anyone saw of the object was a blank solid with no
+    // technologies on it. This observer fires a screenful early, so the chunk
+    // loads and `StackObject` builds its renderer, compiles its shaders and
+    // draws its first frame while the section is still below the fold.
+    // Mounting early was not enough on its own, twice over: R3F's scroll
+    // debounce kept the renderer from existing until scrolling stopped
+    // (`CANVAS_RESIZE` there), and a paused canvas would still have deferred
+    // its first frame to arrival (`WarmUp` there).
+    const preload = new IntersectionObserver(
       ([entry]) => {
-        setIsVisible(entry.isIntersecting)
-        if (entry.isIntersecting) setHasIntersected(true)
+        if (!entry.isIntersecting) return
+        setHasIntersected(true)
+        preload.disconnect()
       },
-      { threshold: 0 },
+      { rootMargin: MOUNT_MARGIN },
     )
-    observer.observe(node)
-    return () => observer.disconnect()
+    preload.observe(node)
+
+    // The render loop still starts and stops on the real edge of the
+    // viewport: an object built early must not also be animating early.
+    const visibility = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), {
+      threshold: 0,
+    })
+    visibility.observe(node)
+
+    return () => {
+      preload.disconnect()
+      visibility.disconnect()
+    }
   }, [interactive])
 
   useEffect(() => {
